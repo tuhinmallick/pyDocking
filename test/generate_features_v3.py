@@ -1,16 +1,17 @@
 #!/usr/bin/env python
 
-import numpy as np
-import pandas as pd
-import mdtraj as mt
+import argparse
 import itertools
 import sys
-from collections import OrderedDict
-from mpi4py import MPI
-import argparse
-import biopandas as bp
 from argparse import RawDescriptionHelpFormatter
+from collections import OrderedDict
+
+import biopandas as bp
+import mdtraj as mt
+import numpy as np
+import pandas as pd
 from biopandas.mol2 import PandasMol2
+from mpi4py import MPI
 
 
 class ProteinParser(object):

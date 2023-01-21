@@ -1,11 +1,12 @@
-import subprocess as sp
-import numpy as np
-import mdtraj as mt
-from rdkit import Chem
-from pyDocking.region_mutate import coordinatesPDB
-from pyDocking import builder
 import argparse
+import subprocess as sp
 
+import mdtraj as mt
+import numpy as np
+from rdkit import Chem
+
+from pyDocking import builder
+from pyDocking.region_mutate import coordinatesPDB
 
 """
 Docking Routine

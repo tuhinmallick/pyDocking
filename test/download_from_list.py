@@ -1,5 +1,6 @@
-from pyDocking import PubChemDownloader
 import sys
+
+from pyDocking import PubChemDownloader
 
 if __name__ == "__main__":
     dowloader = PubChemDownloader()

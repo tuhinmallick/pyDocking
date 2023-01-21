@@ -1,6 +1,7 @@
+import sys
+
 import mdtraj as mt
 from rdkit import Chem
-import sys
 
 
 def long2short(code):

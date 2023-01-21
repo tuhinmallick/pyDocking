@@ -1,19 +1,18 @@
 #!/usr/bin/env python
 
-from torch import nn
-from torch import optim
-import torch
-import torch.utils.data
-import torch.cuda
-from torch.autograd import Variable
-import pandas as pd
-import numpy as np
 import argparse
-from argparse import RawTextHelpFormatter
 import os
 import sys
-from sklearn import preprocessing, externals
+from argparse import RawTextHelpFormatter
+
+import numpy as np
 import pandas as pd
+import torch
+import torch.cuda
+import torch.utils.data
+from sklearn import externals, preprocessing
+from torch import nn, optim
+from torch.autograd import Variable
 
 
 class BranchedNet(torch.nn.Module):
@@ -149,6 +148,7 @@ def pcc(output, target):
 def debug_memory():
     import collections
     import gc
+
     import torch
 
     tensors = collections.Counter(

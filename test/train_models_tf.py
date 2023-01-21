@@ -1,13 +1,14 @@
-import sys
-from sklearn import preprocessing, model_selection
-import tensorflow as tf
-import pandas as pd
-import numpy as np
-from sklearn.externals import joblib
 import argparse
-from argparse import RawTextHelpFormatter, RawDescriptionHelpFormatter
 import os
+import sys
+from argparse import RawDescriptionHelpFormatter, RawTextHelpFormatter
+
+import numpy as np
+import pandas as pd
+import tensorflow as tf
 from scipy import stats
+from sklearn import model_selection, preprocessing
+from sklearn.externals import joblib
 
 
 def rmse(y_true, y_pred):

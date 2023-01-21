@@ -1,10 +1,12 @@
 #!/usr/bin/env python
 
 import os
-import sys
-from rdkit import Chem
 import subprocess as sp
+import sys
+
 import dockml.pdbIO as pdbio
+from rdkit import Chem
+
 from pyDocking import builder
 
 

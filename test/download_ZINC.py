@@ -1,5 +1,6 @@
-from pyDocking import downloader
 import sys
+
+from pyDocking import downloader
 
 if __name__ == "__main__":
     inp = sys.argv[1]

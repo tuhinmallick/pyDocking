@@ -1,8 +1,9 @@
+import sys
+
+import numpy as np
+import pandas as pd
 from rdkit import Chem
 from rdkit.Chem.Fingerprints import FingerprintMols
-import sys
-import pandas as pd
-import numpy as np
 
 
 def fingerprints(smi):

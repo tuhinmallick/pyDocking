@@ -1,9 +1,10 @@
-import mdtraj as mt
 import sys
-import sklearn
+
+import mdtraj as mt
 import numpy as np
-from sklearn import cluster
 import pandas as pd
+import sklearn
+from sklearn import cluster
 
 
 def load_pdb(fn):

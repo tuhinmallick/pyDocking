@@ -1,7 +1,8 @@
-import numpy as np
-import sys
 import os
 import subprocess as sp
+import sys
+
+import numpy as np
 
 
 class rewritePDB(object):

@@ -1,8 +1,10 @@
+import sys
+
 import mdtraj as mt
-from pyDocking.docking import coordinatesPDB
 import numpy as np
 from prody import *
-import sys
+
+from pyDocking.docking import coordinatesPDB
 
 
 class EssentialDynamics(object):

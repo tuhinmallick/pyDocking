@@ -1,8 +1,9 @@
 #!/usr/bin/env python
 
-import sys
-import dockml.pdbIO as pdbio
 import os
+import sys
+
+import dockml.pdbIO as pdbio
 
 
 def lig_name_change(lig_in, lig_out, lig_code):

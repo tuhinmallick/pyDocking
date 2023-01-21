@@ -1,6 +1,7 @@
-from pyDocking import builder
-import sys
 import os
+import sys
+
+from pyDocking import builder
 
 if __name__ == "__main__":
 

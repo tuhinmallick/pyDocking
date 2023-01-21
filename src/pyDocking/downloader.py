@@ -1,13 +1,14 @@
 # -*- coding: utf-8 -*-
 
-from pubchempy import get_compounds
-from bs4 import BeautifulSoup
-import subprocess as sp
 import os
+import subprocess as sp
 import time
 from random import random
-from bs4 import BeautifulSoup as Soup
+
 import requests
+from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup as Soup
+from pubchempy import get_compounds
 
 
 class PubChemDownloader(object):

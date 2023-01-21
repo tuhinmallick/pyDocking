@@ -1,13 +1,13 @@
 from __future__ import division
 
 import six
-from keras.models import Model
-from keras.layers import Input, Activation, Dense, Flatten
-from keras.layers.convolutional import Conv2D, MaxPooling2D, AveragePooling2D
+from keras import backend as K
+from keras.layers import Activation, Dense, Flatten, Input
+from keras.layers.convolutional import AveragePooling2D, Conv2D, MaxPooling2D
 from keras.layers.merge import add
 from keras.layers.normalization import BatchNormalization
+from keras.models import Model
 from keras.regularizers import l2
-from keras import backend as K
 
 
 def _bn_relu(input):

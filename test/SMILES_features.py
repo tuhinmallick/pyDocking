@@ -1,7 +1,8 @@
 import sys
-from rdkit import Chem
+
 import pandas as pd
 from PyBioMed import Pymolecule
+from rdkit import Chem
 
 
 def SMI2Descriptor(smi):

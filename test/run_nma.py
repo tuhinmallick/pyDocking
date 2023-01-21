@@ -1,8 +1,9 @@
 #!/usr/bin/env python
 
+import sys
+
 import mdtraj as md
 from nma import ANMA
-import sys
 
 # Load structure of choice (e.g. Water)
 pdb = md.load_pdb(sys.argv[1])

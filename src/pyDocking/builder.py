@@ -1,7 +1,8 @@
-from rdkit import Chem
-from rdkit.Chem import AllChem
 import os
 from subprocess import Popen
+
+from rdkit import Chem
+from rdkit.Chem import AllChem
 
 
 class Molecule(object):

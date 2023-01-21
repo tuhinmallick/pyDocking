@@ -1,19 +1,17 @@
 import argparse
-from argparse import RawDescriptionHelpFormatter
-import sys
 import os
-from rdkit import Chem
-from sklearn.externals import joblib
+import sys
+from argparse import RawDescriptionHelpFormatter
+
 import numpy as np
 import pandas as pd
-
-from torch import nn
-from torch import optim
 import torch
-import torch.utils.data
 import torch.cuda
+import torch.utils.data
+from rdkit import Chem
+from sklearn.externals import joblib
+from torch import nn, optim
 from torch.autograd import Variable
-
 
 try:
     from PyBioMed import Pymolecule

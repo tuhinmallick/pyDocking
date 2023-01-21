@@ -1,12 +1,13 @@
 import argparse
-from argparse import RawDescriptionHelpFormatter
-import sys
 import os
-from rdkit import Chem
-from sklearn.externals import joblib
+import sys
+from argparse import RawDescriptionHelpFormatter
+
 import numpy as np
 import pandas as pd
 from PyBioMed import Pymolecule
+from rdkit import Chem
+from sklearn.externals import joblib
 
 
 def SMI2Descriptor(smi):

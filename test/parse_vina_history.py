@@ -1,8 +1,8 @@
-import sys
-import os
 import linecache
-from collections import OrderedDict
 import operator
+import os
+import sys
+from collections import OrderedDict
 
 
 class ParseVinaHistory(object):

@@ -1,21 +1,20 @@
 #!/usr/bin/env python
 
-from sklearn import preprocessing
-import numpy as np
-from sklearn.externals import joblib
 import argparse
-from argparse import RawTextHelpFormatter
 import os
-from scipy import stats
-from torch import nn
-from torch import optim
-import torch
-import torch.utils.data
-import torch.cuda
-from torch.autograd import Variable
-import pandas as pd
 import sys
-from sklearn import model_selection
+from argparse import RawTextHelpFormatter
+
+import numpy as np
+import pandas as pd
+import torch
+import torch.cuda
+import torch.utils.data
+from scipy import stats
+from sklearn import model_selection, preprocessing
+from sklearn.externals import joblib
+from torch import nn, optim
+from torch.autograd import Variable
 
 
 # Fully connected neural network with one hidden layer
@@ -196,6 +195,7 @@ def rmse_pcc_loss(output, target):
 def debug_memory():
     import collections
     import gc
+
     import torch
 
     tensors = collections.Counter(

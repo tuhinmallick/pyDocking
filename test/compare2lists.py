@@ -1,7 +1,7 @@
-from pyDocking import fingerprints
-import sys
 import itertools
+import sys
 
+from pyDocking import fingerprints
 
 if __name__ == "__main__":
     fn1 = sys.argv[1]

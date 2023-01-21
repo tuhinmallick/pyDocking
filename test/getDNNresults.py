@@ -1,9 +1,10 @@
 #!/usr/bin/env python
 
-import pandas as pd
 import argparse
-import sys
 import os
+import sys
+
+import pandas as pd
 
 if __name__ == "__main__":
 

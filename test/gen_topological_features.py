@@ -1,9 +1,11 @@
-from rdkit import Chem
-from rdkit.Chem.Fingerprints import FingerprintMols
-import pandas as pd
-import numpy as np
 import os
 import sys
+
+import numpy as np
+import pandas as pd
+from rdkit import Chem
+from rdkit.Chem.Fingerprints import FingerprintMols
+
 from pyDocking import builder
 
 

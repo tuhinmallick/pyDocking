@@ -1,15 +1,16 @@
 #!/usr/bin/env python
 
-import numpy as np
-import pandas as pd
-import mdtraj as mt
+import argparse
 import itertools
 import re
 import sys
-from collections import OrderedDict
-from mpi4py import MPI
-import argparse
 from argparse import RawDescriptionHelpFormatter
+from collections import OrderedDict
+
+import mdtraj as mt
+import numpy as np
+import pandas as pd
+from mpi4py import MPI
 
 
 class ResidueCounts(object):
