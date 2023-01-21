@@ -10,7 +10,8 @@ import torch.utils.data
 from scipy import stats
 from sklearn import preprocessing
 from sklearn.externals import joblib
-from torch import nn, optim
+from torch import nn
+from torch import optim
 from torch.autograd import Variable
 
 

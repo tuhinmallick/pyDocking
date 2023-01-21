@@ -3,10 +3,9 @@ import sys
 
 import numpy as np
 import pandas as pd
+from pyDocking import builder
 from rdkit import Chem
 from rdkit.Chem.Fingerprints import FingerprintMols
-
-from pyDocking import builder
 
 
 def get_top_features(fn, converter):

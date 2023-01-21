@@ -9,7 +9,8 @@ import torch.cuda
 import torch.utils.data
 from rdkit import Chem
 from sklearn.externals import joblib
-from torch import nn, optim
+from torch import nn
+from torch import optim
 from torch.autograd import Variable
 
 try:

@@ -1,15 +1,19 @@
 import argparse
 import os
 import sys
-from argparse import RawDescriptionHelpFormatter, RawTextHelpFormatter
+from argparse import RawDescriptionHelpFormatter
+from argparse import RawTextHelpFormatter
 
 import keras
 import numpy as np
 import pandas as pd
 import tensorflow as tf
-from keras import Input, layers, models
+from keras import Input
+from keras import layers
+from keras import models
 from scipy import stats
-from sklearn import model_selection, preprocessing
+from sklearn import model_selection
+from sklearn import preprocessing
 from sklearn.externals import joblib
 
 

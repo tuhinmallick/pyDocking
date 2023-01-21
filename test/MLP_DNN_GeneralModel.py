@@ -2,7 +2,8 @@ import sys
 
 import pandas as pd
 import tensorflow as tf
-from sklearn import model_selection, preprocessing
+from sklearn import model_selection
+from sklearn import preprocessing
 
 
 def create_model(input_size):
