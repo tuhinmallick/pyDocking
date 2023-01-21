@@ -364,8 +364,7 @@ if __name__ == "__main__":
         "-method",
         type=str,
         default="CNN",
-        help=
-        "Input, optional. Default is CNN. Options: CNN, DNN. The learning network type.",
+        help="Input, optional. Default is CNN. Options: CNN, DNN. The learning network type.",
     )
 
     args = parser.parse_args()

@@ -311,8 +311,7 @@ if __name__ == "__main__":
         "-res_weight",
         type=float,
         default=0.1,
-        help=
-        "Input, optional. Defulat is 0.1. The weight factor for residual block.\n",
+        help="Input, optional. Defulat is 0.1. The weight factor for residual block.\n",
     )
 
     args = parser.parse_args()

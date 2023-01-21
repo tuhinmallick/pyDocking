@@ -317,15 +317,13 @@ if __name__ == "__main__":
         "-patience",
         type=int,
         default=40,
-        help=
-        "Input, optional. Default is 40. Number of steps in early stopping. ",
+        help="Input, optional. Default is 40. Number of steps in early stopping. ",
     )
     parser.add_argument(
         "-delta",
         default=0.001,
         type=float,
-        help=
-        "Input, optional. Default is 0.001. The maximium difference for early stopping. ",
+        help="Input, optional. Default is 0.001. The maximium difference for early stopping. ",
     )
 
     args = parser.parse_args()
