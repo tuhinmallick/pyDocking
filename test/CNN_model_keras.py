@@ -31,7 +31,8 @@ def PCC_RMSE(y_true, y_pred):
     devP = tf.keras.backend.std(y_pred)
     devT = tf.keras.backend.std(y_true)
 
-    rmse = tf.keras.backend.sqrt(tf.keras.backend.mean(tf.keras.backend.square(y_pred - y_true), axis=-1))
+    rmse = tf.keras.backend.sqrt(tf.keras.backend.mean(
+        tf.keras.backend.square(y_pred - y_true), axis=-1))
 
     pcc = 1.0 - tf.keras.backend.mean(fsp * fst) / (devP * devT)
 
@@ -70,7 +71,8 @@ def create_model(input_size, lr=0.0001):
 
     model.add(tf.keras.layers.Flatten())
 
-    model.add(tf.keras.layers.Dense(200, kernel_regularizer=tf.keras.regularizers.l2(0.01),))
+    model.add(tf.keras.layers.Dense(
+        200, kernel_regularizer=tf.keras.regularizers.l2(0.01),))
     model.add(tf.keras.layers.Activation("relu"))
     model.add(tf.keras.layers.BatchNormalization())
 
@@ -79,19 +81,23 @@ def create_model(input_size, lr=0.0001):
     model.add(tf.keras.layers.Activation("relu"))
     model.add(tf.keras.layers.BatchNormalization())
 
-    model.add(tf.keras.layers.Dense(40, kernel_regularizer=tf.keras.regularizers.l2(0.01),))
+    model.add(tf.keras.layers.Dense(
+        40, kernel_regularizer=tf.keras.regularizers.l2(0.01),))
     model.add(tf.keras.layers.Activation("relu"))
     model.add(tf.keras.layers.BatchNormalization())
 
-    model.add(tf.keras.layers.Dense(20, kernel_regularizer=tf.keras.regularizers.l2(0.01),))
+    model.add(tf.keras.layers.Dense(
+        20, kernel_regularizer=tf.keras.regularizers.l2(0.01),))
     model.add(tf.keras.layers.Activation("relu"))
     model.add(tf.keras.layers.BatchNormalization())
 
-    model.add(tf.keras.layers.Dense(10, kernel_regularizer=tf.keras.regularizers.l2(0.01),))
+    model.add(tf.keras.layers.Dense(
+        10, kernel_regularizer=tf.keras.regularizers.l2(0.01),))
     model.add(tf.keras.layers.Activation("relu"))
     model.add(tf.keras.layers.BatchNormalization())
 
-    model.add(tf.keras.layers.Dense(1, kernel_regularizer=tf.keras.regularizers.l2(0.01),))
+    model.add(tf.keras.layers.Dense(
+        1, kernel_regularizer=tf.keras.regularizers.l2(0.01),))
     model.add(tf.keras.layers.Activation("relu"))
 
     sgd = tf.keras.optimizers.SGD(lr=lr, momentum=0.9, decay=1e-6, )
@@ -133,7 +139,6 @@ if __name__ == "__main__":
     parser.add_argument("-train", type=int, default=1,
                         help="Input. Default is 1. Whether train or predict. \n"
                              "1: train, 0: predict. ")
-
 
     args = parser.parse_args()
 
@@ -181,15 +186,19 @@ if __name__ == "__main__":
         joblib.dump(scaler, args.scaler)
         print("DataSet Scaled")
 
-        Xtrain, Xtest, ytrain, ytest = model_selection.train_test_split(Xs, y, test_size=0.2)
+        Xtrain, Xtest, ytrain, ytest = model_selection.train_test_split(
+            Xs, y, test_size=0.2)
         print("Train and test split")
         Xtrain = Xtrain.reshape((-1, 64, 60, 1))
         model = create_model((64, 60, 1), lr=args.lr_init)
 
         # callbacks
-        stop = tf.keras.callbacks.EarlyStopping(monitor='val_loss', min_delta=0.001, patience=20, verbose=1, mode='auto',)
-        logger = tf.keras.callbacks.CSVLogger(args.log, separator=',', append=False)
-        bestmodel = tf.keras.callbacks.ModelCheckpoint(filepath="bestmodel_"+args.model, verbose=1, save_best_only=True)
+        stop = tf.keras.callbacks.EarlyStopping(
+            monitor='val_loss', min_delta=0.001, patience=20, verbose=1, mode='auto',)
+        logger = tf.keras.callbacks.CSVLogger(
+            args.log, separator=',', append=False)
+        bestmodel = tf.keras.callbacks.ModelCheckpoint(
+            filepath="bestmodel_"+args.model, verbose=1, save_best_only=True)
 
         # train the model
         history = model.fit(Xtrain, ytrain, validation_data=(Xtest.reshape(-1, 64, 60, 1), ytest),
@@ -198,9 +207,9 @@ if __name__ == "__main__":
         model.save(args.model)
         print("Save model. ")
 
-        #np_hist = np.array(history)
-        #np.savetxt(args.history, np_hist, delimiter=",", fmt="%.4f")
-        #print("Save history.")
+        # np_hist = np.array(history)
+        # np.savetxt(args.history, np_hist, delimiter=",", fmt="%.4f")
+        # print("Save history.")
 
     else:
         scaler = joblib.load(args.scaler)
@@ -210,7 +219,7 @@ if __name__ == "__main__":
         model = tf.keras.models.load_model(args.model,
                                            custom_objects={'RMSE': RMSE,
                                                            'PCC': PCC,
-                                                           'PCC_RMSE':PCC_RMSE})
+                                                           'PCC_RMSE': PCC_RMSE})
 
         ypred = pd.DataFrame()
         ypred['pKa_predicted'] = model.predict(Xs).ravel()
@@ -221,6 +230,3 @@ if __name__ == "__main__":
             ypred['pKa_true'] = ytrue
 
         ypred.to_csv(args.out, header=True, index=True, float_format="%.3f")
-
-
-

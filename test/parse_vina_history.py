@@ -1,4 +1,5 @@
-import sys, os
+import sys
+import os
 import linecache
 from collections import OrderedDict
 import operator
@@ -26,7 +27,7 @@ class ParseVinaHistory(object):
                 for i, s in enumerate(lines):
                     if "REMARK step #" in s and "energy" in s:
                         model = int(s.split("#")[1].split()[0])
-                        energy= float(s.split("=")[-1])
+                        energy = float(s.split("=")[-1])
 
                         ln_start = i
 
@@ -58,11 +59,11 @@ class ParseVinaHistory(object):
                 if keep_lines:
                     s = linecache.getline(self.history_fn, ndx)
                     lines_id.append(s)
-                    #print(s)
+                    # print(s)
 
                 if "ENDMDL" in s:
                     keep_lines = False
-                    #lines_id.append(s)
+                    # lines_id.append(s)
                     s = ""
 
             lines.append(lines_id)
@@ -82,9 +83,10 @@ class ParseVinaHistory(object):
 
         if not self.history_parsed_:
             self.read_energies()
-            #self.history_parsed_ = True
+            # self.history_parsed_ = True
 
-        topn_models = [x[0] for x in list(self.sorted_energies.items())[: top_n]]
+        topn_models = [x[0]
+                       for x in list(self.sorted_energies.items())[: top_n]]
         topn_lines = self.get_model_lines(topn_models)
 
         return topn_lines
@@ -108,4 +110,3 @@ if __name__ == "__main__":
                 tofile.write(s)
 
     print("history best generated.")
-

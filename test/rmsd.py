@@ -8,10 +8,10 @@ from pyDocking import region_mutate
 
 def rmsd(mol1, mol2):
 
-    #cpdb = region_mutate.coordinatesPDB()
-    #with open(mol1) as lines:
+    # cpdb = region_mutate.coordinatesPDB()
+    # with open(mol1) as lines:
     #    m1 = cpdb.getAtomCrdFromLines([x for x in lines if ("ATOM" in x or "HETATM" in x)])
-    #with open(mol2) as lines:
+    # with open(mol2) as lines:
     #    m2 = cpdb.getAtomCrdFromLines([x for x in lines if ("ATOM" in x or "HETATM" in x)])
     m1 = mt.load(mol1).xyz[0]
     m2 = mt.load(mol2).xyz[0]
@@ -25,6 +25,7 @@ def rmsd(mol1, mol2):
 
     return np.sqrt(rmsd)
 
+
 if __name__ == "__main__":
     if len(sys.argv) != 3:
         print("Make sure that the atoms' sequences in both files are the same exactly. ")
@@ -33,4 +34,3 @@ if __name__ == "__main__":
         sys.exit(0)
     else:
         print(rmsd(sys.argv[1], sys.argv[2]))
-

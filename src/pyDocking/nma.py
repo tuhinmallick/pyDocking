@@ -66,9 +66,11 @@ class EssentialDynamics(object):
 
             if vectors.shape[0] == len(coords):
                 for i in range(len(coords)):
-                    newxyz = self.transform_xyz(coords[i], list(vectors[i]), delta)
+                    newxyz = self.transform_xyz(
+                        coords[i], list(vectors[i]), delta)
                     newxyzs.append(newxyz)
-                    newlines.append(pdbio.replaceCrdInPdbLine(lines[i], newxyz))
+                    newlines.append(
+                        pdbio.replaceCrdInPdbLine(lines[i], newxyz))
 
         return newxyzs, newlines
 
@@ -98,7 +100,8 @@ class EssentialDynamics(object):
 
         with open(pdbout, 'w') as tofile:
             for i in range(no_files):
-                length = delta * np.cos(2.0 * PI * (float(i) / float(no_files)) - PI)
+                length = delta * \
+                    np.cos(2.0 * PI * (float(i) / float(no_files)) - PI)
                 print(length)
                 tofile.write("MODEL   %d \n" % i)
                 t, nlines = self.pdbIncreaseMotion(pdbin, vector, delta=length)
@@ -146,6 +149,7 @@ class NMA(object):
 
         return self
 
+
 def main():
 
     inpdb = sys.argv[1]
@@ -160,5 +164,4 @@ def main():
 
     gnm.write_traj(inpdb, outpdb, ev, 10, step_size=0.1)
 
-#main()
-
+# main()

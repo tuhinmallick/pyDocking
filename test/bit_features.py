@@ -28,9 +28,9 @@ if __name__ == "__main__":
             print(i)
         bits_list.append(fingerprints(smi))
 
-    bits = pd.DataFrame(bits_list, columns=["FP"+str(x) for x in np.arange(len(bits_list[0]))])
+    bits = pd.DataFrame(bits_list, columns=[
+                        "FP"+str(x) for x in np.arange(len(bits_list[0]))])
     bits.index = df.values[:, 0]
     bits['logD'] = df['exp'].values
 
     bits.to_csv(out, header=True, index=True, float_format="%.3f")
-

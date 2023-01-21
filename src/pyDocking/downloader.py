@@ -125,7 +125,7 @@ class ZINCDownloader(object):
 
     def crawl_smiles(self, url):
         try:
-            #url = "http://zinc.docking.org/substance/%s" % zinc_id
+            # url = "http://zinc.docking.org/substance/%s" % zinc_id
             r = requests.get(url)
             soup = Soup(r.text)
 
@@ -162,7 +162,7 @@ class ZINCDownloader(object):
                     try:
                         url = "http://zinc.docking.org/substance/%s" % zinc_id
                         s = self.crawl_smiles(url)
-                    except(ConnectionError, UnicodeDecodeError):
+                    except (ConnectionError, UnicodeDecodeError):
                         s = ""
 
                 return s
@@ -194,4 +194,3 @@ class ZINCDownloader(object):
             smiles.append(s)
 
         return smiles
-

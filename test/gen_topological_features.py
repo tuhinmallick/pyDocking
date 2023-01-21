@@ -2,7 +2,8 @@ from rdkit import Chem
 from rdkit.Chem.Fingerprints import FingerprintMols
 import pandas as pd
 import numpy as np
-import os, sys
+import os
+import sys
 from pyDocking import builder
 
 
@@ -17,6 +18,7 @@ def get_top_features(fn, converter):
         f = np.zeros(2048)
 
     return f
+
 
 if __name__ == "__main__":
 
@@ -42,4 +44,3 @@ if __name__ == "__main__":
     df = pd.DataFrame(features)
     df.columns = ["FP"+str(x) for x in range(df.shape[1])]
     df.to_csv(out, header=True, index=False, sep=",", float_format="%.1f")
-

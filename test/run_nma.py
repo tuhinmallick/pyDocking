@@ -14,4 +14,3 @@ anma = ANMA(mode=3, rmsd=0.06, n_steps=50, selection='all')
 anma_traj = anma.fit_transform(pdb)
 
 anma_traj.save_pdb(sys.argv[2])
-

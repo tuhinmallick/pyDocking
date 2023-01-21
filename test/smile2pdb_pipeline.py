@@ -1,6 +1,7 @@
 
 from pyDocking import builder
-import sys, os
+import sys
+import os
 
 if __name__ == "__main__":
 
@@ -21,7 +22,7 @@ if __name__ == "__main__":
                 print("Progress %d out 4900 k" % i)
 
             try:
-                #print(sm, i)
+                # print(sm, i)
                 mol = builder.CompoundBuilder(out_format=out_format,
                                               in_format="smile", )
 

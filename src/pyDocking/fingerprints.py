@@ -57,4 +57,3 @@ def similarity(mol1, mol2, metric="Tanimoto"):
                                                  m)
     except:
         return 0.0
-

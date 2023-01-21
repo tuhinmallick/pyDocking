@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
-import sys, os
+import sys
+import os
 from mpi4py import MPI
 from pyDocking import docking, builder
 
@@ -22,10 +23,10 @@ def do_docking():
         keep_codes = []
         with open(sys.argv[1]) as lines:
             pdb_codes = [x.strip("\n") for x in lines]
-        #print(pdb_codes)
+        # print(pdb_codes)
 
         for c in pdb_codes:
-            if not os.path.exists("%s/%s_vinaout.pdbqt"%(c, c)) and os.path.exists("%s/%s_protein.pdb.pdbqt"%(c, c)):
+            if not os.path.exists("%s/%s_vinaout.pdbqt" % (c, c)) and os.path.exists("%s/%s_protein.pdb.pdbqt" % (c, c)):
                 keep_codes.append(c)
         print(keep_codes)
         chunk = int(len(keep_codes) / size)
@@ -43,7 +44,7 @@ def do_docking():
 
         rec = "%s/%s_protein.pdb.pdbqt" % (c, c)
 
-        #process the ligand
+        # process the ligand
         lig = "%s/%s_ligand.mol2" % (c, c)
         docking.pdb2pdbqt(lig, lig + ".pdbqt", )
         docking.pdb2pdbqt(lig, lig + ".pdb", keep_polarH=False)
@@ -51,7 +52,7 @@ def do_docking():
         if os.path.exists(rec) and os.path.exists(lig+".pdbqt"):
 
             try:
-                out = "%s/%s_vinaout.pdbqt" %(c, c)
+                out = "%s/%s_vinaout.pdbqt" % (c, c)
                 log = "%s/log_vina.log" % c
 
                 config = "%s/vina.config" % c
@@ -69,10 +70,10 @@ def do_docking():
                                      n_modes=20, config=config)
                     vina.run_docking()
 
-                print("COMPLETE on rank %d: %s" %(rank, c))
+                print("COMPLETE on rank %d: %s" % (rank, c))
             except:
                 print("FAIL     on rank %d: %s" % (rank, c))
 
+
 if __name__ == "__main__":
     do_docking()
-

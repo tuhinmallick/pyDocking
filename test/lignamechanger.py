@@ -4,6 +4,7 @@ import sys
 import dockml.pdbIO as pdbio
 import os
 
+
 def lig_name_change(lig_in, lig_out, lig_code):
 
     pio = pdbio.rewritePDB(lig_in)
@@ -12,11 +13,12 @@ def lig_name_change(lig_in, lig_out, lig_code):
         for s in lines:
             if len(s.split()) and s.split()[0] in ['ATOM', 'HETATM']:
                 nl = pio.resNameChanger(s, lig_code)
-                #n2 = pio.chainIDChanger(nl, "Z")
+                # n2 = pio.chainIDChanger(nl, "Z")
                 tofile.write(nl)
 
     tofile.close()
     return None
+
 
 def main():
 
@@ -29,7 +31,7 @@ def main():
             lig_name_change(lig, out, "LIG")
 
         else:
-            os.system("cp %s temp"%(lig))
+            os.system("cp %s temp" % (lig))
+
 
 main()
-

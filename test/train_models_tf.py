@@ -40,7 +40,8 @@ def PCC_RMSE(y_true, y_pred):
     devP = tf.keras.backend.std(y_pred)
     devT = tf.keras.backend.std(y_true)
 
-    rmse = tf.keras.backend.sqrt(tf.keras.backend.mean(tf.keras.backend.square(y_pred - y_true), axis=-1))
+    rmse = tf.keras.backend.sqrt(tf.keras.backend.mean(
+        tf.keras.backend.square(y_pred - y_true), axis=-1))
 
     p = 1.0 - tf.keras.backend.mean(fsp * fst) / (devP * devT)
 
@@ -116,7 +117,8 @@ def create_model_DNN(input_size, hidden_layers=[1000, 400, 200], lr=0.0001, maxp
         model.add(tf.keras.layers.BatchNormalization())
         model.add(tf.keras.layers.Dropout(dropout))
 
-    model.add(tf.keras.layers.Dense(1, kernel_regularizer=tf.keras.regularizers.l2(0.01), ))
+    model.add(tf.keras.layers.Dense(
+        1, kernel_regularizer=tf.keras.regularizers.l2(0.01), ))
     model.add(tf.keras.layers.Activation("relu"))
 
     sgd = tf.keras.optimizers.SGD(lr=lr, momentum=0.9, decay=1e-6, )
@@ -160,13 +162,15 @@ def create_model(input_size, lr=0.0001, maxpool=True, dropout=0.1, hidden_layers
 
     for hl in hidden_layers:
 
-        model.add(tf.keras.layers.Dense(hl, kernel_regularizer=tf.keras.regularizers.l2(0.01), ))
+        model.add(tf.keras.layers.Dense(
+            hl, kernel_regularizer=tf.keras.regularizers.l2(0.01), ))
         model.add(tf.keras.layers.Activation("relu"))
         model.add(tf.keras.layers.BatchNormalization())
         model.add(tf.keras.layers.Dropout(dropout))
 
-    model.add(tf.keras.layers.Dense(1, kernel_regularizer=tf.keras.regularizers.l2(0.01), ))
-    #model.add(tf.keras.layers.Activation("relu"))
+    model.add(tf.keras.layers.Dense(
+        1, kernel_regularizer=tf.keras.regularizers.l2(0.01), ))
+    # model.add(tf.keras.layers.Activation("relu"))
 
     sgd = tf.keras.optimizers.SGD(lr=lr, momentum=0.9, decay=1e-6, )
     model.compile(optimizer=sgd, loss=PCC_RMSE, metrics=['mse'])
@@ -183,7 +187,8 @@ if __name__ == "__main__":
 
     """
 
-    parser = argparse.ArgumentParser(description=d, formatter_class=RawDescriptionHelpFormatter)
+    parser = argparse.ArgumentParser(
+        description=d, formatter_class=RawDescriptionHelpFormatter)
     parser.add_argument("-fn_train", type=str, default=["features_1.csv", ], nargs="+",
                         help="Input. The docked cplx feature training set.")
     parser.add_argument("-fn_validate", type=str, default=["features_2.csv", ], nargs="+",
@@ -272,7 +277,8 @@ if __name__ == "__main__":
             if i == 0:
                 Xval = df.values[:, :args.n_features]
             else:
-                Xval = np.concatenate((Xval, df.values[:, :args.n_features]), axis=0)
+                Xval = np.concatenate(
+                    (Xval, df.values[:, :args.n_features]), axis=0)
 
             if args.train:
                 yval = yval + list(df[args.y_col[-1]].values)
@@ -287,7 +293,8 @@ if __name__ == "__main__":
             if i == 0:
                 Xtest = df.values[:, :args.n_features]
             else:
-                Xtest = np.concatenate((Xtest, df.values[:, :args.n_features]), axis=0)
+                Xtest = np.concatenate(
+                    (Xtest, df.values[:, :args.n_features]), axis=0)
 
             if args.train:
                 ytest = ytest + list(df[args.y_col[-1]].values)
@@ -331,4 +338,3 @@ if __name__ == "__main__":
                                      lr=args.lr_init, dropout=args.dropout)
 
         print("Model Started")
-

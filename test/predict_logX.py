@@ -52,7 +52,7 @@ def SMI2Descriptor(smi):
     :param smi:
     :return:
     """
-    #m = Chem.MolFromSmiles(smi)
+    # m = Chem.MolFromSmiles(smi)
     try:
         mol = Pymolecule.PyMolecule()
         mol.ReadMolFromSmile(smi)
@@ -72,6 +72,7 @@ def SMILE2Strings(smi, length=100):
         return list(smi) + (100-len(smi)) * ['X', ]
     else:
         return list(smi)[:100]
+
 
 def SMI2Fingerprints(smi):
 
@@ -111,7 +112,6 @@ if __name__ == "__main__":
                         help="Input, optional. ")
     parser.add_argument("-reshape", type=int, default=[64, 60, 1], nargs="+",
                         help="Input. Default is 64 60 1. Reshape the dataset. ")
-
 
     args = parser.parse_args()
 
@@ -178,17 +178,18 @@ if __name__ == "__main__":
         dat = np.array(descriptors)
 
         # do the prediction now
-        #try:
+        # try:
         Xpred = scaler.transform(dat)
         if len(args.reshape) == 3:
-            Xpred = Xpred.reshape((-1, args.reshape[0], args.reshape[1], args.reshape[2]))
+            Xpred = Xpred.reshape(
+                (-1, args.reshape[0], args.reshape[1], args.reshape[2]))
         else:
             Xpred = Xpred.reshape((-1, args.reshape[0]))
 
         Xpred = torch.from_numpy(Xpred).type(torch.FloatTensor).to(device)
         ypred = list(model(Xpred).cpu().detach().numpy().ravel())
-            
-        #except RuntimeError:
+
+        # except RuntimeError:
         #    ypred = [99., ] * CHUNK
 
         pred_logS += ypred
@@ -197,7 +198,7 @@ if __name__ == "__main__":
         torch.cuda.empty_cache()
 
         if args.v:
-            print("PROGRESS: %12d out of %20d."%(i*CHUNK, df.shape[0]))
+            print("PROGRESS: %12d out of %20d." % (i*CHUNK, df.shape[0]))
 
         output = pd.DataFrame()
         output['ID'] = df.ID.values[: len(success)]
@@ -206,4 +207,3 @@ if __name__ == "__main__":
         output['success'] = success
 
         output.to_csv(args.out, header=True, index=True, float_format="%.3f", )
-

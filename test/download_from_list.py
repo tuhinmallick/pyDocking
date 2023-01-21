@@ -33,4 +33,3 @@ if __name__ == "__main__":
         tofile.write("%s,%s,%s\n" % (c, smiles[c], cids[c]))
 
     print("Completed!")
-

@@ -42,10 +42,9 @@ if __name__ == "__main__":
     seq = res_seq(p)
 
     with open(o, "w") as tofile:
-        l = p +","+ "".join(seq) + "\n"
+        l = p + "," + "".join(seq) + "\n"
         tofile.write(l)
 
     with open(s, "w") as tofile:
         l = lig+","+lig_smiles(lig)
         tofile.write(l)
-

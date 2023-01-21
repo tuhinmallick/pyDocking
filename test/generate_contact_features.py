@@ -40,9 +40,10 @@ class ResidueCounts(object):
         self.receptor_ids_ = np.arange(len(self.seq))
         self.ligand_ids_ = np.array([self.receptor_ids_[-1]+1, ])
 
-        #print(self.receptor_ids_, self.ligand_ids_)
+        # print(self.receptor_ids_, self.ligand_ids_)
 
-        self.ligand_n_atoms_ = self.top.select("resid %d" % len(self.seq)).shape[0]
+        self.ligand_n_atoms_ = self.top.select(
+            "resid %d" % len(self.seq)).shape[0]
 
         return self
 
@@ -65,7 +66,8 @@ class ResidueCounts(object):
         pairs_ = list(itertools.product(c_alpha_indices, c_alpha_indices))
 
         distance_matrix_ = mt.compute_distances(self.pdb, atom_pairs=pairs_)[0]
-        distance_matrix_ = distance_matrix_.reshape((-1, int(np.sqrt(distance_matrix_.shape[0]))))
+        distance_matrix_ = distance_matrix_.reshape(
+            (-1, int(np.sqrt(distance_matrix_.shape[0]))))
 
         cmap = (distance_matrix_ <= cutoff)*1.0
 
@@ -74,8 +76,10 @@ class ResidueCounts(object):
     def cal_distances(self, residue_pair, ignore_hydrogen=True):
 
         if ignore_hydrogen:
-            indices_a = self.pdb.topology.select("(resid %d) and (symbol != H)" % residue_pair[0])
-            indices_b = self.pdb.topology.select("(resid %d) and (symbol != H)" % residue_pair[1])
+            indices_a = self.pdb.topology.select(
+                "(resid %d) and (symbol != H)" % residue_pair[0])
+            indices_b = self.pdb.topology.select(
+                "(resid %d) and (symbol != H)" % residue_pair[1])
         else:
             indices_a = self.pdb.topology.select("resid %d" % residue_pair[0])
             indices_b = self.pdb.topology.select("resid %d" % residue_pair[1])
@@ -88,7 +92,8 @@ class ResidueCounts(object):
 
         # if not self.distance_calculated_:
         distances = np.sum(self.cal_distances(resid_pair) <= cutoff)
-        nbyn = np.sqrt(self.top.select("resid %d" % resid_pair[0]).shape[0] * self.ligand_n_atoms_)
+        nbyn = np.sqrt(self.top.select("resid %d" %
+                       resid_pair[0]).shape[0] * self.ligand_n_atoms_)
 
         return distances / nbyn
 
@@ -138,7 +143,8 @@ def distance_padding(dist, max_pairs_=500, padding_with=0.0):
     """
 
     if dist.shape[0] < max_pairs_:
-        d = np.concatenate((dist, np.repeat(padding_with, max_pairs_ - dist.shape[0])))
+        d = np.concatenate(
+            (dist, np.repeat(padding_with, max_pairs_ - dist.shape[0])))
     elif dist.shape == max_pairs_:
         d = dist
     else:
@@ -248,41 +254,54 @@ def generate_contact_features(complex_fn, ncutoffs, verbose=True):
 
     rescont = ResidueCounts(complex_fn)
 
-    if verbose: print("START preparation")
+    if verbose:
+        print("START preparation")
     rescont.do_preparation()
-    if verbose: print("COMPLETE preparation")
+    if verbose:
+        print("COMPLETE preparation")
 
     seq = rescont.seq
-    if verbose: print("Length of residues ", len(seq))
+    if verbose:
+        print("Length of residues ", len(seq))
 
-    if verbose: print("START alpha-C contact map")
+    if verbose:
+        print("START alpha-C contact map")
     r = np.array([])
     for c in np.linspace(0.3, 1.2, 4):
         cmap = rescont.contact_calpha(cutoff=c)
         cmap = distance_padding(cmap)
         r = np.concatenate((r, cmap))
-        if verbose: print(cmap)
-    if verbose:print("COMPLETE contactmap")
+        if verbose:
+            print(cmap)
+    if verbose:
+        print("COMPLETE contactmap")
 
     for m in [stringcoding, polarizability, hydrophobicity]:
         coding = np.array(residue_string2code(seq, m))
-        if verbose: print("START sequence to coding")
+        if verbose:
+            print("START sequence to coding")
         mapper = m()
         coding = distance_padding(coding, padding_with=mapper['GLY'])
-        if verbose: print(coding)
+        if verbose:
+            print(coding)
         r = np.concatenate((r, coding))
 
-    if verbose:print("COMPLETE sequence to coding")
-    if verbose:print("SHAPE of result: ", r.shape)
+    if verbose:
+        print("COMPLETE sequence to coding")
+    if verbose:
+        print("SHAPE of result: ", r.shape)
 
     for c in ncutoffs:
-        if verbose: print("START residue based atom contact nbyn, cutoff=", c)
+        if verbose:
+            print("START residue based atom contact nbyn, cutoff=", c)
         rescont.distances_all_pairs(c, verbose)
         d = distance_padding(rescont.distances_all_pairs_)
-        if verbose: print(d)
+        if verbose:
+            print(d)
         r = np.concatenate((r, d))
 
-    if verbose: print("SHAPE of result: ", r.shape)
+    if verbose:
+        print("SHAPE of result: ", r.shape)
 
     return r
 
@@ -316,7 +335,8 @@ if __name__ == "__main__":
 
     """
 
-    parser = argparse.ArgumentParser(description=d, formatter_class=RawDescriptionHelpFormatter)
+    parser = argparse.ArgumentParser(
+        description=d, formatter_class=RawDescriptionHelpFormatter)
     parser.add_argument("-inp", type=str, default="input.dat",
                         help="Input. The input file containg the file path of each \n"
                              "of the protein-ligand complexes files (in pdb format.)\n"
@@ -355,7 +375,8 @@ if __name__ == "__main__":
 
         # spreading the calculating list to different MPI ranks
         with open(args.inp) as lines:
-            lines = [x for x in lines if ("#" not in x and len(x.split()) >= 1)].copy()
+            lines = [x for x in lines if (
+                "#" not in x and len(x.split()) >= 1)].copy()
             inputs = [x.split()[0] for x in lines]
 
         inputs_list = []
@@ -363,7 +384,8 @@ if __name__ == "__main__":
         if args.v:
             print(size, aver_size)
         for i in range(size - 1):
-            inputs_list.append(inputs[int(i * aver_size):int((i + 1) * aver_size)])
+            inputs_list.append(
+                inputs[int(i * aver_size):int((i + 1) * aver_size)])
         inputs_list.append(inputs[(size - 1) * aver_size:])
 
     else:
@@ -384,7 +406,7 @@ if __name__ == "__main__":
 
         try:
             # the main function for featurization ...
-            r= generate_contact_features(p, n_cutoffs, verbose=args.v)
+            r = generate_contact_features(p, n_cutoffs, verbose=args.v)
 
             print(rank, p)
 
@@ -401,9 +423,9 @@ if __name__ == "__main__":
     except:
         df.index = np.arange(df.shape[0])
 
-    col_n = ["F"+ str(x) for x in range(df.shape[1])]
+    col_n = ["F" + str(x) for x in range(df.shape[1])]
     df.columns = col_n
-    df.to_csv("rank%d_" % rank + args.out, sep=",", float_format="%.4f", index=True)
+    df.to_csv("rank%d_" % rank + args.out, sep=",",
+              float_format="%.4f", index=True)
 
     print(rank, "Complete calculations. ")
-

@@ -86,10 +86,12 @@ class AtomTypeCounts(object):
         if not self.pdb_parsed_:
             self.parsePDB()
 
-        all_pairs = itertools.product(self.receptor_indices, self.ligand_indices)
+        all_pairs = itertools.product(
+            self.receptor_indices, self.ligand_indices)
 
         if not self.distance_computed_:
-            self.distance_matrix_ = mt.compute_distances(self.pdb, atom_pairs=all_pairs)[0]
+            self.distance_matrix_ = mt.compute_distances(
+                self.pdb, atom_pairs=all_pairs)[0]
 
         self.distance_computed_ = True
 
@@ -105,7 +107,8 @@ class AtomTypeCounts(object):
 def generate_features(complex_fn, lig_code, ncutoffs):
 
     all_elements = ["H", "C", "O", "N", "P", "S", "Br", "Du"]
-    keys = ["_".join(x) for x in list(itertools.product(all_elements, all_elements))]
+    keys = ["_".join(x) for x in list(
+        itertools.product(all_elements, all_elements))]
 
     cplx = AtomTypeCounts(complex_fn, lig_code)
     cplx.parsePDB(rec_sele="protein", lig_sele="resname %s" % lig_code)
@@ -131,7 +134,8 @@ def generate_features(complex_fn, lig_code, ncutoffs):
     for e in new_lig:
         ligand_element_count[e] += 1
 
-    rec_lig_element_combines = ["_".join(x) for x in list(itertools.product(new_rec, new_lig))]
+    rec_lig_element_combines = ["_".join(x) for x in list(
+        itertools.product(new_rec, new_lig))]
     cplx.distance_pairs()
 
     counts = []
@@ -173,7 +177,8 @@ if __name__ == "__main__":
             sys.exit(0)
 
         with open(sys.argv[1]) as lines:
-            lines = [x for x in lines if ("#" not in x and len(x.split()) >= 2)].copy()
+            lines = [x for x in lines if (
+                "#" not in x and len(x.split()) >= 2)].copy()
             inputs = [x.split()[0] for x in lines]
 
         inputs_list = []
@@ -187,13 +192,13 @@ if __name__ == "__main__":
         inputs_list = None
 
     inputs = comm.scatter(inputs_list, root=0)
-    #print(rank, inputs)
+    # print(rank, inputs)
 
     out = sys.argv[2]
     n_cutoffs = np.linspace(0.1, 3.1, 60)
 
     results = []
-    ele_pairs =[]
+    ele_pairs = []
     success = []
 
     for p in inputs:
@@ -207,7 +212,7 @@ if __name__ == "__main__":
             print(rank, fn)
 
         except:
-            #r = results[-1]
+            # r = results[-1]
             r = ['fn', ] + list([0., ]*3840) + [0.0, ]
             results.append(r)
             success.append(0.)
@@ -226,4 +231,3 @@ if __name__ == "__main__":
     df.to_csv(str(rank)+"_"+out, sep=",", float_format="%.3f", index=True)
 
     print(rank, "Complete calculations. ")
-

@@ -16,7 +16,7 @@ def SMI2Descriptor(smi):
     :param smi:
     :return:
     """
-    #m = Chem.MolFromSmiles(smi)
+    # m = Chem.MolFromSmiles(smi)
     try:
         mol = Pymolecule.PyMolecule()
         mol.ReadMolFromSmile(smi)
@@ -36,6 +36,7 @@ def SMILE2Strings(smi, length=100):
         return list(smi) + (100-len(smi)) * ['X', ]
     else:
         return list(smi)[:100]
+
 
 def Fingerprints(smi):
     pass
@@ -118,9 +119,9 @@ if __name__ == "__main__":
         dat = np.array(descriptors)
 
         # load scaler and load model
-        if os.path.exists(args.scaler) and os.path.exists(args.model) :
+        if os.path.exists(args.scaler) and os.path.exists(args.model):
             scaler = joblib.load(args.scaler)
-            model  = joblib.load(args.model)
+            model = joblib.load(args.model)
         else:
             print("Scaler model is not existed, exit now!")
             sys.exit(0)
@@ -129,14 +130,14 @@ if __name__ == "__main__":
         try:
             Xpred = scaler.transform(dat)
             ypred = list(model.predict(Xpred).ravel())
-            
+
         except RuntimeError:
             ypred = [99., ] * FEATURE_SIZE
 
         pred_logS += ypred
 
         if args.v:
-            print("PROGRESS: %12d out of %20d."%(i*CHUNK, df.shape[0]))
+            print("PROGRESS: %12d out of %20d." % (i*CHUNK, df.shape[0]))
 
         output = pd.DataFrame()
         output['ID'] = df.ID.values[: len(success)]
@@ -145,4 +146,3 @@ if __name__ == "__main__":
         output['success'] = success
 
         output.to_csv(args.out, header=True, index=True, float_format="%.3f", )
-

@@ -8,7 +8,8 @@ def create_model(input_size):
 
     model = tf.keras.Sequential()
 
-    model.add(tf.keras.layers.Dense(100, input_shape=input_size, activation="relu"))
+    model.add(tf.keras.layers.Dense(
+        100, input_shape=input_size, activation="relu"))
     model.add(tf.keras.layers.BatchNormalization())
 
     model.add(tf.keras.layers.Dense(200, activation="relu"))
@@ -35,6 +36,7 @@ def create_model(input_size):
 
     return model
 
+
 if __name__ == "__main__":
 
     df = pd.read_csv(sys.argv[1], header=True)
@@ -45,7 +47,8 @@ if __name__ == "__main__":
     scaler = preprocessing.StandardScaler()
     Xs = scaler.fit_transform(X)
 
-    Xtrain, Xtest, ytrain, ytest = model_selection.train_test_split(Xs, y, test_size=0.2)
+    Xtrain, Xtest, ytrain, ytest = model_selection.train_test_split(
+        Xs, y, test_size=0.2)
 
     model = create_model((Xtrain.shape[1], ))
 

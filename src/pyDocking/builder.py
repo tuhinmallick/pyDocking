@@ -50,7 +50,7 @@ class Molecule(object):
             "sdf": Chem.MolFromMolBlock,
         }
 
-        #self.converter_ = converter
+        # self.converter_ = converter
 
         return self
 
@@ -210,7 +210,7 @@ class CompoundBuilder(object):
         converter = {
             "pdb": Chem.MolToPDBFile,
             "sdf": Chem.MolToMolBlock,
-            #"mol2": Chem.MolToMol2File,
+            # "mol2": Chem.MolToMol2File,
             "mol": Chem.MolToMolFile,
             "smile": Chem.MolToSmiles,
         }
@@ -249,12 +249,11 @@ def babel_converter(input, output, babelexe="obabel", mode="general"):
         cmd = "%s %s -O %s -d" % (babelexe, input, "xxx_temp_noH.pdbqt")
         job = Popen(cmd, shell=True)
         job.communicate()
-        cmd = "%s %s -O %s --AddPolarH" % (babelexe, "xxx_temp_noH.pdbqt", output)
+        cmd = "%s %s -O %s --AddPolarH" % (babelexe,
+                                           "xxx_temp_noH.pdbqt", output)
     else:
         pass
     job = Popen(cmd, shell=True)
     job.communicate()
 
     return None
-
-

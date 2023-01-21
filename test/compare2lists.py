@@ -14,8 +14,8 @@ if __name__ == "__main__":
 
     with open(fn2) as lines:
         smiles.append([x.split()[0] for x in lines
-                   if (len(x.split()) and "#" not in x)])
-    #print(smiles)
+                       if (len(x.split()) and "#" not in x)])
+    # print(smiles)
     smile_pairs = list(itertools.product(smiles[0], smiles[1]))
 
     similarities = [(fingerprints.similarity(x[0], x[1]), x[0], x[1])
@@ -26,5 +26,3 @@ if __name__ == "__main__":
         if item[0] > 0.7:
             print(item)
             tofile.write("%.3f  %s  %s \n" % (item[0], item[1], item[2]))
-
-

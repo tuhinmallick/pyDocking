@@ -32,9 +32,11 @@ def _conv_bn_relu(**conv_params):
     filters = conv_params["filters"]
     kernel_size = conv_params["kernel_size"]
     strides = conv_params.setdefault("strides", (1, 1))
-    kernel_initializer = conv_params.setdefault("kernel_initializer", "he_normal")
+    kernel_initializer = conv_params.setdefault(
+        "kernel_initializer", "he_normal")
     padding = conv_params.setdefault("padding", "same")
-    kernel_regularizer = conv_params.setdefault("kernel_regularizer", l2(1.e-4))
+    kernel_regularizer = conv_params.setdefault(
+        "kernel_regularizer", l2(1.e-4))
 
     def f(input):
         conv = Conv2D(filters=filters, kernel_size=kernel_size,
@@ -53,9 +55,11 @@ def _bn_relu_conv(**conv_params):
     filters = conv_params["filters"]
     kernel_size = conv_params["kernel_size"]
     strides = conv_params.setdefault("strides", (1, 1))
-    kernel_initializer = conv_params.setdefault("kernel_initializer", "he_normal")
+    kernel_initializer = conv_params.setdefault(
+        "kernel_initializer", "he_normal")
     padding = conv_params.setdefault("padding", "same")
-    kernel_regularizer = conv_params.setdefault("kernel_regularizer", l2(1.e-4))
+    kernel_regularizer = conv_params.setdefault(
+        "kernel_regularizer", l2(1.e-4))
 
     def f(input):
         activation = _bn_relu(input)
@@ -76,7 +80,8 @@ def _shortcut(input, residual):
     input_shape = K.int_shape(input)
     residual_shape = K.int_shape(residual)
     stride_width = int(round(input_shape[ROW_AXIS] / residual_shape[ROW_AXIS]))
-    stride_height = int(round(input_shape[COL_AXIS] / residual_shape[COL_AXIS]))
+    stride_height = int(
+        round(input_shape[COL_AXIS] / residual_shape[COL_AXIS]))
     equal_channels = input_shape[CHANNEL_AXIS] == residual_shape[CHANNEL_AXIS]
 
     shortcut = input
@@ -150,7 +155,8 @@ def bottleneck(filters, init_strides=(1, 1), is_first_block_of_first_layer=False
                                      strides=init_strides)(input)
 
         conv_3_3 = _bn_relu_conv(filters=filters, kernel_size=(3, 3))(conv_1_1)
-        residual = _bn_relu_conv(filters=filters * 4, kernel_size=(1, 1))(conv_3_3)
+        residual = _bn_relu_conv(
+            filters=filters * 4, kernel_size=(1, 1))(conv_3_3)
         return _shortcut(input, residual)
 
     return f
@@ -195,7 +201,8 @@ class ResnetBuilder(object):
         """
         _handle_dim_ordering()
         if len(input_shape) != 3:
-            raise Exception("Input shape should be a tuple (nb_channels, nb_rows, nb_cols)")
+            raise Exception(
+                "Input shape should be a tuple (nb_channels, nb_rows, nb_cols)")
 
         # Permute dimension order if necessary
         if K.image_dim_ordering() == 'tf':
@@ -205,13 +212,16 @@ class ResnetBuilder(object):
         block_fn = _get_block(block_fn)
 
         input = Input(shape=input_shape)
-        conv1 = _conv_bn_relu(filters=64, kernel_size=(7, 7), strides=(2, 2))(input)
-        pool1 = MaxPooling2D(pool_size=(3, 3), strides=(2, 2), padding="same")(conv1)
+        conv1 = _conv_bn_relu(filters=64, kernel_size=(
+            7, 7), strides=(2, 2))(input)
+        pool1 = MaxPooling2D(pool_size=(3, 3), strides=(
+            2, 2), padding="same")(conv1)
 
         block = pool1
         filters = 64
         for i, r in enumerate(repetitions):
-            block = _residual_block(block_fn, filters=filters, repetitions=r, is_first_layer=(i == 0))(block)
+            block = _residual_block(
+                block_fn, filters=filters, repetitions=r, is_first_layer=(i == 0))(block)
             filters *= 2
 
         # Last activation

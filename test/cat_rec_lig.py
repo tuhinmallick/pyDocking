@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
-import os, sys
+import os
+import sys
 from rdkit import Chem
 import subprocess as sp
 import dockml.pdbIO as pdbio
@@ -18,11 +19,15 @@ def convert_lig(lig_in, lig_out):
 
     return None
 
+
 def cat_rec_lig(rec, lig, out):
-    job = sp.Popen("cat %s | awk '$1 ~ /ATOM/ {print $0}' > temp_rec" %rec, shell=True )
+    job = sp.Popen(
+        "cat %s | awk '$1 ~ /ATOM/ {print $0}' > temp_rec" % rec, shell=True)
     job.communicate()
-    job = sp.Popen("cat temp_rec %s | awk '$1 ~ /ATOM/ || $1 ~ /HETATM/ {print $0}' | awk '$4 != /HOH/ {print $0}' > %s"%(lig, out), shell=True)
+    job = sp.Popen(
+        "cat temp_rec %s | awk '$1 ~ /ATOM/ || $1 ~ /HETATM/ {print $0}' | awk '$4 != /HOH/ {print $0}' > %s" % (lig, out), shell=True)
     job.communicate()
+
 
 def lig_name_change(lig_in, lig_out, lig_code):
 
@@ -38,23 +43,26 @@ def lig_name_change(lig_in, lig_out, lig_code):
     tofile.close()
     return None
 
+
 def main():
 
-    inputs = [x.split()[0] for x in open(sys.argv[1]).readlines() if "#" not in x]
+    inputs = [x.split()[0]
+              for x in open(sys.argv[1]).readlines() if "#" not in x]
     print(inputs)
     for p in inputs:
 
         rec = os.path.join(p, p+"_protein.pdb")
         lig = os.path.join(p, p+"_ligand.mol2")
-        if True: #if not os.path.exists(os.path.join(p, "%s_cplx.pdb" % p)):
+        if True:  # if not os.path.exists(os.path.join(p, "%s_cplx.pdb" % p)):
             try:
                 convert_lig(lig, "t1_%s.pdb" % p)
                 lig_name_change("t1_%s.pdb" % p, "t2_%s.pdb" % p, "LIG")
-                cat_rec_lig(rec, "t2_%s.pdb" % p, os.path.join(p, "%s_cplx.pdb" % p))
+                cat_rec_lig(rec, "t2_%s.pdb" %
+                            p, os.path.join(p, "%s_cplx.pdb" % p))
             except:
                 print("Not successful : ", p)
 
 #        print(p)
 
-main()
 
+main()

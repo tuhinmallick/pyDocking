@@ -56,24 +56,33 @@ class SimpleCNN(nn.Module):
         self.stride = 1
         self.padding = 0
 
-        self.conv1 = nn.Conv2d(1, 128, kernel_size=self.kernel, stride=self.stride, padding=self.padding)
+        self.conv1 = nn.Conv2d(
+            1, 128, kernel_size=self.kernel, stride=self.stride, padding=self.padding)
         self.channel = 128
-        self.w = int((self.w - self.kernel + 2 * self.padding) / self.stride + 1)
-        self.h = int((self.h - self.kernel + 2 * self.padding) / self.stride + 1)
+        self.w = int((self.w - self.kernel + 2 *
+                     self.padding) / self.stride + 1)
+        self.h = int((self.h - self.kernel + 2 *
+                     self.padding) / self.stride + 1)
 
         self.relu1 = nn.ReLU(inplace=True)
 
-        self.conv2 = nn.Conv2d(128, 64, kernel_size=self.kernel, stride=self.stride, padding=self.padding)
+        self.conv2 = nn.Conv2d(
+            128, 64, kernel_size=self.kernel, stride=self.stride, padding=self.padding)
         self.channel = 64
-        self.w = int((self.w - self.kernel + 2 * self.padding) / self.stride + 1)
-        self.h = int((self.h - self.kernel + 2 * self.padding) / self.stride + 1)
+        self.w = int((self.w - self.kernel + 2 *
+                     self.padding) / self.stride + 1)
+        self.h = int((self.h - self.kernel + 2 *
+                     self.padding) / self.stride + 1)
 
         self.relu2 = nn.ReLU(inplace=True)
 
-        self.conv3 = nn.Conv2d(64, 32, kernel_size=self.kernel, stride=self.stride, padding=self.padding)
+        self.conv3 = nn.Conv2d(
+            64, 32, kernel_size=self.kernel, stride=self.stride, padding=self.padding)
         self.channel = 32
-        self.w = int((self.w - self.kernel + 2 * self.padding) / self.stride + 1)
-        self.h = int((self.h - self.kernel + 2 * self.padding) / self.stride + 1)
+        self.w = int((self.w - self.kernel + 2 *
+                     self.padding) / self.stride + 1)
+        self.h = int((self.h - self.kernel + 2 *
+                     self.padding) / self.stride + 1)
 
         self.relu3 = nn.ReLU(inplace=True)
 
@@ -173,13 +182,16 @@ def rmse_pcc_loss(output, target):
     vx = x - torch.mean(x)
     vy = y - torch.mean(y)
 
-    pcc = torch.sum(vx * vy) / (torch.sqrt(torch.sum(vx ** 2)) * torch.sqrt(torch.sum(vy ** 2)))
+    pcc = torch.sum(vx * vy) / (torch.sqrt(torch.sum(vx ** 2))
+                                * torch.sqrt(torch.sum(vy ** 2)))
 
     return alpha * rmse + (1 - alpha) * (1 - pcc)
 
 
 def debug_memory():
-    import collections, gc, torch
+    import collections
+    import gc
+    import torch
     tensors = collections.Counter((str(o.device), o.dtype, tuple(o.shape))
                                   for o in gc.get_objects()
                                   if torch.is_tensor(o))
@@ -200,7 +212,8 @@ if __name__ == "__main__":
 
     """
 
-    parser = argparse.ArgumentParser(description=d, formatter_class=RawTextHelpFormatter)
+    parser = argparse.ArgumentParser(
+        description=d, formatter_class=RawTextHelpFormatter)
     parser.add_argument("-fn1", type=str, default=["features_1.csv", ], nargs="+",
                         help="Input. The docked cplx feature set.")
     parser.add_argument("-fn2", type=str, default=["features_2.csv", ], nargs="+",
@@ -281,7 +294,8 @@ if __name__ == "__main__":
             if i == 0:
                 Xval = df.values[:, :args.n_features]
             else:
-                Xval = np.concatenate((X, df.values[:, :args.n_features]), axis=0)
+                Xval = np.concatenate(
+                    (X, df.values[:, :args.n_features]), axis=0)
 
             if args.train and args.pKa_col[-1] in df.columns.values:
                 yval = yval + list(df[args.pKa_col[-1]].values)
@@ -298,8 +312,10 @@ if __name__ == "__main__":
 
         Xtest, ytest = scaler.transform(Xval), yval
         if len(args.reshape) == 3:
-            Xs = Xs.reshape(-1, args.reshape[0], args.reshape[1], args.reshape[2])
-            Xtest = Xtest.reshape(-1, args.reshape[0], args.reshape[1], args.reshape[2])
+            Xs = Xs.reshape(-1, args.reshape[0],
+                            args.reshape[1], args.reshape[2])
+            Xtest = Xtest.reshape(-1,
+                                  args.reshape[0], args.reshape[1], args.reshape[2])
 
         # Xtrain, Xtest, ytrain, ytest = model_selection.train_test_split(Xs, y, test_size=0.2)
         # print("Train and test split")
@@ -318,18 +334,21 @@ if __name__ == "__main__":
 
         model = model.to(device)
         loss_func = nn.MSELoss()
-        optimizer = optim.SGD(model.parameters(), lr=args.lr_init, momentum=0.9)
+        optimizer = optim.SGD(model.parameters(),
+                              lr=args.lr_init, momentum=0.9)
 
         print(model.eval())
 
         XTrain = torch.from_numpy(Xtrain).type(torch.FloatTensor)
-        YTrain = torch.from_numpy(np.array(ytrain).reshape((-1, 1))).type(torch.FloatTensor)
+        YTrain = torch.from_numpy(np.array(ytrain).reshape(
+            (-1, 1))).type(torch.FloatTensor)
 
         # Pytorch train and test sets
         train = torch.utils.data.TensorDataset(XTrain, YTrain)
         # test = torch.utils.data.TensorDataset(XTest, YTest)
 
-        train_loader = torch.utils.data.DataLoader(train, batch_size=32, shuffle=False)
+        train_loader = torch.utils.data.DataLoader(
+            train, batch_size=32, shuffle=False)
 
         min_val = [[0.0, 999.9], ]
         delta = 0.0001
@@ -344,8 +363,8 @@ if __name__ == "__main__":
                 inputs, labels = data
                 X, Y = Variable(torch.FloatTensor(inputs),
                                 requires_grad=False).to(device), \
-                       Variable(torch.FloatTensor(labels),
-                                requires_grad=False).to(device)
+                    Variable(torch.FloatTensor(labels),
+                             requires_grad=False).to(device)
 
                 # zero the parameter gradients
                 optimizer.zero_grad()
@@ -371,8 +390,10 @@ if __name__ == "__main__":
             # Xval = torch.Tensor.cpu(Xval)
             yv = model(Xv).cpu()
 
-            val_rmse = float(rmse(yv, torch.from_numpy(np.array(ytest).reshape(-1, 1)).type(torch.FloatTensor)))
-            val_pcc = float(PCC(yv, torch.from_numpy(np.array(ytest).reshape(-1, 1)).type(torch.FloatTensor)))
+            val_rmse = float(rmse(yv, torch.from_numpy(
+                np.array(ytest).reshape(-1, 1)).type(torch.FloatTensor)))
+            val_pcc = float(PCC(yv, torch.from_numpy(
+                np.array(ytest).reshape(-1, 1)).type(torch.FloatTensor)))
 
             # del Xval, yval
             # debug_memory()
@@ -394,7 +415,8 @@ if __name__ == "__main__":
             log.to_csv(args.log, header=True, index=False, float_format="%.4f")
 
             if min_val[-1][1] - val_rmse >= delta:
-                print("Model improve from %.3f to %.3f . Save model to %s " % (min_val[-1][1], val_rmse, args.model))
+                print("Model improve from %.3f to %.3f . Save model to %s " %
+                      (min_val[-1][1], val_rmse, args.model))
                 torch.save(model, args.model)
                 min_val.append([epoch, val_rmse])
             else:
@@ -427,7 +449,8 @@ if __name__ == "__main__":
 
         if do_eval:
             r = PCC(ypred.numpy().ravel(), np.array(y))
-            error = float(rmse(ypred, torch.from_numpy(np.array(y).reshape(-1, 1)).type(torch.FloatTensor)))
+            error = float(rmse(ypred, torch.from_numpy(
+                np.array(y).reshape(-1, 1)).type(torch.FloatTensor)))
             print("PCC: %.3f \nRMSE: %.3f" % (r, error))
             df['real'] = np.array(y)
 

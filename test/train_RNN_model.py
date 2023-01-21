@@ -23,33 +23,33 @@ def rmse(output, target):
 
 def PCC(output, target):
 
-
     vx = target.view(-1) - torch.mean(target.view(-1))
     vy = output.view(-1) - torch.mean(output.view(-1))
 
-    P = torch.sum(vx * vy) / (torch.sqrt(torch.sum(vx ** 2)) * torch.sqrt(torch.sum(vy ** 2)))
-    #P = vx * vy * torch.rsqrt(torch.sum(vx ** 2)) * torch.rsqrt(torch.sum(vy ** 2))
+    P = torch.sum(vx * vy) / (torch.sqrt(torch.sum(vx ** 2))
+                              * torch.sqrt(torch.sum(vy ** 2)))
+    # P = vx * vy * torch.rsqrt(torch.sum(vx ** 2)) * torch.rsqrt(torch.sum(vy ** 2))
 
-    #x = output.detach().numpy().ravel()
-    #y = target.detach().numpy().ravel()
+    # x = output.detach().numpy().ravel()
+    # y = target.detach().numpy().ravel()
 
-    #return stats.pearsonr(x, y)[0]
+    # return stats.pearsonr(x, y)[0]
     return P
 
 
 def PCC_loss(output, target):
 
-
     vx = target.view(-1) - torch.mean(target.view(-1))
     vy = output.view(-1) - torch.mean(output.view(-1))
 
-    P = torch.sum(vx * vy) / (torch.sqrt(torch.sum(vx ** 2)) * torch.sqrt(torch.sum(vy ** 2)))
-    #P = vx * vy * torch.rsqrt(torch.sum(vx ** 2)) * torch.rsqrt(torch.sum(vy ** 2))
+    P = torch.sum(vx * vy) / (torch.sqrt(torch.sum(vx ** 2))
+                              * torch.sqrt(torch.sum(vy ** 2)))
+    # P = vx * vy * torch.rsqrt(torch.sum(vx ** 2)) * torch.rsqrt(torch.sum(vy ** 2))
 
-    #x = output.detach().numpy().ravel()
-    #y = target.detach().numpy().ravel()
+    # x = output.detach().numpy().ravel()
+    # y = target.detach().numpy().ravel()
 
-    #return stats.pearsonr(x, y)[0]
+    # return stats.pearsonr(x, y)[0]
     return 1 - P
 
 
@@ -98,18 +98,20 @@ def rmse_pcc_loss(output, target):
     vx = target - torch.mean(target)
     vy = output - torch.mean(output)
 
-    #pcc = torch.sum(vx * vy) / (torch.sqrt(torch.sum(vx ** 2)) * torch.sqrt(torch.sum(vy ** 2)))
-    PCC = vx * vy * torch.rsqrt(torch.sum(vx ** 2)) * torch.rsqrt(torch.sum(vy ** 2))
+    # pcc = torch.sum(vx * vy) / (torch.sqrt(torch.sum(vx ** 2)) * torch.sqrt(torch.sum(vy ** 2)))
+    PCC = vx * vy * torch.rsqrt(torch.sum(vx ** 2)) * \
+        torch.rsqrt(torch.sum(vy ** 2))
 
-    return alpha * RMSE + (1-alpha) * (1- PCC)
+    return alpha * RMSE + (1-alpha) * (1 - PCC)
 
 
 def debug_memory():
-    import collections, gc, torch
+    import collections
+    import gc
+    import torch
     tensors = collections.Counter((str(o.device), o.dtype, tuple(o.shape))
                                   for o in gc.get_objects()
                                   if torch.is_tensor(o))
-
 
 
 def PCC(y_true, y_pred):
@@ -205,7 +207,6 @@ class ResNet(nn.Module):
         self.relu = nn.ReLU(inplace=True)
 
 
-
 if __name__ == "__main__":
     d = """Train or predict the features based on protein-ligand complexes.
 
@@ -215,7 +216,8 @@ if __name__ == "__main__":
 
     """
 
-    parser = argparse.ArgumentParser(description=d, formatter_class=RawDescriptionHelpFormatter)
+    parser = argparse.ArgumentParser(
+        description=d, formatter_class=RawDescriptionHelpFormatter)
     parser.add_argument("-fn_train", type=str, default=["features_1.csv", ], nargs="+",
                         help="Input. The docked cplx feature training set.")
     parser.add_argument("-fn_validate", type=str, default=["features_2.csv", ], nargs="+",
@@ -304,7 +306,8 @@ if __name__ == "__main__":
             if i == 0:
                 Xval = df.values[:, :args.n_features]
             else:
-                Xval = np.concatenate((Xval, df.values[:, :args.n_features]), axis=0)
+                Xval = np.concatenate(
+                    (Xval, df.values[:, :args.n_features]), axis=0)
 
             if args.train:
                 yval = yval + list(df[args.y_col[-1]].values)
@@ -319,7 +322,8 @@ if __name__ == "__main__":
             if i == 0:
                 Xtest = df.values[:, :args.n_features]
             else:
-                Xtest = np.concatenate((Xtest, df.values[:, :args.n_features]), axis=0)
+                Xtest = np.concatenate(
+                    (Xtest, df.values[:, :args.n_features]), axis=0)
 
             if args.train:
                 ytest = ytest + list(df[args.y_col[-1]].values)
@@ -355,14 +359,15 @@ if __name__ == "__main__":
 
         print("DataSet Scaled")
 
-        torch.cuda.set_device(1) # select a gpu id
+        torch.cuda.set_device(1)  # select a gpu id
         device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
         # model defined
         model = ResNet(ResidualBlock, [2, 2, 2, 2]).to(device)
 
         loss_func = nn.MSELoss()
-        optimizer = optim.SGD(model.parameters(), lr=args.lr_init, momentum=0.9)
+        optimizer = optim.SGD(model.parameters(),
+                              lr=args.lr_init, momentum=0.9)
 
         # print model summary
         print(model.eval())
@@ -372,7 +377,8 @@ if __name__ == "__main__":
 
         # Pytorch train and test sets
         train = torch.utils.data.TensorDataset(XTrain, YTrain)
-        train_loader = torch.utils.data.DataLoader(train, batch_size=args.batch, shuffle=False)
+        train_loader = torch.utils.data.DataLoader(
+            train, batch_size=args.batch, shuffle=False)
 
         min_val = [[0, 999.9], ]
         delta = args.delta
@@ -389,17 +395,17 @@ if __name__ == "__main__":
                 inputs, labels = data
                 X, Y = Variable(torch.FloatTensor(inputs),
                                 requires_grad=False).to(device), \
-                       Variable(torch.FloatTensor(labels),
-                                requires_grad=False).to(device)
+                    Variable(torch.FloatTensor(labels),
+                             requires_grad=False).to(device)
 
                 # zero the parameter gradients
                 optimizer.zero_grad()
 
                 # forward + backward + optimize
                 outputs = model(X)
-                #loss = PCC_loss(outputs, Y)
+                # loss = PCC_loss(outputs, Y)
                 loss = rmse(outputs, Y)
-                #loss = loss_func(outputs, Y)
+                # loss = loss_func(outputs, Y)
                 loss.backward()
                 optimizer.step()
 
@@ -411,7 +417,7 @@ if __name__ == "__main__":
                 # clear gpu memory
                 del X, Y, r
                 torch.cuda.empty_cache()
-                #debug_memory()
+                # debug_memory()
 
                 # do validating test
             Xval = Variable(torch.from_numpy(Xtest).type(torch.FloatTensor),
@@ -419,8 +425,10 @@ if __name__ == "__main__":
             # Xval = torch.Tensor.cpu(Xval)
             yval = model(Xval).cpu()
 
-            val_rmse = float(rmse(yval, torch.from_numpy(np.array(ytest)).type(torch.FloatTensor)))
-            val_pcc = float(PCC(yval, torch.from_numpy(ytest.ravel()).type(torch.FloatTensor)))
+            val_rmse = float(rmse(yval, torch.from_numpy(
+                np.array(ytest)).type(torch.FloatTensor)))
+            val_pcc = float(PCC(yval, torch.from_numpy(
+                ytest.ravel()).type(torch.FloatTensor)))
 
             del Xval, yval
             debug_memory()
@@ -429,12 +437,14 @@ if __name__ == "__main__":
             print('[%5d] loss: %.3f, pcc: %.3f val_loss: %.3f, val_pcc: %.3f' %
                   (epoch, running_loss / (i + 1), running_pcc, val_rmse, val_pcc))
 
-            history.append([epoch, running_loss / (i + 1), running_pcc, val_rmse, val_pcc])
+            history.append([epoch, running_loss / (i + 1),
+                           running_pcc, val_rmse, val_pcc])
 
             # early stopping
             # do validating test
             if min_val[-1][1] - val_rmse >= delta:
-                print("Model improve from %.3f to %.3f . Save model to %s " % (min_val[-1][1], val_rmse, args.model))
+                print("Model improve from %.3f to %.3f . Save model to %s " %
+                      (min_val[-1][1], val_rmse, args.model))
                 torch.save(model.state_dict(), args.model)
                 min_val.append([epoch, val_rmse])
 
@@ -445,7 +455,9 @@ if __name__ == "__main__":
                 else:
                     pass
 
-            hist = pd.DataFrame(history, columns=['epochs', 'loss', 'pcc', 'val_loss', 'val_pcc'])
-            hist.to_csv(args.log, header=True, index=False, float_format="%.4f")
+            hist = pd.DataFrame(
+                history, columns=['epochs', 'loss', 'pcc', 'val_loss', 'val_pcc'])
+            hist.to_csv(args.log, header=True,
+                        index=False, float_format="%.4f")
 
         print('Finished Training')

@@ -33,7 +33,8 @@ class ResidueCounts(object):
 
         res_seq = self.top.residues[:-1]
         self.seq = [pattern.match(x).group(0) for x in res_seq]
-        self.ligand_n_atoms_ = self.top.select("resid %d" % len(self.seq)).shape[0]
+        self.ligand_n_atoms_ = self.top.select(
+            "resid %d" % len(self.seq)).shape[0]
 
         return self
 
@@ -50,8 +51,10 @@ class ResidueCounts(object):
     def cal_distances(self, residue_pair, ignore_hydrogen=True):
 
         if ignore_hydrogen:
-            indices_a = self.pdb.topology.select("resid %d and element H" % residue_pair[0])
-            indices_b = self.pdb.topology.select("resid %d and element H" % residue_pair[1])
+            indices_a = self.pdb.topology.select(
+                "resid %d and element H" % residue_pair[0])
+            indices_b = self.pdb.topology.select(
+                "resid %d and element H" % residue_pair[1])
         else:
             indices_a = self.pdb.topology.select("resid %d" % residue_pair[0])
             indices_b = self.pdb.topology.select("resid %d" % residue_pair[1])
@@ -62,7 +65,7 @@ class ResidueCounts(object):
 
     def contacts_nbyn(self, cutoff, resid_pair):
 
-        #if not self.distance_calculated_:
+        # if not self.distance_calculated_:
         distances = np.sum(self.cal_distances(resid_pair) <= cutoff)
 
         return distances / (self.top.select("resid %d" % resid_pair[0]).shape[0] *
@@ -187,11 +190,13 @@ class AtomTypeCounts(object):
             self.parsePDB()
 
         # all combinations of the atom indices from the receptor and the ligand
-        all_pairs = itertools.product(self.receptor_indices, self.ligand_indices)
+        all_pairs = itertools.product(
+            self.receptor_indices, self.ligand_indices)
 
         # if distance matrix is not calculated
         if not self.distance_computed_:
-            self.distance_matrix_ = mt.compute_distances(self.pdb, atom_pairs=all_pairs)[0]
+            self.distance_matrix_ = mt.compute_distances(
+                self.pdb, atom_pairs=all_pairs)[0]
 
         self.distance_computed_ = True
 
@@ -218,8 +223,8 @@ class AtomTypeCounts(object):
 
 def generate_features(complex_fn, lig_code, ncutoffs, all_elements, keys):
 
-    #all_elements = ["H", "C", "O", "N", "P", "S", "Br", "Du"]
-    #keys = ["_".join(x) for x in list(itertools.product(all_elements, all_elements))]
+    # all_elements = ["H", "C", "O", "N", "P", "S", "Br", "Du"]
+    # keys = ["_".join(x) for x in list(itertools.product(all_elements, all_elements))]
 
     # parse the pdb file and get the atom element information
     cplx = AtomTypeCounts(complex_fn, lig_code)
@@ -230,7 +235,8 @@ def generate_features(complex_fn, lig_code, ncutoffs, all_elements, keys):
     new_rec = [x if x in all_elements else "Du" for x in cplx.rec_ele]
 
     # the element-type combinations for all atom-atom pairs
-    rec_lig_element_combines = ["_".join(x) for x in list(itertools.product(new_rec, new_lig))]
+    rec_lig_element_combines = ["_".join(x) for x in list(
+        itertools.product(new_rec, new_lig))]
     cplx.distance_pairs()
 
     counts = []
@@ -248,7 +254,7 @@ def generate_features(complex_fn, lig_code, ncutoffs, all_elements, keys):
     results = []
 
     for n in range(len(ncutoffs)):
-        #count_dict = dict.fromkeys(keys, 0.0)
+        # count_dict = dict.fromkeys(keys, 0.0)
         d = OrderedDict()
         d = d.fromkeys(keys, 0.0)
         # now sort the atom-pairs and accumulate the element-type to a dict
@@ -288,7 +294,8 @@ if __name__ == "__main__":
     
     """
 
-    parser = argparse.ArgumentParser(description=d, formatter_class=RawDescriptionHelpFormatter)
+    parser = argparse.ArgumentParser(
+        description=d, formatter_class=RawDescriptionHelpFormatter)
     parser.add_argument("-inp", type=str, default="input.dat",
                         help="Input. The input file containg the file path of each \n"
                              "of the protein-ligand complexes files (in pdb format.)\n"
@@ -318,7 +325,8 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     all_elements = ["H", "C", "O", "N", "P", "S", "Br", "Du"]
-    keys = ["_".join(x) for x in list(itertools.product(all_elements, all_elements))]
+    keys = ["_".join(x) for x in list(
+        itertools.product(all_elements, all_elements))]
 
     if rank == 0:
         if len(sys.argv) < 3:
@@ -327,7 +335,8 @@ if __name__ == "__main__":
 
         # spreading the calculating list to different MPI ranks
         with open(args.inp) as lines:
-            lines = [x for x in lines if ("#" not in x and len(x.split()) >= 1)].copy()
+            lines = [x for x in lines if (
+                "#" not in x and len(x.split()) >= 1)].copy()
             inputs = [x.split()[0] for x in lines]
 
         inputs_list = []
@@ -347,7 +356,7 @@ if __name__ == "__main__":
     print(n_cutoffs)
 
     results = []
-    ele_pairs =[]
+    ele_pairs = []
 
     # computing the features now ...
     for p in inputs:
@@ -356,7 +365,8 @@ if __name__ == "__main__":
 
         try:
             # the main function for featurization ...
-            r, ele_pairs = generate_features(fn, lig_code, n_cutoffs, all_elements, keys)
+            r, ele_pairs = generate_features(
+                fn, lig_code, n_cutoffs, all_elements, keys)
             print(rank, fn)
 
         except:
@@ -365,7 +375,7 @@ if __name__ == "__main__":
 
         results.append(r)
 
-    # saving features to a file now ... 
+    # saving features to a file now ...
     df = pd.DataFrame(results)
     try:
         df.index = inputs
@@ -376,7 +386,7 @@ if __name__ == "__main__":
     for i, n in enumerate(keys * args.n_shells):
         col_n.append(n+"_"+str(i))
     df.columns = col_n
-    df.to_csv("rank%d_"%rank+args.out, sep=",", float_format="%.1f", index=True)
+    df.to_csv("rank%d_" % rank+args.out, sep=",",
+              float_format="%.1f", index=True)
 
     print(rank, "Complete calculations. ")
-

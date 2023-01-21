@@ -42,7 +42,8 @@ def PCC_RMSE(y_true, y_pred):
     devP = tf.keras.backend.std(y_pred)
     devT = tf.keras.backend.std(y_true)
 
-    rmse = tf.keras.backend.sqrt(tf.keras.backend.mean(tf.keras.backend.square(y_pred - y_true), axis=-1))
+    rmse = tf.keras.backend.sqrt(tf.keras.backend.mean(
+        tf.keras.backend.square(y_pred - y_true), axis=-1))
 
     pcc = 1.0 - tf.keras.backend.mean(fsp * fst) / (devP * devT)
 
@@ -157,7 +158,8 @@ if __name__ == "__main__":
 
     """
 
-    parser = argparse.ArgumentParser(description=d, formatter_class=RawDescriptionHelpFormatter)
+    parser = argparse.ArgumentParser(
+        description=d, formatter_class=RawDescriptionHelpFormatter)
     parser.add_argument("-fn_train", type=str, default=["features_1.csv", ], nargs="+",
                         help="Input. The docked cplx feature training set.")
     parser.add_argument("-fn_validate", type=str, default=["features_2.csv", ], nargs="+",
@@ -244,7 +246,8 @@ if __name__ == "__main__":
             if i == 0:
                 Xval = df.values[:, :args.n_features]
             else:
-                Xval = np.concatenate((Xval, df.values[:, :args.n_features]), axis=0)
+                Xval = np.concatenate(
+                    (Xval, df.values[:, :args.n_features]), axis=0)
 
             if args.train or do_eval:
                 yval = yval + list(df[args.y_col[-1]].values)
@@ -259,12 +262,13 @@ if __name__ == "__main__":
             if i == 0:
                 Xtest = df.values[:, :args.n_features]
             else:
-                Xtest = np.concatenate((Xtest, df.values[:, :args.n_features]), axis=0)
+                Xtest = np.concatenate(
+                    (Xtest, df.values[:, :args.n_features]), axis=0)
 
             if args.y_col[0] in df.columns.values:
-               do_eval = True
+                do_eval = True
             else:
-               do_eval = False
+                do_eval = False
 
             if args.train:
                 ytest = ytest + list(df[args.y_col[-1]].values)
@@ -325,19 +329,20 @@ if __name__ == "__main__":
             history.append([e, loss, pcc_train, rmse_train,
                             loss_val, pcc_val, rmse_val,
                             loss_test, pcc_test, rmse_test])
-            hist    = pd.DataFrame(history, columns=['epoch', 'loss', 'pcc_train', 'rmse_train',
-                                                     'loss_val', 'pcc_val', 'rmse_val',
-                                                     'loss_test', 'pcc_test', 'rmse_test'])
+            hist = pd.DataFrame(history, columns=['epoch', 'loss', 'pcc_train', 'rmse_train',
+                                                  'loss_val', 'pcc_val', 'rmse_val',
+                                                  'loss_test', 'pcc_test', 'rmse_test'])
 
             if args.log == "":
                 log = "log_batch%d_dropout%.1f_alpha%.1f_withH%d.csv" % \
-                (args.batch, args.dropout, args.alpha, args.remove_H)
+                    (args.batch, args.dropout, args.alpha, args.remove_H)
             else:
                 log = args.log
 
-            hist.to_csv(log, header=True, index=False, sep=",", float_format="%.4f")
+            hist.to_csv(log, header=True, index=False,
+                        sep=",", float_format="%.4f")
             print("EPOCH:%d Loss:%.3f RMSE:%.3f PCC:%.3f LOSS_VAL:%.3f RMSE:%.3f PCC:%.3f LOSS_TEST:%.3f RMSE_TEST:%.3f PCC_TEST:%.3f"
-                  %(e, loss, rmse_train, pcc_train, loss_val, rmse_val, pcc_val, loss_test, rmse_test, pcc_test ))
+                  % (e, loss, rmse_train, pcc_train, loss_val, rmse_val, pcc_val, loss_test, rmse_test, pcc_test))
 
             if stopping[-1][1] - loss_val >= args.delta_loss:
                 print("Model improve from %.3f to %.3f. Save model to %s."
@@ -355,7 +360,8 @@ if __name__ == "__main__":
     else:
         scaler = joblib.load(args.scaler)
 
-        Xs = scaler.transform(Xtest).reshape((-1, args.reshape[0], args.reshape[1], args.reshape[2]))
+        Xs = scaler.transform(Xtest).reshape(
+            (-1, args.reshape[0], args.reshape[1], args.reshape[2]))
 
         model = tf.keras.models.load_model(args.model,
                                            custom_objects={'RMSE': RMSE,
@@ -365,10 +371,11 @@ if __name__ == "__main__":
         ypred = pd.DataFrame(index=indexer)
         ypred['pKa_predicted'] = model.predict(Xs).ravel()
         if do_eval:
-            print("PCC : %.3f" % pcc(ypred['pKa_predicted'].values, np.array(ytest)))
-            print("RMSE: %.3f" % rmse(ypred['pKa_predicted'].values, np.array(ytest)))
+            print("PCC : %.3f" %
+                  pcc(ypred['pKa_predicted'].values, np.array(ytest)))
+            print("RMSE: %.3f" %
+                  rmse(ypred['pKa_predicted'].values, np.array(ytest)))
 
             ypred['pKa_true'] = ytest
 
         ypred.to_csv(args.out, header=True, index=True, float_format="%.3f")
-

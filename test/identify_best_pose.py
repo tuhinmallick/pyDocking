@@ -9,6 +9,7 @@ import pandas as pd
 from pyDocking import region_mutate
 import os
 
+
 def converter_multiple(inp, out, multiple=True):
 
     if multiple:
@@ -18,27 +19,29 @@ def converter_multiple(inp, out, multiple=True):
     else:
         babel_converter(inp, out, mode="general")
 
+
 def calculate_rmsd(ref="reference.pdb"):
 
     rmsd_list = []
     fn_list = glob("*_vinaout_*.pdb")
 
     for fn in fn_list:
-        #print(ref, fn)
+        # print(ref, fn)
         if len(fn.split("_")) == 3:
             r = rmsd(ref, fn)
             rmsd_list.append((fn, r))
 
     return rmsd_list
 
+
 if __name__ == "__main__":
     prefix = sys.argv[1]
     rmsd_cutoff = float(sys.argv[2])
 
-    #rmsd_df = pd.DataFrame()
+    # rmsd_df = pd.DataFrame()
 
     # split vina output
-    #converter_multiple(prefix+"_vinaout.pdbqt", prefix+"_vinaout_.pdb")
+    # converter_multiple(prefix+"_vinaout.pdbqt", prefix+"_vinaout_.pdb")
 
     # get a reference, the crystal position of a ligand
 #    babel_converter(prefix+"_ligand.mol2.pdbqt", "temp_ligand.pdb", mode="general")
@@ -73,6 +76,7 @@ if __name__ == "__main__":
 
         job = sp.Popen(cmd, shell=True)
         job.communicate()
-        job = sp.Popen("awk '$1 ~ /ATOM/ || $1 ~ /HETATM/ {print $0}' %s > %s" % ("temp_cplx" ,prefix+"_vinaout_bestpose_complex.pdb"), shell=True)
-        job.communicate()  
-        #sp.Popen("echo %s %.3f > best_rmsd "% (prefix, rmsds_sorted[0][1]), shell=True)
+        job = sp.Popen("awk '$1 ~ /ATOM/ || $1 ~ /HETATM/ {print $0}' %s > %s" % (
+            "temp_cplx", prefix+"_vinaout_bestpose_complex.pdb"), shell=True)
+        job.communicate()
+        # sp.Popen("echo %s %.3f > best_rmsd "% (prefix, rmsds_sorted[0][1]), shell=True)

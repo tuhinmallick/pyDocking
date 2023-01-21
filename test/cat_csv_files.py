@@ -42,7 +42,7 @@ if __name__ == "__main__":
             dat = pd.concat([dat, df])
 
         print(dat.shape)
-    #dat.index = [x.split("/")[2] for x in dat.index]
+    # dat.index = [x.split("/")[2] for x in dat.index]
 
     if os.path.exists(args.target):
         if dat.shape[0] != target.shape[0]:
@@ -50,8 +50,6 @@ if __name__ == "__main__":
             sys.exit(1)
         else:
             dat['pKa'] = target['pKa'].values
-            #dat = dat.reindex(target.index.values)
+            # dat = dat.reindex(target.index.values)
 
     dat.to_csv(args.out, header=True, index=True)
-
-
