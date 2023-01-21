@@ -9,22 +9,19 @@ if __name__ == "__main__":
 
     smiles = []
     with open(fn1) as lines:
-        smiles.append(
-            [x.split(",")[1] for x in lines if (len(x.split(",")) and "#" not in x)]
-        )
+        smiles.append([
+            x.split(",")[1] for x in lines
+            if (len(x.split(",")) and "#" not in x)
+        ])
 
     with open(fn2) as lines:
         smiles.append(
-            [x.split()[0] for x in lines if (len(x.split()) and "#" not in x)]
-        )
+            [x.split()[0] for x in lines if (len(x.split()) and "#" not in x)])
     # print(smiles)
     smile_pairs = list(itertools.product(smiles[0], smiles[1]))
 
-    similarities = [
-        (fingerprints.similarity(x[0], x[1]), x[0], x[1])
-        for x in smile_pairs
-        if (len(x[0]) and len(x[1]))
-    ]
+    similarities = [(fingerprints.similarity(x[0], x[1]), x[0], x[1])
+                    for x in smile_pairs if (len(x[0]) and len(x[1]))]
 
     tofile = open("results.dat", "w")
     for item in similarities:

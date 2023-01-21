@@ -47,8 +47,7 @@ def Fingerprints(smi):
 if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(
-        description="", formatter_class=RawDescriptionHelpFormatter
-    )
+        description="", formatter_class=RawDescriptionHelpFormatter)
 
     parser.add_argument(
         "-smi",
@@ -59,9 +58,10 @@ if __name__ == "__main__":
         "the file, the first columns is the SMILES code, the 2nd is"
         "the unique ID of the molecule. ",
     )
-    parser.add_argument(
-        "-out", type=str, default="Output_solubility.list", help="Output, optional. \n"
-    )
+    parser.add_argument("-out",
+                        type=str,
+                        default="Output_solubility.list",
+                        help="Output, optional. \n")
     parser.add_argument(
         "-scaler",
         type=str,
@@ -73,13 +73,15 @@ if __name__ == "__main__":
         "-model",
         type=str,
         default="RFRegression.model",
-        help="Input, optional. \n" "The model for the regression. ",
+        help="Input, optional. \n"
+        "The model for the regression. ",
     )
     parser.add_argument(
         "-v",
         type=int,
         default=1,
-        help="Input, optional. Default is 1. \n" "Whether output detail information. ",
+        help="Input, optional. Default is 1. \n"
+        "Whether output detail information. ",
     )
     parser.add_argument(
         "-features",
@@ -88,10 +90,14 @@ if __name__ == "__main__":
         help="Input, optional. Default is descriptors. "
         "Choices: descriptors, onehot, fingerprints. \n",
     )
-    parser.add_argument("-chunk", default=100, type=int, help="Input, optional. ")
-    parser.add_argument(
-        "-feature_size", default=100, type=int, help="Input, optional. "
-    )
+    parser.add_argument("-chunk",
+                        default=100,
+                        type=int,
+                        help="Input, optional. ")
+    parser.add_argument("-feature_size",
+                        default=100,
+                        type=int,
+                        help="Input, optional. ")
 
     args = parser.parse_args()
 
@@ -116,9 +122,9 @@ if __name__ == "__main__":
     for i in range(SIZE):
         descriptors = []
 
-        smiles = SMILES[CHUNK * i : CHUNK * i + CHUNK]
+        smiles = SMILES[CHUNK * i:CHUNK * i + CHUNK]
         if i == SIZE - 1:
-            smiles = SMILES[CHUNK * i :]
+            smiles = SMILES[CHUNK * i:]
 
         for smi in smiles:
             # get descriptors from SMILES
@@ -137,12 +143,9 @@ if __name__ == "__main__":
                 success.append(1)
                 descriptors.append(f)
             else:
-                descriptors.append(
-                    [
-                        0.0,
-                    ]
-                    * FEATURE_SIZE
-                )
+                descriptors.append([
+                    0.0,
+                ] * FEATURE_SIZE)
                 success.append(0)
 
         dat = np.array(descriptors)
@@ -171,8 +174,8 @@ if __name__ == "__main__":
             print("PROGRESS: %12d out of %20d." % (i * CHUNK, df.shape[0]))
 
         output = pd.DataFrame()
-        output["ID"] = df.ID.values[: len(success)]
-        output["SMI"] = df.SMI.values[: len(success)]
+        output["ID"] = df.ID.values[:len(success)]
+        output["SMI"] = df.SMI.values[:len(success)]
         output["logS_pred"] = pred_logS
         output["success"] = success
 

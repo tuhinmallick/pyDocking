@@ -87,12 +87,12 @@ class AtomTypeCounts(object):
         if not self.pdb_parsed_:
             self.parsePDB()
 
-        all_pairs = itertools.product(self.receptor_indices, self.ligand_indices)
+        all_pairs = itertools.product(self.receptor_indices,
+                                      self.ligand_indices)
 
         if not self.distance_computed_:
             self.distance_matrix_ = mt.compute_distances(
-                self.pdb, atom_pairs=all_pairs
-            )[0]
+                self.pdb, atom_pairs=all_pairs)[0]
 
         self.distance_computed_ = True
 
@@ -113,7 +113,6 @@ def generate_features(complex_fn, lig_code, ncutoffs, all_elements):
 
     cplx = AtomTypeCounts(complex_fn, lig_code)
     cplx.parsePDB(rec_sele="protein", lig_sele="resname %s" % lig_code)
-
     """lig = cplx.lig_ele
     rec = cplx.rec_ele
 
@@ -174,7 +173,10 @@ if __name__ == "__main__":
 
     # A list of different types of molecules
     all_elements = ["H", "C", "O", "N", "P", "S", "Br", "Du"]
-    keys = ["_".join(x) for x in list(itertools.product(all_elements, all_elements))]
+    keys = [
+        "_".join(x)
+        for x in list(itertools.product(all_elements, all_elements))
+    ]
 
     if rank == 0:
         if len(sys.argv) < 3:
@@ -182,15 +184,18 @@ if __name__ == "__main__":
             sys.exit(0)
 
         with open(sys.argv[1]) as lines:
-            lines = [x for x in lines if ("#" not in x and len(x.split()) >= 1)].copy()
+            lines = [
+                x for x in lines if ("#" not in x and len(x.split()) >= 1)
+            ].copy()
             inputs = [x.split()[0] for x in lines]
 
         inputs_list = []
         aver_size = int(len(inputs) / size)
         print(size, aver_size)
         for i in range(size - 1):
-            inputs_list.append(inputs[int(i * aver_size) : int((i + 1) * aver_size)])
-        inputs_list.append(inputs[(size - 1) * aver_size :])
+            inputs_list.append(inputs[int(i * aver_size):int((i + 1) *
+                                                             aver_size)])
+        inputs_list.append(inputs[(size - 1) * aver_size:])
 
         # print(inputs_list)
 
@@ -219,12 +224,9 @@ if __name__ == "__main__":
 
         except:
             # r = results[-1]
-            r = list(
-                [
-                    0.0,
-                ]
-                * 3840
-            )
+            r = list([
+                0.0,
+            ] * 3840)
             results.append(r)
             # success.append(0.)
             print("Not successful. ", fn)

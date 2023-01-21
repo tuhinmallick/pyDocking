@@ -18,6 +18,7 @@ from torch.autograd import Variable
 
 # Fully connected neural network with one hidden layer
 class NeuralNet(nn.Module):
+
     def __init__(self, input_size):
         super(NeuralNet, self).__init__()
         self.fc1 = nn.Linear(input_size, 4000)
@@ -55,30 +56,42 @@ class SimpleCNN(nn.Module):
         self.stride = 1
         self.padding = 0
 
-        self.conv1 = nn.Conv2d(
-            1, 60, kernel_size=self.kernel, stride=self.stride, padding=self.padding
-        )
+        self.conv1 = nn.Conv2d(1,
+                               60,
+                               kernel_size=self.kernel,
+                               stride=self.stride,
+                               padding=self.padding)
         self.channel = 60
-        self.w = int((self.w - self.kernel + 2 * self.padding) / self.stride + 1)
-        self.h = int((self.h - self.kernel + 2 * self.padding) / self.stride + 1)
+        self.w = int((self.w - self.kernel + 2 * self.padding) / self.stride +
+                     1)
+        self.h = int((self.h - self.kernel + 2 * self.padding) / self.stride +
+                     1)
 
         self.relu1 = nn.ReLU(inplace=True)
 
-        self.conv2 = nn.Conv2d(
-            60, 30, kernel_size=self.kernel, stride=self.stride, padding=self.padding
-        )
+        self.conv2 = nn.Conv2d(60,
+                               30,
+                               kernel_size=self.kernel,
+                               stride=self.stride,
+                               padding=self.padding)
         self.channel = 30
-        self.w = int((self.w - self.kernel + 2 * self.padding) / self.stride + 1)
-        self.h = int((self.h - self.kernel + 2 * self.padding) / self.stride + 1)
+        self.w = int((self.w - self.kernel + 2 * self.padding) / self.stride +
+                     1)
+        self.h = int((self.h - self.kernel + 2 * self.padding) / self.stride +
+                     1)
 
         self.relu2 = nn.ReLU(inplace=True)
 
-        self.conv3 = nn.Conv2d(
-            30, 15, kernel_size=self.kernel, stride=self.stride, padding=self.padding
-        )
+        self.conv3 = nn.Conv2d(30,
+                               15,
+                               kernel_size=self.kernel,
+                               stride=self.stride,
+                               padding=self.padding)
         self.channel = 15
-        self.w = int((self.w - self.kernel + 2 * self.padding) / self.stride + 1)
-        self.h = int((self.h - self.kernel + 2 * self.padding) / self.stride + 1)
+        self.w = int((self.w - self.kernel + 2 * self.padding) / self.stride +
+                     1)
+        self.h = int((self.h - self.kernel + 2 * self.padding) / self.stride +
+                     1)
 
         self.relu3 = nn.ReLU(inplace=True)
 
@@ -108,7 +121,7 @@ class SimpleCNN(nn.Module):
 
 
 def rmse(output, target):
-    return torch.sqrt(torch.mean((output - target) ** 2))
+    return torch.sqrt(torch.mean((output - target)**2))
 
 
 def pcc(output, target):
@@ -117,9 +130,8 @@ def pcc(output, target):
     vx = x - torch.mean(x)
     vy = y - torch.mean(y)
 
-    return torch.sum(vx * vy) / (
-        torch.sqrt(torch.sum(vx**2)) * torch.sqrt(torch.sum(vy**2))
-    )
+    return torch.sum(vx * vy) / (torch.sqrt(torch.sum(vx**2)) *
+                                 torch.sqrt(torch.sum(vy**2)))
 
 
 def PCC(output, target):
@@ -170,7 +182,7 @@ def remove_all_hydrogens(dat, n_features):
 
 def rmse_pcc_loss(output, target):
     alpha = 0.8
-    rmse = torch.sqrt(torch.mean((output - target) ** 2))
+    rmse = torch.sqrt(torch.mean((output - target)**2))
 
     x = output
     y = target
@@ -178,9 +190,8 @@ def rmse_pcc_loss(output, target):
     vx = x - torch.mean(x)
     vy = y - torch.mean(y)
 
-    pcc = torch.sum(vx * vy) / (
-        torch.sqrt(torch.sum(vx**2)) * torch.sqrt(torch.sum(vy**2))
-    )
+    pcc = torch.sum(vx * vy) / (torch.sqrt(torch.sum(vx**2)) *
+                                torch.sqrt(torch.sum(vy**2)))
 
     return alpha * rmse + (1 - alpha) * (1 - pcc)
 
@@ -191,11 +202,9 @@ def debug_memory():
 
     import torch
 
-    tensors = collections.Counter(
-        (str(o.device), o.dtype, tuple(o.shape))
-        for o in gc.get_objects()
-        if torch.is_tensor(o)
-    )
+    tensors = collections.Counter((str(o.device), o.dtype, tuple(o.shape))
+                                  for o in gc.get_objects()
+                                  if torch.is_tensor(o))
     # for line in sorted(tensors.items()):
     #    print('{}\t{}'.format(*line))
     # print("Clean items number ", len(tensors.items()))
@@ -210,9 +219,8 @@ if __name__ == "__main__":
 
     """
 
-    parser = argparse.ArgumentParser(
-        description=d, formatter_class=RawTextHelpFormatter
-    )
+    parser = argparse.ArgumentParser(description=d,
+                                     formatter_class=RawTextHelpFormatter)
     parser.add_argument(
         "-fn1",
         type=str,
@@ -338,11 +346,12 @@ if __name__ == "__main__":
                 if args.pKa_col[0] in df.columns.values:
                     y = y + list(df[args.pKa_col[0]].values)
                 else:
-                    print("No such column %s in input file. " % args.pKa_col[0])
+                    print("No such column %s in input file. " %
+                          args.pKa_col[0])
             if i == 0:
-                X = df.values[:, : args.n_features]
+                X = df.values[:, :args.n_features]
             else:
-                X = np.concatenate((X, df.values[:, : args.n_features]), axis=0)
+                X = np.concatenate((X, df.values[:, :args.n_features]), axis=0)
 
             if args.pKa_col[0] in df.columns.values:
                 ytrue = ytrue + list(df[args.pKa_col[0]].values)
@@ -355,7 +364,7 @@ if __name__ == "__main__":
             if args.remove_H:
                 df = remove_all_hydrogens(df, args.n_features)
 
-            X = np.concatenate((X, df.values[:, : args.n_features]), axis=0)
+            X = np.concatenate((X, df.values[:, :args.n_features]), axis=0)
             if args.train:
                 y = y + list(df[args.pKa_col[-1]].values)
 
@@ -376,8 +385,7 @@ if __name__ == "__main__":
         Xs = Xs.reshape(-1, args.reshape[0], args.reshape[1], args.reshape[2])
 
         Xtrain, Xtest, ytrain, ytest = model_selection.train_test_split(
-            Xs, y, test_size=0.2
-        )
+            Xs, y, test_size=0.2)
         print("Train and test split")
 
         device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -390,20 +398,23 @@ if __name__ == "__main__":
 
         model = model.to(device)
         loss_func = nn.MSELoss()
-        optimizer = optim.SGD(model.parameters(), lr=args.lr_init, momentum=0.9)
+        optimizer = optim.SGD(model.parameters(),
+                              lr=args.lr_init,
+                              momentum=0.9)
 
         print(model.eval())
 
         XTrain = torch.from_numpy(Xtrain).type(torch.FloatTensor)
-        YTrain = torch.from_numpy(np.array(ytrain).reshape((-1, 1))).type(
-            torch.FloatTensor
-        )
+        YTrain = torch.from_numpy(np.array(ytrain).reshape(
+            (-1, 1))).type(torch.FloatTensor)
 
         # Pytorch train and test sets
         train = torch.utils.data.TensorDataset(XTrain, YTrain)
         # test = torch.utils.data.TensorDataset(XTest, YTest)
 
-        train_loader = torch.utils.data.DataLoader(train, batch_size=32, shuffle=False)
+        train_loader = torch.utils.data.DataLoader(train,
+                                                   batch_size=32,
+                                                   shuffle=False)
 
         min_val = [
             [0.0, 999.9],
@@ -412,15 +423,17 @@ if __name__ == "__main__":
         patience = 40
         history = []
 
-        for epoch in range(args.epochs):  # loop over the dataset multiple times
+        for epoch in range(
+                args.epochs):  # loop over the dataset multiple times
 
             running_loss = 0.0
             for i, data in enumerate(train_loader):
                 # get the inputs
                 inputs, labels = data
-                X, Y = Variable(torch.FloatTensor(inputs), requires_grad=False).to(
-                    device
-                ), Variable(torch.FloatTensor(labels), requires_grad=False).to(device)
+                X, Y = Variable(torch.FloatTensor(inputs),
+                                requires_grad=False).to(device), Variable(
+                                    torch.FloatTensor(labels),
+                                    requires_grad=False).to(device)
 
                 # zero the parameter gradients
                 optimizer.zero_grad()
@@ -441,9 +454,8 @@ if __name__ == "__main__":
                 debug_memory()
 
             # do validating test
-            Xval = Variable(
-                torch.from_numpy(Xtest).type(torch.FloatTensor), requires_grad=False
-            ).to(device)
+            Xval = Variable(torch.from_numpy(Xtest).type(torch.FloatTensor),
+                            requires_grad=False).to(device)
             # Xval = torch.Tensor.cpu(Xval)
             yval = model(Xval).cpu()
 
@@ -451,18 +463,14 @@ if __name__ == "__main__":
                 rmse(
                     yval,
                     torch.from_numpy(np.array(ytest).reshape(-1, 1)).type(
-                        torch.FloatTensor
-                    ),
-                )
-            )
+                        torch.FloatTensor),
+                ))
             val_pcc = float(
                 PCC(
                     yval,
                     torch.from_numpy(np.array(ytest).reshape(-1, 1)).type(
-                        torch.FloatTensor
-                    ),
-                )
-            )
+                        torch.FloatTensor),
+                ))
 
             # del Xval, yval
             # debug_memory()
@@ -478,13 +486,10 @@ if __name__ == "__main__":
                     float(
                         pcc(
                             yval,
-                            torch.from_numpy(np.array(ytest).reshape(-1, 1)).type(
-                                torch.FloatTensor
-                            ),
-                        )
-                    ),
-                )
-            )
+                            torch.from_numpy(np.array(ytest).reshape(
+                                -1, 1)).type(torch.FloatTensor),
+                        )),
+                ))
             # del val_rmse, val_pcc
             # debug_memory()
 
@@ -500,10 +505,8 @@ if __name__ == "__main__":
             log.to_csv(args.log, header=True, index=False, float_format="%.4f")
 
             if min_val[-1][1] - val_rmse >= delta:
-                print(
-                    "Model improve from %.3f to %.3f . Save model to %s "
-                    % (min_val[-1][1], val_rmse, args.model)
-                )
+                print("Model improve from %.3f to %.3f . Save model to %s " %
+                      (min_val[-1][1], val_rmse, args.model))
                 torch.save(model.state_dict(), args.model)
                 min_val.append([epoch, val_rmse])
             else:

@@ -59,8 +59,7 @@ if __name__ == "__main__":
             tofile.write("%20s %6.3f \n" % (rmsds_sorted[i][0], rmsds_sorted[i][1]))"""
 
     if rmsds_sorted[0][1] <= rmsd_cutoff and not os.path.exists(
-        prefix + "_vinaout_bestpose_complex.pdb"
-    ):
+            prefix + "_vinaout_bestpose_complex.pdb"):
         lig2combine = rmsds_sorted[0][0]
 
         # change ligand resname to LIG
@@ -81,8 +80,8 @@ if __name__ == "__main__":
         job = sp.Popen(cmd, shell=True)
         job.communicate()
         job = sp.Popen(
-            "awk '$1 ~ /ATOM/ || $1 ~ /HETATM/ {print $0}' %s > %s"
-            % ("temp_cplx", prefix + "_vinaout_bestpose_complex.pdb"),
+            "awk '$1 ~ /ATOM/ || $1 ~ /HETATM/ {print $0}' %s > %s" %
+            ("temp_cplx", prefix + "_vinaout_bestpose_complex.pdb"),
             shell=True,
         )
         job.communicate()

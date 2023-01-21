@@ -150,13 +150,14 @@ class rewritePDB(object):
         if ln_source != ln_target:
             print(
                 "Error: Number of lines in source and target pdb files are not equal. (%s %s)"
-                % (input, atomseq_pdb)
-            )
+                % (input, atomseq_pdb))
 
         # re-sequence the atom index
-        self.pdbRewrite(
-            input="temp.pdb", atomStartNdx=1, chain=chain, output=out_pdb, resStartNdx=1
-        )
+        self.pdbRewrite(input="temp.pdb",
+                        atomStartNdx=1,
+                        chain=chain,
+                        output=out_pdb,
+                        resStartNdx=1)
 
         os.remove("temp.pdb")
 
@@ -164,6 +165,7 @@ class rewritePDB(object):
 
 
 class coordinatesPDB(object):
+
     def __init__(self):
         pass
 
@@ -189,11 +191,8 @@ class coordinatesPDB(object):
             head = line[:30]
             tail = line[54:]
 
-            newline = (
-                head
-                + "{0:8.3f}{1:8.3f}{2:8.3f}".format(newxyz[0], newxyz[1], newxyz[2])
-                + tail
-            )
+            newline = (head + "{0:8.3f}{1:8.3f}{2:8.3f}".format(
+                newxyz[0], newxyz[1], newxyz[2]) + tail)
 
         else:
             print("WARNING: %s is not a coordination line" % line)
@@ -224,8 +223,7 @@ class coordinatesPDB(object):
                     float(x[46:54].strip()),
                 ],
                 lines,
-            )
-        )
+            ))
 
         return np.array(atomCrd)
 
@@ -256,9 +254,8 @@ class coordinatesPDB(object):
         atomCrd = []
         with open(singleFramePDB) as lines:
             lines = [
-                s
-                for s in lines
-                if len(s) > 4 and s[:4] in ["ATOM", "HETA"] and s.split()[1] in atomNdx
+                s for s in lines if len(s) > 4 and s[:4] in ["ATOM", "HETA"]
+                and s.split()[1] in atomNdx
             ]
             atomCrd = map(
                 lambda x: [
@@ -287,7 +284,8 @@ def void_area(centriod, diameter):
 
     area = []
     for i in range(len(centriod)):
-        area.append([centriod[i] - 0.5 * diameter, centriod[i] + 0.5 * diameter])
+        area.append(
+            [centriod[i] - 0.5 * diameter, centriod[i] + 0.5 * diameter])
 
     return area
 
@@ -306,7 +304,10 @@ def point_in_area(area, point):
     return all(in_area)
 
 
-def sliding_box_centers(center, step_size=0.3, nstep=3, along_xyz=[True, True, True]):
+def sliding_box_centers(center,
+                        step_size=0.3,
+                        nstep=3,
+                        along_xyz=[True, True, True]):
 
     centriods = []
 
@@ -335,9 +336,8 @@ def get_atom_ndx(fn, atom_names=["CA"], lig_code="LIG"):
     with open(fn) as lines:
         # only consider protein atoms
         lines = [
-            x
-            for x in lines
-            if ("ATOM" in x and lig_code not in x and x.split()[2] in atom_names)
+            x for x in lines if ("ATOM" in x and lig_code not in x
+                                 and x.split()[2] in atom_names)
         ]
         atom_ndx = [x.split()[1] for x in lines if len(x.split()) > 2]
 
@@ -348,11 +348,12 @@ def get_resid(fn, atom_names=["CA"], lig_code="LIG"):
     with open(fn) as lines:
         # only consider protein atoms
         lines = [
-            x
-            for x in lines
-            if ("ATOM" in x and lig_code not in x and x.split()[2] in atom_names)
+            x for x in lines if ("ATOM" in x and lig_code not in x
+                                 and x.split()[2] in atom_names)
         ]
-        resid = [x[22:26].strip() + "_" + x[21] for x in lines if len(x.split()) > 2]
+        resid = [
+            x[22:26].strip() + "_" + x[21] for x in lines if len(x.split()) > 2
+        ]
 
     return resid
 
@@ -390,7 +391,8 @@ def trim_sidechain(
 
     with open(fn) as lines:
         for s in lines:
-            if "ATOM" in s and s[22:26].strip() in resid_list and s[21] in chains:
+            if "ATOM" in s and s[22:26].strip(
+            ) in resid_list and s[21] in chains:
                 if s.split()[2] not in atoms_to_keep:
                     pass
                 else:
@@ -406,8 +408,7 @@ def origin_to_zero(fn, out_fn, origin):
 
     with open(fn) as lines:
         lines = [
-            x
-            for x in lines
+            x for x in lines
             if (x.split()[0] in ["ATOM", "HETATM"] and len(x.split()) > 3)
         ]
         plines = lines.copy()
@@ -419,11 +420,9 @@ def origin_to_zero(fn, out_fn, origin):
     tofile = open(out_fn, "w")
 
     for s in plines:
-        crds = pio.getAtomCrdFromLines(
-            [
-                s,
-            ]
-        )[0]
+        crds = pio.getAtomCrdFromLines([
+            s,
+        ])[0]
         new_crds = np.array(crds) + vector
         nl = pio.replaceCrdInPdbLine(s, new_crds)
 
@@ -484,9 +483,8 @@ def main():
     # for x, y, z direction
     dimensions = ["x", "y", "z"]
 
-    centroids = sliding_box_centers(
-        center, step_size, nsteps_to_slide, [True, True, True]
-    )
+    centroids = sliding_box_centers(center, step_size, nsteps_to_slide,
+                                    [True, True, True])
     # print(centroids)
     for i, c in enumerate(centroids):
         print(c, i)
@@ -500,8 +498,7 @@ def main():
         with open("t1.pdb") as lines:
             tofile.write(
                 "CRYST1  %7.3f  %7.3f  %7.3f  90.00  90.00  90.00               1 \n"
-                % (diameter, diameter, diameter)
-            )
+                % (diameter, diameter, diameter))
             for s in lines:
                 tofile.write(s)
             tofile.close()

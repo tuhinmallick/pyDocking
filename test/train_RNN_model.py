@@ -17,7 +17,7 @@ from torch.autograd import Variable
 
 def rmse(output, target):
 
-    return torch.sqrt(torch.mean((output - target) ** 2))
+    return torch.sqrt(torch.mean((output - target)**2))
 
 
 def PCC(output, target):
@@ -25,9 +25,8 @@ def PCC(output, target):
     vx = target.view(-1) - torch.mean(target.view(-1))
     vy = output.view(-1) - torch.mean(output.view(-1))
 
-    P = torch.sum(vx * vy) / (
-        torch.sqrt(torch.sum(vx**2)) * torch.sqrt(torch.sum(vy**2))
-    )
+    P = torch.sum(vx * vy) / (torch.sqrt(torch.sum(vx**2)) *
+                              torch.sqrt(torch.sum(vy**2)))
     # P = vx * vy * torch.rsqrt(torch.sum(vx ** 2)) * torch.rsqrt(torch.sum(vy ** 2))
 
     # x = output.detach().numpy().ravel()
@@ -42,9 +41,8 @@ def PCC_loss(output, target):
     vx = target.view(-1) - torch.mean(target.view(-1))
     vy = output.view(-1) - torch.mean(output.view(-1))
 
-    P = torch.sum(vx * vy) / (
-        torch.sqrt(torch.sum(vx**2)) * torch.sqrt(torch.sum(vy**2))
-    )
+    P = torch.sum(vx * vy) / (torch.sqrt(torch.sum(vx**2)) *
+                              torch.sqrt(torch.sum(vy**2)))
     # P = vx * vy * torch.rsqrt(torch.sum(vx ** 2)) * torch.rsqrt(torch.sum(vy ** 2))
 
     # x = output.detach().numpy().ravel()
@@ -94,13 +92,14 @@ def remove_all_hydrogens(dat, n_features):
 
 def rmse_pcc_loss(output, target):
     alpha = 0.8
-    RMSE = torch.sqrt(torch.mean((output - target) ** 2))
+    RMSE = torch.sqrt(torch.mean((output - target)**2))
 
     vx = target - torch.mean(target)
     vy = output - torch.mean(output)
 
     # pcc = torch.sum(vx * vy) / (torch.sqrt(torch.sum(vx ** 2)) * torch.sqrt(torch.sum(vy ** 2)))
-    PCC = vx * vy * torch.rsqrt(torch.sum(vx**2)) * torch.rsqrt(torch.sum(vy**2))
+    PCC = vx * vy * torch.rsqrt(torch.sum(vx**2)) * torch.rsqrt(
+        torch.sum(vy**2))
 
     return alpha * RMSE + (1 - alpha) * (1 - PCC)
 
@@ -111,11 +110,9 @@ def debug_memory():
 
     import torch
 
-    tensors = collections.Counter(
-        (str(o.device), o.dtype, tuple(o.shape))
-        for o in gc.get_objects()
-        if torch.is_tensor(o)
-    )
+    tensors = collections.Counter((str(o.device), o.dtype, tuple(o.shape))
+                                  for o in gc.get_objects()
+                                  if torch.is_tensor(o))
 
 
 def PCC(y_true, y_pred):
@@ -168,13 +165,17 @@ def remove_all_hydrogens(dat, n_features):
 
 # 3x3 convolution
 def conv3x3(in_channels, out_channels, stride=1):
-    return nn.Conv2d(
-        in_channels, out_channels, kernel_size=3, stride=stride, padding=1, bias=False
-    )
+    return nn.Conv2d(in_channels,
+                     out_channels,
+                     kernel_size=3,
+                     stride=stride,
+                     padding=1,
+                     bias=False)
 
 
 # Residual block
 class ResidualBlock(nn.Module):
+
     def __init__(self, in_channels, out_channels, stride=1, downsample=None):
 
         super(ResidualBlock, self).__init__()
@@ -202,6 +203,7 @@ class ResidualBlock(nn.Module):
 
 
 class ResNet(nn.Module):
+
     def __init__(self, block, layers, num_classes=10):
         super(ResNet, self).__init__()
         self.in_channels = 16
@@ -221,8 +223,7 @@ if __name__ == "__main__":
     """
 
     parser = argparse.ArgumentParser(
-        description=d, formatter_class=RawDescriptionHelpFormatter
-    )
+        description=d, formatter_class=RawDescriptionHelpFormatter)
     parser.add_argument(
         "-fn_train",
         type=str,
@@ -269,9 +270,10 @@ if __name__ == "__main__":
         default="DNN_Model.h5",
         help="Output. The trained DNN model file to save. ",
     )
-    parser.add_argument(
-        "-log", type=str, default="", help="Output. The logger file name to save. "
-    )
+    parser.add_argument("-log",
+                        type=str,
+                        default="",
+                        help="Output. The logger file name to save. ")
     parser.add_argument(
         "-out",
         type=str,
@@ -290,9 +292,10 @@ if __name__ == "__main__":
         default=100,
         help="Input. Default is 100. The number of epochs to train. ",
     )
-    parser.add_argument(
-        "-batch", type=int, default=128, help="Input. Default is 128. The batch size. "
-    )
+    parser.add_argument("-batch",
+                        type=int,
+                        default=128,
+                        help="Input. Default is 128. The batch size. ")
     parser.add_argument(
         "-patience",
         type=int,
@@ -361,7 +364,8 @@ if __name__ == "__main__":
         "-method",
         type=str,
         default="CNN",
-        help="Input, optional. Default is CNN. Options: CNN, DNN. The learning network type.",
+        help=
+        "Input, optional. Default is CNN. Options: CNN, DNN. The learning network type.",
     )
 
     args = parser.parse_args()
@@ -391,9 +395,9 @@ if __name__ == "__main__":
                     print("No such column %s in input file. " % args.y_col[0])
 
             if i == 0:
-                X = df.values[:, : args.n_features]
+                X = df.values[:, :args.n_features]
             else:
-                X = np.concatenate((X, df.values[:, : args.n_features]), axis=0)
+                X = np.concatenate((X, df.values[:, :args.n_features]), axis=0)
 
     Xval, yval = None, []
     for i, fn in enumerate(args.fn_validate):
@@ -403,9 +407,10 @@ if __name__ == "__main__":
                 df = remove_all_hydrogens(df, args.n_features)
 
             if i == 0:
-                Xval = df.values[:, : args.n_features]
+                Xval = df.values[:, :args.n_features]
             else:
-                Xval = np.concatenate((Xval, df.values[:, : args.n_features]), axis=0)
+                Xval = np.concatenate((Xval, df.values[:, :args.n_features]),
+                                      axis=0)
 
             if args.train:
                 yval = yval + list(df[args.y_col[-1]].values)
@@ -418,9 +423,10 @@ if __name__ == "__main__":
                 df = remove_all_hydrogens(df, args.n_features)
 
             if i == 0:
-                Xtest = df.values[:, : args.n_features]
+                Xtest = df.values[:, :args.n_features]
             else:
-                Xtest = np.concatenate((Xtest, df.values[:, : args.n_features]), axis=0)
+                Xtest = np.concatenate((Xtest, df.values[:, :args.n_features]),
+                                       axis=0)
 
             if args.train:
                 ytest = ytest + list(df[args.y_col[-1]].values)
@@ -437,14 +443,11 @@ if __name__ == "__main__":
 
         if args.method == "CNN":
             Xtrain = scaler.transform(X).reshape(
-                (-1, args.reshape[0], args.reshape[1], args.reshape[2])
-            )
+                (-1, args.reshape[0], args.reshape[1], args.reshape[2]))
             Xval = scaler.transform(Xval).reshape(
-                (-1, args.reshape[0], args.reshape[1], args.reshape[2])
-            )
+                (-1, args.reshape[0], args.reshape[1], args.reshape[2]))
             Xtest = scaler.transform(Xtest).reshape(
-                (-1, args.reshape[0], args.reshape[1], args.reshape[2])
-            )
+                (-1, args.reshape[0], args.reshape[1], args.reshape[2]))
         else:
             Xtrain = scaler.transform(X)
             Xval = scaler.transform(Xval)
@@ -463,7 +466,9 @@ if __name__ == "__main__":
         model = ResNet(ResidualBlock, [2, 2, 2, 2]).to(device)
 
         loss_func = nn.MSELoss()
-        optimizer = optim.SGD(model.parameters(), lr=args.lr_init, momentum=0.9)
+        optimizer = optim.SGD(model.parameters(),
+                              lr=args.lr_init,
+                              momentum=0.9)
 
         # print model summary
         print(model.eval())
@@ -473,9 +478,9 @@ if __name__ == "__main__":
 
         # Pytorch train and test sets
         train = torch.utils.data.TensorDataset(XTrain, YTrain)
-        train_loader = torch.utils.data.DataLoader(
-            train, batch_size=args.batch, shuffle=False
-        )
+        train_loader = torch.utils.data.DataLoader(train,
+                                                   batch_size=args.batch,
+                                                   shuffle=False)
 
         min_val = [
             [0, 999.9],
@@ -485,16 +490,18 @@ if __name__ == "__main__":
 
         history = []
 
-        for epoch in range(args.epochs):  # loop over the dataset multiple times
+        for epoch in range(
+                args.epochs):  # loop over the dataset multiple times
 
             running_loss = 0.0
             running_pcc = 0.0
             for i, data in enumerate(train_loader):
                 # get the inputs
                 inputs, labels = data
-                X, Y = Variable(torch.FloatTensor(inputs), requires_grad=False).to(
-                    device
-                ), Variable(torch.FloatTensor(labels), requires_grad=False).to(device)
+                X, Y = Variable(torch.FloatTensor(inputs),
+                                requires_grad=False).to(device), Variable(
+                                    torch.FloatTensor(labels),
+                                    requires_grad=False).to(device)
 
                 # zero the parameter gradients
                 optimizer.zero_grad()
@@ -518,39 +525,36 @@ if __name__ == "__main__":
                 # debug_memory()
 
                 # do validating test
-            Xval = Variable(
-                torch.from_numpy(Xtest).type(torch.FloatTensor), requires_grad=False
-            ).to(device)
+            Xval = Variable(torch.from_numpy(Xtest).type(torch.FloatTensor),
+                            requires_grad=False).to(device)
             # Xval = torch.Tensor.cpu(Xval)
             yval = model(Xval).cpu()
 
             val_rmse = float(
-                rmse(yval, torch.from_numpy(np.array(ytest)).type(torch.FloatTensor))
-            )
+                rmse(yval,
+                     torch.from_numpy(np.array(ytest)).type(
+                         torch.FloatTensor)))
             val_pcc = float(
-                PCC(yval, torch.from_numpy(ytest.ravel()).type(torch.FloatTensor))
-            )
+                PCC(yval,
+                    torch.from_numpy(ytest.ravel()).type(torch.FloatTensor)))
 
             del Xval, yval
             debug_memory()
             torch.cuda.empty_cache()
 
-            print(
-                "[%5d] loss: %.3f, pcc: %.3f val_loss: %.3f, val_pcc: %.3f"
-                % (epoch, running_loss / (i + 1), running_pcc, val_rmse, val_pcc)
-            )
+            print("[%5d] loss: %.3f, pcc: %.3f val_loss: %.3f, val_pcc: %.3f" %
+                  (epoch, running_loss /
+                   (i + 1), running_pcc, val_rmse, val_pcc))
 
-            history.append(
-                [epoch, running_loss / (i + 1), running_pcc, val_rmse, val_pcc]
-            )
+            history.append([
+                epoch, running_loss / (i + 1), running_pcc, val_rmse, val_pcc
+            ])
 
             # early stopping
             # do validating test
             if min_val[-1][1] - val_rmse >= delta:
-                print(
-                    "Model improve from %.3f to %.3f . Save model to %s "
-                    % (min_val[-1][1], val_rmse, args.model)
-                )
+                print("Model improve from %.3f to %.3f . Save model to %s " %
+                      (min_val[-1][1], val_rmse, args.model))
                 torch.save(model.state_dict(), args.model)
                 min_val.append([epoch, val_rmse])
 
@@ -562,8 +566,11 @@ if __name__ == "__main__":
                     pass
 
             hist = pd.DataFrame(
-                history, columns=["epochs", "loss", "pcc", "val_loss", "val_pcc"]
-            )
-            hist.to_csv(args.log, header=True, index=False, float_format="%.4f")
+                history,
+                columns=["epochs", "loss", "pcc", "val_loss", "val_pcc"])
+            hist.to_csv(args.log,
+                        header=True,
+                        index=False,
+                        float_format="%.4f")
 
         print("Finished Training")

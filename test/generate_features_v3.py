@@ -184,19 +184,21 @@ def generate_features(pro_fn, lig_fn, ncutoffs):
         ligand_data[d] = lig.coordinates[:, i]
 
     # print("LIGAND COORD GENERATE")
-    elements_ligand = ["H", "C", "CAR", "O", "N", "S", "P", "DU", "Br", "Cl", "F"]
+    elements_ligand = [
+        "H", "C", "CAR", "O", "N", "S", "P", "DU", "Br", "Cl", "F"
+    ]
     elements_protein = ["H", "C", "O", "N", "S", "DU"]
 
     onionnet_counts = pd.DataFrame()
 
     for el in elements_ligand:
         for ep in elements_protein:
-            protein_xyz = protein_data[protein_data["element"] == ep][
-                ["x", "y", "z"]
-            ].values
-            ligand_xyz = ligand_data[ligand_data["element"] == el][
-                ["x", "y", "z"]
-            ].values
+            protein_xyz = protein_data[protein_data["element"] == ep][[
+                "x", "y", "z"
+            ]].values
+            ligand_xyz = ligand_data[ligand_data["element"] == el][[
+                "x", "y", "z"
+            ]].values
 
             #       print(ligand_xyz[:10], protein_xyz[:10])
             # distances = distance_pairs(protein_xyz, ligand_xyz)
@@ -245,8 +247,7 @@ if __name__ == "__main__":
     """
 
     parser = argparse.ArgumentParser(
-        description=d, formatter_class=RawDescriptionHelpFormatter
-    )
+        description=d, formatter_class=RawDescriptionHelpFormatter)
     parser.add_argument(
         "-inp",
         type=str,
@@ -288,15 +289,18 @@ if __name__ == "__main__":
 
         # spreading the calculating list to different MPI ranks
         with open(args.inp) as lines:
-            lines = [x for x in lines if ("#" not in x and len(x.split()) >= 1)].copy()
+            lines = [
+                x for x in lines if ("#" not in x and len(x.split()) >= 1)
+            ].copy()
             inputs = [x.split() for x in lines]
 
         inputs_list = []
         aver_size = int(len(inputs) / size)
         print(size, aver_size)
         for i in range(size - 1):
-            inputs_list.append(inputs[int(i * aver_size) : int((i + 1) * aver_size)])
-        inputs_list.append(inputs[(size - 1) * aver_size :])
+            inputs_list.append(inputs[int(i * aver_size):int((i + 1) *
+                                                             aver_size)])
+        inputs_list.append(inputs[(size - 1) * aver_size:])
 
     else:
         inputs_list = None
@@ -344,6 +348,9 @@ if __name__ == "__main__":
     for i, n in enumerate(keys * len(n_cutoffs)):
         col_n.append(n + "_" + str(i))
     df.columns = col_n
-    df.to_csv("rank%d_" % rank + args.out, sep=",", float_format="%.1f", index=True)
+    df.to_csv("rank%d_" % rank + args.out,
+              sep=",",
+              float_format="%.1f",
+              index=True)
 
     print(rank, "Complete calculations. ")
