@@ -20,7 +20,7 @@
 <br />
 <div align="center">
   <a href="https://github.com/tuhinmallick/pyDocking">
-    <img src="docs/images/logo.jpg" alt="Logo" width="80" height="80">
+    <img src="docs/images/logo.png" alt="Logo" width="80" height="80">
   </a>
 
 <h3 align="center">pyDocking</h3>
