@@ -13,15 +13,15 @@ def readme():
 
 
 setup(
-    name="deepunion",
+    name="pyDocking",
     version="0.1",
     long_description=readme(),
     description="A collection of drug discovery tools",
-    url="https://github.com/tuhinmallick/pyDock",
+    url="https://github.com/tuhinmallick/pyDocking",
     author="Tuhin Mallick",
     author_email="tuhin.mllk@gmail.com",
     license="GPL-3.0",
-    packages=["deepunion"],
+    packages=["pyDocking"],
     install_requires=[
         "numpy",
         "pandas",
