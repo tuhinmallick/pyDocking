@@ -3,9 +3,10 @@ import subprocess as sp
 
 import mdtraj as mt
 import numpy as np
+from rdkit import Chem
+
 from pyDocking import builder
 from pyDocking.region_mutate import coordinatesPDB
-from rdkit import Chem
 
 """
 Docking Routine

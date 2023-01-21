@@ -3,6 +3,7 @@ import sys
 import mdtraj as mt
 import numpy as np
 from prody import *
+
 from pyDocking.docking import coordinatesPDB
 
 

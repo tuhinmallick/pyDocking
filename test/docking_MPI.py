@@ -3,8 +3,8 @@ import os
 import sys
 
 from mpi4py import MPI
-from pyDocking import builder
-from pyDocking import docking
+
+from pyDocking import builder, docking
 
 """
 Docking Routine

@@ -4,8 +4,9 @@ import subprocess as sp
 import sys
 
 import dockml.pdbIO as pdbio
-from pyDocking import builder
 from rdkit import Chem
+
+from pyDocking import builder
 
 
 def convert_lig(lig_in, lig_out):
