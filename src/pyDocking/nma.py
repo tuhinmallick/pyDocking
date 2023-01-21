@@ -7,6 +7,7 @@ from pyDocking.docking import coordinatesPDB
 
 
 class EssentialDynamics(object):
+
     def __init__(self):
         pass
 
@@ -66,15 +67,21 @@ class EssentialDynamics(object):
 
             if vectors.shape[0] == len(coords):
                 for i in range(len(coords)):
-                    newxyz = self.transform_xyz(coords[i], list(vectors[i]), delta)
+                    newxyz = self.transform_xyz(coords[i], list(vectors[i]),
+                                                delta)
                     newxyzs.append(newxyz)
-                    newlines.append(pdbio.replaceCrdInPdbLine(lines[i], newxyz))
+                    newlines.append(pdbio.replaceCrdInPdbLine(
+                        lines[i], newxyz))
 
         return newxyzs, newlines
 
-    def genEDA_essemble(
-        self, pdbin, pdbout, vector, no_files=20, delta=0.5, numres=250
-    ):
+    def genEDA_essemble(self,
+                        pdbin,
+                        pdbout,
+                        vector,
+                        no_files=20,
+                        delta=0.5,
+                        numres=250):
         """Generate an essemble of pdb files to increase the PC motions
 
         Parameters
@@ -100,7 +107,8 @@ class EssentialDynamics(object):
 
         with open(pdbout, "w") as tofile:
             for i in range(no_files):
-                length = delta * np.cos(2.0 * PI * (float(i) / float(no_files)) - PI)
+                length = delta * np.cos(2.0 * PI *
+                                        (float(i) / float(no_files)) - PI)
                 print(length)
                 tofile.write("MODEL   %d \n" % i)
                 t, nlines = self.pdbIncreaseMotion(pdbin, vector, delta=length)
@@ -112,6 +120,7 @@ class EssentialDynamics(object):
 
 
 class NMA(object):
+
     def __init__(self, n_modes=3):
 
         self.eigvectors = np.array([])
@@ -139,19 +148,21 @@ class NMA(object):
         return self.eigvectors
 
     def write_traj(
-        self,
-        pdb_fn,
-        out_fn="gnm_traj_mode0.pdb",
-        eigvec=np.array([]),
-        n_frames=20,
-        step_size=0.1,
+            self,
+            pdb_fn,
+            out_fn="gnm_traj_mode0.pdb",
+            eigvec=np.array([]),
+            n_frames=20,
+            step_size=0.1,
     ):
 
         eda = EssentialDynamics()
 
-        eda.genEDA_essemble(
-            pdb_fn, out_fn, vector=eigvec, no_files=n_frames, delta=step_size
-        )
+        eda.genEDA_essemble(pdb_fn,
+                            out_fn,
+                            vector=eigvec,
+                            no_files=n_frames,
+                            delta=step_size)
 
         return self
 

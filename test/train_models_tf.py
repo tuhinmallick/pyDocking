@@ -44,8 +44,8 @@ def PCC_RMSE(y_true, y_pred):
     devT = tf.keras.backend.std(y_true)
 
     rmse = tf.keras.backend.sqrt(
-        tf.keras.backend.mean(tf.keras.backend.square(y_pred - y_true), axis=-1)
-    )
+        tf.keras.backend.mean(tf.keras.backend.square(y_pred - y_true),
+                              axis=-1))
 
     p = 1.0 - tf.keras.backend.mean(fsp * fst) / (devP * devT)
 
@@ -56,8 +56,8 @@ def PCC_RMSE(y_true, y_pred):
 
 def RMSE(y_true, y_pred):
     return tf.keras.backend.sqrt(
-        tf.keras.backend.mean(tf.keras.backend.square(y_pred - y_true), axis=-1)
-    )
+        tf.keras.backend.mean(tf.keras.backend.square(y_pred - y_true),
+                              axis=-1))
 
 
 def PCC(y_true, y_pred):
@@ -108,9 +108,11 @@ def remove_all_hydrogens(dat, n_features):
     return df
 
 
-def create_model_DNN(
-    input_size, hidden_layers=[1000, 400, 200], lr=0.0001, maxpool=True, dropout=0.1
-):
+def create_model_DNN(input_size,
+                     hidden_layers=[1000, 400, 200],
+                     lr=0.0001,
+                     maxpool=True,
+                     dropout=0.1):
     model = tf.keras.Sequential()
 
     for i, hl in enumerate(hidden_layers):
@@ -120,16 +122,14 @@ def create_model_DNN(
                     hl,
                     input_dim=input_size,
                     kernel_regularizer=tf.keras.regularizers.l2(0.01),
-                )
-            )
+                ))
         else:
             model.add(
                 tf.keras.layers.Dense(
                     hl,
                     input_dim=input_size,
                     kernel_regularizer=tf.keras.regularizers.l2(0.01),
-                )
-            )
+                ))
 
         model.add(tf.keras.layers.Activation("relu"))
         model.add(tf.keras.layers.BatchNormalization())
@@ -139,8 +139,7 @@ def create_model_DNN(
         tf.keras.layers.Dense(
             1,
             kernel_regularizer=tf.keras.regularizers.l2(0.01),
-        )
-    )
+        ))
     model.add(tf.keras.layers.Activation("relu"))
 
     sgd = tf.keras.optimizers.SGD(
@@ -153,16 +152,19 @@ def create_model_DNN(
     return model
 
 
-def create_model(
-    input_size, lr=0.0001, maxpool=True, dropout=0.1, hidden_layers=[400, 200, 100]
-):
+def create_model(input_size,
+                 lr=0.0001,
+                 maxpool=True,
+                 dropout=0.1,
+                 hidden_layers=[400, 200, 100]):
     model = tf.keras.Sequential()
 
     model.add(
-        tf.keras.layers.Conv2D(
-            128, kernel_size=4, strides=1, padding="valid", input_shape=input_size
-        )
-    )
+        tf.keras.layers.Conv2D(128,
+                               kernel_size=4,
+                               strides=1,
+                               padding="valid",
+                               input_shape=input_size))
     model.add(tf.keras.layers.Activation("relu"))
     if maxpool:
         model.add(
@@ -170,8 +172,7 @@ def create_model(
                 pool_size=2,
                 strides=2,
                 padding="same",  # Padding method
-            )
-        )
+            ))
 
     model.add(tf.keras.layers.Conv2D(64, 4, 1, padding="valid"))
     model.add(tf.keras.layers.Activation("relu"))
@@ -181,8 +182,7 @@ def create_model(
                 pool_size=2,
                 strides=2,
                 padding="same",  # Padding method
-            )
-        )
+            ))
 
     model.add(tf.keras.layers.Conv2D(32, 4, 1, padding="valid"))
     model.add(tf.keras.layers.Activation("relu"))
@@ -192,8 +192,7 @@ def create_model(
                 pool_size=2,
                 strides=2,
                 padding="same",  # Padding method
-            )
-        )
+            ))
 
     model.add(tf.keras.layers.Flatten())
 
@@ -203,8 +202,7 @@ def create_model(
             tf.keras.layers.Dense(
                 hl,
                 kernel_regularizer=tf.keras.regularizers.l2(0.01),
-            )
-        )
+            ))
         model.add(tf.keras.layers.Activation("relu"))
         model.add(tf.keras.layers.BatchNormalization())
         model.add(tf.keras.layers.Dropout(dropout))
@@ -213,8 +211,7 @@ def create_model(
         tf.keras.layers.Dense(
             1,
             kernel_regularizer=tf.keras.regularizers.l2(0.01),
-        )
-    )
+        ))
     # model.add(tf.keras.layers.Activation("relu"))
 
     sgd = tf.keras.optimizers.SGD(
@@ -237,8 +234,7 @@ if __name__ == "__main__":
     """
 
     parser = argparse.ArgumentParser(
-        description=d, formatter_class=RawDescriptionHelpFormatter
-    )
+        description=d, formatter_class=RawDescriptionHelpFormatter)
     parser.add_argument(
         "-fn_train",
         type=str,
@@ -285,9 +281,10 @@ if __name__ == "__main__":
         default="DNN_Model.h5",
         help="Output. The trained DNN model file to save. ",
     )
-    parser.add_argument(
-        "-log", type=str, default="", help="Output. The logger file name to save. "
-    )
+    parser.add_argument("-log",
+                        type=str,
+                        default="",
+                        help="Output. The logger file name to save. ")
     parser.add_argument(
         "-out",
         type=str,
@@ -306,9 +303,10 @@ if __name__ == "__main__":
         default=100,
         help="Input. Default is 100. The number of epochs to train. ",
     )
-    parser.add_argument(
-        "-batch", type=int, default=128, help="Input. Default is 128. The batch size. "
-    )
+    parser.add_argument("-batch",
+                        type=int,
+                        default=128,
+                        help="Input. Default is 128. The batch size. ")
     parser.add_argument(
         "-patience",
         type=int,
@@ -377,7 +375,8 @@ if __name__ == "__main__":
         "-method",
         type=str,
         default="CNN",
-        help="Input, optional. Default is CNN. Options: CNN, DNN. The learning network type.",
+        help=
+        "Input, optional. Default is CNN. Options: CNN, DNN. The learning network type.",
     )
 
     args = parser.parse_args()
@@ -407,9 +406,9 @@ if __name__ == "__main__":
                     print("No such column %s in input file. " % args.y_col[0])
 
             if i == 0:
-                X = df.values[:, : args.n_features]
+                X = df.values[:, :args.n_features]
             else:
-                X = np.concatenate((X, df.values[:, : args.n_features]), axis=0)
+                X = np.concatenate((X, df.values[:, :args.n_features]), axis=0)
 
     Xval, yval = None, []
     for i, fn in enumerate(args.fn_validate):
@@ -419,9 +418,10 @@ if __name__ == "__main__":
                 df = remove_all_hydrogens(df, args.n_features)
 
             if i == 0:
-                Xval = df.values[:, : args.n_features]
+                Xval = df.values[:, :args.n_features]
             else:
-                Xval = np.concatenate((Xval, df.values[:, : args.n_features]), axis=0)
+                Xval = np.concatenate((Xval, df.values[:, :args.n_features]),
+                                      axis=0)
 
             if args.train:
                 yval = yval + list(df[args.y_col[-1]].values)
@@ -434,9 +434,10 @@ if __name__ == "__main__":
                 df = remove_all_hydrogens(df, args.n_features)
 
             if i == 0:
-                Xtest = df.values[:, : args.n_features]
+                Xtest = df.values[:, :args.n_features]
             else:
-                Xtest = np.concatenate((Xtest, df.values[:, : args.n_features]), axis=0)
+                Xtest = np.concatenate((Xtest, df.values[:, :args.n_features]),
+                                       axis=0)
 
             if args.train:
                 ytest = ytest + list(df[args.y_col[-1]].values)
@@ -453,14 +454,11 @@ if __name__ == "__main__":
 
         if args.method == "CNN":
             Xtrain = scaler.transform(X).reshape(
-                (-1, args.reshape[0], args.reshape[1], args.reshape[2])
-            )
+                (-1, args.reshape[0], args.reshape[1], args.reshape[2]))
             Xval = scaler.transform(Xval).reshape(
-                (-1, args.reshape[0], args.reshape[1], args.reshape[2])
-            )
+                (-1, args.reshape[0], args.reshape[1], args.reshape[2]))
             Xtest = scaler.transform(Xtest).reshape(
-                (-1, args.reshape[0], args.reshape[1], args.reshape[2])
-            )
+                (-1, args.reshape[0], args.reshape[1], args.reshape[2]))
         else:
             Xtrain = scaler.transform(X)
             Xval = scaler.transform(Xval)

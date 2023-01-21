@@ -9,9 +9,10 @@ if __name__ == "__main__":
 
     d = """"""
     parser = argparse.ArgumentParser(description=d)
-    parser.add_argument(
-        "-fn", type=str, nargs="+", help="Input. The log files from TF."
-    )
+    parser.add_argument("-fn",
+                        type=str,
+                        nargs="+",
+                        help="Input. The log files from TF.")
     parser.add_argument(
         "-patience",
         default=40,
@@ -53,7 +54,8 @@ if __name__ == "__main__":
 
             if df.index.values[-1] == EPOCHS or df.shape[0] < args.patience + 1:
                 print(
-                    fn, "Model training per-terminated before a final solution fixed. "
+                    fn,
+                    "Model training per-terminated before a final solution fixed. "
                 )
                 # sys.exit(0)
             else:

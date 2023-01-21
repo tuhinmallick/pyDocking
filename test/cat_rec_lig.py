@@ -21,7 +21,8 @@ def convert_lig(lig_in, lig_out):
 
 
 def cat_rec_lig(rec, lig, out):
-    job = sp.Popen("cat %s | awk '$1 ~ /ATOM/ {print $0}' > temp_rec" % rec, shell=True)
+    job = sp.Popen("cat %s | awk '$1 ~ /ATOM/ {print $0}' > temp_rec" % rec,
+                   shell=True)
     job.communicate()
     job = sp.Popen(
         "cat temp_rec %s | awk '$1 ~ /ATOM/ || $1 ~ /HETATM/ {print $0}' | awk '$4 != /HOH/ {print $0}' > %s"
@@ -48,7 +49,9 @@ def lig_name_change(lig_in, lig_out, lig_code):
 
 def main():
 
-    inputs = [x.split()[0] for x in open(sys.argv[1]).readlines() if "#" not in x]
+    inputs = [
+        x.split()[0] for x in open(sys.argv[1]).readlines() if "#" not in x
+    ]
     print(inputs)
     for p in inputs:
 
@@ -58,7 +61,8 @@ def main():
             try:
                 convert_lig(lig, "t1_%s.pdb" % p)
                 lig_name_change("t1_%s.pdb" % p, "t2_%s.pdb" % p, "LIG")
-                cat_rec_lig(rec, "t2_%s.pdb" % p, os.path.join(p, "%s_cplx.pdb" % p))
+                cat_rec_lig(rec, "t2_%s.pdb" % p,
+                            os.path.join(p, "%s_cplx.pdb" % p))
             except:
                 print("Not successful : ", p)
 

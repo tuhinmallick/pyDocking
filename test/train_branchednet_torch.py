@@ -16,6 +16,7 @@ from torch.autograd import Variable
 
 
 class BranchedNet(torch.nn.Module):
+
     def __init__(self, input_size_1, input_size_2):
         super().__init__()
         """https://discuss.pytorch.org/t/how-to-train-the-network-with-multiple-branches/2152/12"""
@@ -36,24 +37,34 @@ class BranchedNet(torch.nn.Module):
             padding=self.padding,
         )
         self.channel = 128
-        self.w = int((self.w - self.kernel + 2 * self.padding) / self.stride + 1)
-        self.h = int((self.h - self.kernel + 2 * self.padding) / self.stride + 1)
+        self.w = int((self.w - self.kernel + 2 * self.padding) / self.stride +
+                     1)
+        self.h = int((self.h - self.kernel + 2 * self.padding) / self.stride +
+                     1)
         self.relu11 = nn.ReLU(inplace=True)
 
-        self.conv12 = nn.Conv2d(
-            128, 64, kernel_size=self.kernel, stride=self.stride, padding=self.padding
-        )
+        self.conv12 = nn.Conv2d(128,
+                                64,
+                                kernel_size=self.kernel,
+                                stride=self.stride,
+                                padding=self.padding)
         self.channel = 64
-        self.w = int((self.w - self.kernel + 2 * self.padding) / self.stride + 1)
-        self.h = int((self.h - self.kernel + 2 * self.padding) / self.stride + 1)
+        self.w = int((self.w - self.kernel + 2 * self.padding) / self.stride +
+                     1)
+        self.h = int((self.h - self.kernel + 2 * self.padding) / self.stride +
+                     1)
         self.relu12 = nn.ReLU(inplace=True)
 
-        self.conv13 = nn.Conv2d(
-            64, 32, kernel_size=self.kernel, stride=self.stride, padding=self.padding
-        )
+        self.conv13 = nn.Conv2d(64,
+                                32,
+                                kernel_size=self.kernel,
+                                stride=self.stride,
+                                padding=self.padding)
         self.channel = 32
-        self.w = int((self.w - self.kernel + 2 * self.padding) / self.stride + 1)
-        self.h = int((self.h - self.kernel + 2 * self.padding) / self.stride + 1)
+        self.w = int((self.w - self.kernel + 2 * self.padding) / self.stride +
+                     1)
+        self.h = int((self.h - self.kernel + 2 * self.padding) / self.stride +
+                     1)
         self.relu13 = nn.ReLU(inplace=True)
 
         self.n_features_1 = self.channel * self.w * self.h
@@ -74,24 +85,34 @@ class BranchedNet(torch.nn.Module):
             padding=self.padding,
         )
         self.channel = 128
-        self.w = int((self.w - self.kernel + 2 * self.padding) / self.stride + 1)
-        self.h = int((self.h - self.kernel + 2 * self.padding) / self.stride + 1)
+        self.w = int((self.w - self.kernel + 2 * self.padding) / self.stride +
+                     1)
+        self.h = int((self.h - self.kernel + 2 * self.padding) / self.stride +
+                     1)
         self.relu21 = nn.ReLU(inplace=True)
 
-        self.conv22 = nn.Conv2d(
-            128, 64, kernel_size=self.kernel, stride=self.stride, padding=self.padding
-        )
+        self.conv22 = nn.Conv2d(128,
+                                64,
+                                kernel_size=self.kernel,
+                                stride=self.stride,
+                                padding=self.padding)
         self.channel = 64
-        self.w = int((self.w - self.kernel + 2 * self.padding) / self.stride + 1)
-        self.h = int((self.h - self.kernel + 2 * self.padding) / self.stride + 1)
+        self.w = int((self.w - self.kernel + 2 * self.padding) / self.stride +
+                     1)
+        self.h = int((self.h - self.kernel + 2 * self.padding) / self.stride +
+                     1)
         self.relu22 = nn.ReLU(inplace=True)
 
-        self.conv23 = nn.Conv2d(
-            64, 32, kernel_size=self.kernel, stride=self.stride, padding=self.padding
-        )
+        self.conv23 = nn.Conv2d(64,
+                                32,
+                                kernel_size=self.kernel,
+                                stride=self.stride,
+                                padding=self.padding)
         self.channel = 32
-        self.w = int((self.w - self.kernel + 2 * self.padding) / self.stride + 1)
-        self.h = int((self.h - self.kernel + 2 * self.padding) / self.stride + 1)
+        self.w = int((self.w - self.kernel + 2 * self.padding) / self.stride +
+                     1)
+        self.h = int((self.h - self.kernel + 2 * self.padding) / self.stride +
+                     1)
         self.relu23 = nn.ReLU(inplace=True)
 
         self.n_features_2 = self.channel * self.w * self.h
@@ -130,7 +151,7 @@ class BranchedNet(torch.nn.Module):
 
 
 def rmse(output, target):
-    return torch.sqrt(torch.mean((output - target) ** 2))
+    return torch.sqrt(torch.mean((output - target)**2))
 
 
 def pcc(output, target):
@@ -139,9 +160,8 @@ def pcc(output, target):
     vx = x - torch.mean(x)
     vy = y - torch.mean(y)
 
-    return torch.sum(vx * vy) / (
-        torch.sqrt(torch.sum(vx**2)) * torch.sqrt(torch.sum(vy**2))
-    )
+    return torch.sum(vx * vy) / (torch.sqrt(torch.sum(vx**2)) *
+                                 torch.sqrt(torch.sum(vy**2)))
 
 
 def debug_memory():
@@ -150,11 +170,9 @@ def debug_memory():
 
     import torch
 
-    tensors = collections.Counter(
-        (str(o.device), o.dtype, tuple(o.shape))
-        for o in gc.get_objects()
-        if torch.is_tensor(o)
-    )
+    tensors = collections.Counter((str(o.device), o.dtype, tuple(o.shape))
+                                  for o in gc.get_objects()
+                                  if torch.is_tensor(o))
 
 
 def remove_shell_features(dat, shell_index, features_n=64):
@@ -204,9 +222,8 @@ if __name__ == "__main__":
 
     """
 
-    parser = argparse.ArgumentParser(
-        description=d, formatter_class=RawTextHelpFormatter
-    )
+    parser = argparse.ArgumentParser(description=d,
+                                     formatter_class=RawTextHelpFormatter)
     parser.add_argument(
         "-fn1",
         type=str,
@@ -387,11 +404,8 @@ if __name__ == "__main__":
         scaler2 = preprocessing.StandardScaler()
         Xs2 = scaler2.fit_transform(X2)
 
-        if (
-            Xs1.shape[0] != Xs2.shape[0]
-            or X1.index.values != X2.index.values
-            or y.index.values != X1.index.values
-        ):
+        if (Xs1.shape[0] != Xs2.shape[0] or X1.index.values != X2.index.values
+                or y.index.values != X1.index.values):
             print("The sample numbers in two branches are not equal. ")
             sys.exit(0)
 
@@ -405,8 +419,8 @@ if __name__ == "__main__":
         indexer = np.arange(Xs1.shape[0])
         np.random.shuffle(indexer)
 
-        train_part = indexer[: int(indexer.shape[0] * 0.8)]
-        test_part = indexer[int(indexer.shape[0] * 0.8) :]
+        train_part = indexer[:int(indexer.shape[0] * 0.8)]
+        test_part = indexer[int(indexer.shape[0] * 0.8):]
 
         # Xtrain, Xtest, ytrain, ytest = model_selection.train_test_split(Xs, y, test_size=0.2)
         # print("Train and test split")
@@ -431,7 +445,9 @@ if __name__ == "__main__":
 
         model = model.to(device)
         # loss_func = nn.MSELoss()
-        optimizer = optim.SGD(model.parameters(), lr=args.lr_init, momentum=0.9)
+        optimizer = optim.SGD(model.parameters(),
+                              lr=args.lr_init,
+                              momentum=0.9)
 
         print(model.eval())
 
@@ -443,7 +459,9 @@ if __name__ == "__main__":
         train = torch.utils.data.TensorDataset(X1Train, X2Train, YTrain)
         # test = torch.utils.data.TensorDataset(XTest, YTest)
 
-        train_loader = torch.utils.data.DataLoader(train, batch_size=32, shuffle=False)
+        train_loader = torch.utils.data.DataLoader(train,
+                                                   batch_size=32,
+                                                   shuffle=False)
 
         min_val = [
             [0.0, 999.9],
@@ -452,20 +470,20 @@ if __name__ == "__main__":
         patience = 40
         history = []
 
-        for epoch in range(args.epochs):  # loop over the dataset multiple times
+        for epoch in range(
+                args.epochs):  # loop over the dataset multiple times
 
             running_loss = 0.0
             for i, data in enumerate(train_loader):
                 # get the inputs
                 inputs_1, inputs_2, labels = data
                 X1, X2, Y = (
-                    Variable(torch.FloatTensor(inputs_1), requires_grad=False).to(
-                        device
-                    ),
-                    Variable(torch.FloatTensor(inputs_2), requires_grad=False).to(
-                        device
-                    ),
-                    Variable(torch.FloatTensor(labels), requires_grad=False).to(device),
+                    Variable(torch.FloatTensor(inputs_1),
+                             requires_grad=False).to(device),
+                    Variable(torch.FloatTensor(inputs_2),
+                             requires_grad=False).to(device),
+                    Variable(torch.FloatTensor(labels),
+                             requires_grad=False).to(device),
                 )
 
                 # zero the parameter gradients

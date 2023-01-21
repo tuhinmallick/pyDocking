@@ -6,7 +6,6 @@ import numpy as np
 from pyDocking import builder
 from pyDocking.region_mutate import coordinatesPDB
 from rdkit import Chem
-
 """
 Docking Routine
 
@@ -18,6 +17,7 @@ Docking Routine
 
 
 class VinaDocking(object):
+
     def __init__(self, vina_exe="vina"):
         self.vina_exe = vina_exe
 
@@ -77,6 +77,7 @@ class VinaDocking(object):
 
 
 class ReceptorPrepare(object):
+
     def __init__(self, receptor):
 
         self.receptor = receptor
@@ -84,7 +85,9 @@ class ReceptorPrepare(object):
     def pocket_center(self, LIG="", res_sele="all"):
         if len(LIG):
             with open(LIG) as lines:
-                lig_lines = [x for x in lines if x.split()[0] in ["ATOM", "HETATM"]]
+                lig_lines = [
+                    x for x in lines if x.split()[0] in ["ATOM", "HETATM"]
+                ]
 
             # read coordinates
             coord = coordinatesPDB().getAtomCrdFromLines(lig_lines)
@@ -118,14 +121,12 @@ def rmsd(mol1, mol2):
     cpdb = coordinatesPDB()
     with open(mol1) as lines:
         m1 = cpdb.getAtomCrdFromLines(
-            [x for x in lines if ("ATOM" in x or "HETATM" in x)]
-        )
+            [x for x in lines if ("ATOM" in x or "HETATM" in x)])
     with open(mol2) as lines:
         m2 = cpdb.getAtomCrdFromLines(
-            [x for x in lines if ("ATOM" in x or "HETATM" in x)]
-        )
+            [x for x in lines if ("ATOM" in x or "HETATM" in x)])
 
-    rmsd = np.sum((m1 - m2).ravel() ** 2 / m1.shape[0])
+    rmsd = np.sum((m1 - m2).ravel()**2 / m1.shape[0])
 
     return np.sqrt(rmsd)
 
@@ -166,19 +167,22 @@ def run_docking():
         "-rec",
         type=str,
         default="receptor.pdbqt",
-        help="Input. Default is receptor.pdbqt. \n" "The input receptor conformation.",
+        help="Input. Default is receptor.pdbqt. \n"
+        "The input receptor conformation.",
     )
     parser.add_argument(
         "-lig",
         type=str,
         default="ligand.pdbqt",
-        help="Input. Default is ligand.pdbqt. " "The input ligand conformation.",
+        help="Input. Default is ligand.pdbqt. "
+        "The input ligand conformation.",
     )
     parser.add_argument(
         "-out",
         type=str,
         default="output_",
-        help="Output. Optional. Default is output_ \n" "The prefix of the output",
+        help="Output. Optional. Default is output_ \n"
+        "The prefix of the output",
     )
     parser.add_argument(
         "-cal_center",
@@ -207,9 +211,8 @@ def run_docking():
     xyz_c = rec_prep.pocket_center(LIG=lig + ".pdb")
     print(xyz_c)
     pdb2pdbqt(rec, "temp.pdbqt")
-    job = sp.Popen(
-        "awk '$1 ~ /ATOM/ {print $0}' temp.pdbqt > %s.pdbqt" % rec, shell=True
-    )
+    job = sp.Popen("awk '$1 ~ /ATOM/ {print $0}' temp.pdbqt > %s.pdbqt" % rec,
+                   shell=True)
     job.communicate()
 
     docking = VinaDocking()

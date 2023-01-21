@@ -34,8 +34,8 @@ def PCC_RMSE(y_true, y_pred):
     devT = tf.keras.backend.std(y_true)
 
     rmse = tf.keras.backend.sqrt(
-        tf.keras.backend.mean(tf.keras.backend.square(y_pred - y_true), axis=-1)
-    )
+        tf.keras.backend.mean(tf.keras.backend.square(y_pred - y_true),
+                              axis=-1))
 
     pcc = 1.0 - tf.keras.backend.mean(fsp * fst) / (devP * devT)
 
@@ -46,8 +46,8 @@ def PCC_RMSE(y_true, y_pred):
 
 def RMSE(y_true, y_pred):
     return tf.keras.backend.sqrt(
-        tf.keras.backend.mean(tf.keras.backend.square(y_pred - y_true), axis=-1)
-    )
+        tf.keras.backend.mean(tf.keras.backend.square(y_pred - y_true),
+                              axis=-1))
 
 
 def PCC(y_true, y_pred):
@@ -80,8 +80,7 @@ def create_model(input_size, lr=0.0001):
         tf.keras.layers.Dense(
             200,
             kernel_regularizer=tf.keras.regularizers.l2(0.01),
-        )
-    )
+        ))
     model.add(tf.keras.layers.Activation("relu"))
     model.add(tf.keras.layers.BatchNormalization())
 
@@ -89,8 +88,7 @@ def create_model(input_size, lr=0.0001):
         tf.keras.layers.Dense(
             100,
             kernel_regularizer=tf.keras.regularizers.l2(0.01),
-        )
-    )
+        ))
     model.add(tf.keras.layers.Activation("relu"))
     model.add(tf.keras.layers.BatchNormalization())
 
@@ -98,8 +96,7 @@ def create_model(input_size, lr=0.0001):
         tf.keras.layers.Dense(
             40,
             kernel_regularizer=tf.keras.regularizers.l2(0.01),
-        )
-    )
+        ))
     model.add(tf.keras.layers.Activation("relu"))
     model.add(tf.keras.layers.BatchNormalization())
 
@@ -107,8 +104,7 @@ def create_model(input_size, lr=0.0001):
         tf.keras.layers.Dense(
             20,
             kernel_regularizer=tf.keras.regularizers.l2(0.01),
-        )
-    )
+        ))
     model.add(tf.keras.layers.Activation("relu"))
     model.add(tf.keras.layers.BatchNormalization())
 
@@ -116,8 +112,7 @@ def create_model(input_size, lr=0.0001):
         tf.keras.layers.Dense(
             10,
             kernel_regularizer=tf.keras.regularizers.l2(0.01),
-        )
-    )
+        ))
     model.add(tf.keras.layers.Activation("relu"))
     model.add(tf.keras.layers.BatchNormalization())
 
@@ -125,8 +120,7 @@ def create_model(input_size, lr=0.0001):
         tf.keras.layers.Dense(
             1,
             kernel_regularizer=tf.keras.regularizers.l2(0.01),
-        )
-    )
+        ))
     model.add(tf.keras.layers.Activation("relu"))
 
     sgd = tf.keras.optimizers.SGD(
@@ -265,8 +259,7 @@ if __name__ == "__main__":
         print("DataSet Scaled")
 
         Xtrain, Xtest, ytrain, ytest = model_selection.train_test_split(
-            Xs, y, test_size=0.2
-        )
+            Xs, y, test_size=0.2)
         print("Train and test split")
         Xtrain = Xtrain.reshape((-1, 64, 60, 1))
         model = create_model((64, 60, 1), lr=args.lr_init)
@@ -279,10 +272,13 @@ if __name__ == "__main__":
             verbose=1,
             mode="auto",
         )
-        logger = tf.keras.callbacks.CSVLogger(args.log, separator=",", append=False)
-        bestmodel = tf.keras.callbacks.ModelCheckpoint(
-            filepath="bestmodel_" + args.model, verbose=1, save_best_only=True
-        )
+        logger = tf.keras.callbacks.CSVLogger(args.log,
+                                              separator=",",
+                                              append=False)
+        bestmodel = tf.keras.callbacks.ModelCheckpoint(filepath="bestmodel_" +
+                                                       args.model,
+                                                       verbose=1,
+                                                       save_best_only=True)
 
         # train the model
         history = model.fit(
@@ -307,9 +303,12 @@ if __name__ == "__main__":
 
         Xs = scaler.transform(X).reshape((-1, 64, 60, 1))
 
-        model = tf.keras.models.load_model(
-            args.model, custom_objects={"RMSE": RMSE, "PCC": PCC, "PCC_RMSE": PCC_RMSE}
-        )
+        model = tf.keras.models.load_model(args.model,
+                                           custom_objects={
+                                               "RMSE": RMSE,
+                                               "PCC": PCC,
+                                               "PCC_RMSE": PCC_RMSE
+                                           })
 
         ypred = pd.DataFrame()
         ypred["pKa_predicted"] = model.predict(Xs).ravel()

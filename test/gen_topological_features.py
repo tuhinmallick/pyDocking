@@ -29,7 +29,9 @@ if __name__ == "__main__":
     out = sys.argv[2]
 
     if not os.path.exists(inp):
-        print("python gen_top_feat.py input_pdb_code.dat output_top_features.csv")
+        print(
+            "python gen_top_feat.py input_pdb_code.dat output_top_features.csv"
+        )
         sys.exit(0)
 
     with open(inp) as lines:
