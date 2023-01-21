@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-
 import itertools
 import sys
 from collections import OrderedDict

@@ -1,13 +1,11 @@
 #!/usr/bin/env python
-
 import os
 import subprocess as sp
 import sys
 
 import dockml.pdbIO as pdbio
-from rdkit import Chem
-
 from pyDocking import builder
+from rdkit import Chem
 
 
 def convert_lig(lig_in, lig_out):

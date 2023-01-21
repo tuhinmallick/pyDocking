@@ -2,8 +2,13 @@ from __future__ import division
 
 import six
 from keras import backend as K
-from keras.layers import Activation, Dense, Flatten, Input
-from keras.layers.convolutional import AveragePooling2D, Conv2D, MaxPooling2D
+from keras.layers import Activation
+from keras.layers import Dense
+from keras.layers import Flatten
+from keras.layers import Input
+from keras.layers.convolutional import AveragePooling2D
+from keras.layers.convolutional import Conv2D
+from keras.layers.convolutional import MaxPooling2D
 from keras.layers.merge import add
 from keras.layers.normalization import BatchNormalization
 from keras.models import Model

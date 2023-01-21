@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-
 import argparse
 import os
 import sys
@@ -7,11 +6,12 @@ from argparse import RawTextHelpFormatter
 
 import numpy as np
 import pandas as pd
-import torch
 import torch.cuda
 import torch.utils.data
-from sklearn import externals, preprocessing
-from torch import nn, optim
+from sklearn import externals
+from sklearn import preprocessing
+from torch import nn
+from torch import optim
 from torch.autograd import Variable
 
 

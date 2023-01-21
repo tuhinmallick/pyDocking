@@ -1,10 +1,8 @@
 #!/usr/bin/env python
-
 import sys
 
 import mdtraj as mt
 import numpy as np
-
 from pyDocking import region_mutate
 
 

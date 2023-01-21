@@ -1,16 +1,14 @@
 # -*- coding:utf-8 -*-
-
 # ---------------------
 # 作者：kongshuchen
 # 来源：CSDN
 # 原文：https://blog.csdn.net/kongshuchen/article/details/72285709
 # 版权声明：本文为博主原创文章，转载请附上博文链接！
-
 import torch
 import torch.nn as nn
+from torch.autograd import Variable
 # import torchvision.datasets as dsets
 # import torchvision.transforms as transforms
-from torch.autograd import Variable
 
 # 4x4 Convolution
 

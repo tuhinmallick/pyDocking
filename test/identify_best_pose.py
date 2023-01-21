@@ -1,13 +1,13 @@
 #!/usr/bin/env python
-
 import os
 import subprocess as sp
 import sys
 from glob import glob
 
 import pandas as pd
-
-from pyDocking import babel_converter, region_mutate, rmsd
+from pyDocking import babel_converter
+from pyDocking import region_mutate
+from pyDocking import rmsd
 
 
 def converter_multiple(inp, out, multiple=True):

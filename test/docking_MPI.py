@@ -1,11 +1,10 @@
 #!/usr/bin/env python
-
 import os
 import sys
 
 from mpi4py import MPI
-
-from pyDocking import builder, docking
+from pyDocking import builder
+from pyDocking import docking
 
 """
 Docking Routine
