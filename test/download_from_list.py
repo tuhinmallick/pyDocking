@@ -1,4 +1,4 @@
-from deepunion import PubChemDownloader
+from pyDocking import PubChemDownloader
 import sys
 
 if __name__ == "__main__":

@@ -1,10 +1,10 @@
 # Book settings
-title:
-author: World Bank Development Data Group
+title: pyDocking
+author: Tuhin
 logo: docs/images/logo.png
 
 repository:
-    url: https://github.com/worldbank/template
+    url: https://github.com/tuhinmallick/pyDocking
     branch: main
 
 html:
@@ -13,6 +13,6 @@ html:
     use_edit_page_button: true
     use_repository_button: true
     use_issues_button: true
-    baseurl: https://worldbank.github.io/template
+    baseurl: https://tuhinmallick.github.io/pyDocking
 
 only_build_toc_files: true

@@ -1,4 +1,4 @@
-from deepunion import builder
+from pyDocking import builder
 import itertools
 import numpy as np
 from psikit import Psikit

@@ -3,8 +3,8 @@ import subprocess as sp
 import numpy as np
 import mdtraj as mt
 from rdkit import Chem
-from deepunion.region_mutate import coordinatesPDB
-from deepunion import builder
+from pyDocking.region_mutate import coordinatesPDB
+from pyDocking import builder
 import argparse
 
 

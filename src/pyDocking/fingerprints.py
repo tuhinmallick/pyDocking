@@ -36,7 +36,7 @@ def similarity(mol1, mol2, metric="Tanimoto"):
 
     Examples
     --------
-    >>> from deepunion import fingerprints
+    >>> from pyDocking import fingerprints
     >>> fingerprints.similarity("CC(C)OCC", "CCOCC")
     0.666666666666666
 

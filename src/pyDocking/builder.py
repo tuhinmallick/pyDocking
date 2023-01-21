@@ -109,16 +109,16 @@ class CompoundBuilder(object):
     Examples
     --------
     >>> # generate 3D conformation from a SMILE code and save as a pdb file
-    >>> from deepunion import builder
+    >>> from pyDocking import builder
     >>> comp = builder.CompoundBuilder(out_format="pdb", in_format="smile")
     >>> comp.in_format
     'smile'
     >>> comp.load_mol("CCCC")
-    <deepunion.builder.CompoundBuilder object at 0x7f0cd1d909b0>
+    <pyDocking.builder.CompoundBuilder object at 0x7f0cd1d909b0>
     >>> comp.generate_conformer()
-    <deepunion.builder.CompoundBuilder object at 0x7f0cd1d909b0>
+    <pyDocking.builder.CompoundBuilder object at 0x7f0cd1d909b0>
     >>> comp.write_mol("mol_CCCC.pdb")
-    <deepunion.builder.CompoundBuilder object at 0x7f0cd1d909b0>
+    <pyDocking.builder.CompoundBuilder object at 0x7f0cd1d909b0>
     >>> # the molecule has been saved to mol_CCCC.pdb in working directory
     >>> # convert the pdb file into a pdbqt file
     >>> babel_converter("mol_CCCC.pdb", "mol_CCCC.pdbqt")

@@ -3,7 +3,7 @@ from rdkit.Chem.Fingerprints import FingerprintMols
 import pandas as pd
 import numpy as np
 import os, sys
-from deepunion import builder
+from pyDocking import builder
 
 
 def get_top_features(fn, converter):

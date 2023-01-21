@@ -1,5 +1,5 @@
 import mdtraj as mt
-from deepunion.docking import coordinatesPDB
+from pyDocking.docking import coordinatesPDB
 import numpy as np
 from prody import *
 import sys

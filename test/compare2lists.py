@@ -1,4 +1,4 @@
-from deepunion import fingerprints
+from pyDocking import fingerprints
 import sys
 import itertools
 

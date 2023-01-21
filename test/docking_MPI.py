@@ -2,7 +2,7 @@
 
 import sys, os
 from mpi4py import MPI
-from deepunion import docking, builder
+from pyDocking import docking, builder
 
 """
 Docking Routine

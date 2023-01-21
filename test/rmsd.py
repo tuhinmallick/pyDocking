@@ -3,7 +3,7 @@
 import numpy as np
 import mdtraj as mt
 import sys
-from deepunion import region_mutate
+from pyDocking import region_mutate
 
 
 def rmsd(mol1, mol2):

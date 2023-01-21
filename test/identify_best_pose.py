@@ -1,12 +1,12 @@
 #!/usr/bin/env python
 
-from deepunion import rmsd
-from deepunion import babel_converter
+from pyDocking import rmsd
+from pyDocking import babel_converter
 import subprocess as sp
 from glob import glob
 import sys
 import pandas as pd
-from deepunion import region_mutate
+from pyDocking import region_mutate
 import os
 
 def converter_multiple(inp, out, multiple=True):
