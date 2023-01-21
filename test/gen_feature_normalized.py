@@ -74,8 +74,8 @@ class AtomTypeCounts(object):
 
         table, bond = top.to_dataframe()
 
-        self.rec_ele = table['element'][self.receptor_indices]
-        self.lig_ele = table['element'][self.ligand_indices]
+        self.rec_ele = table["element"][self.receptor_indices]
+        self.lig_ele = table["element"][self.ligand_indices]
 
         self.pdb_parsed_ = True
 
@@ -86,12 +86,12 @@ class AtomTypeCounts(object):
         if not self.pdb_parsed_:
             self.parsePDB()
 
-        all_pairs = itertools.product(
-            self.receptor_indices, self.ligand_indices)
+        all_pairs = itertools.product(self.receptor_indices, self.ligand_indices)
 
         if not self.distance_computed_:
             self.distance_matrix_ = mt.compute_distances(
-                self.pdb, atom_pairs=all_pairs)[0]
+                self.pdb, atom_pairs=all_pairs
+            )[0]
 
         self.distance_computed_ = True
 
@@ -107,8 +107,7 @@ class AtomTypeCounts(object):
 def generate_features(complex_fn, lig_code, ncutoffs):
 
     all_elements = ["H", "C", "O", "N", "P", "S", "Br", "Du"]
-    keys = ["_".join(x) for x in list(
-        itertools.product(all_elements, all_elements))]
+    keys = ["_".join(x) for x in list(itertools.product(all_elements, all_elements))]
 
     cplx = AtomTypeCounts(complex_fn, lig_code)
     cplx.parsePDB(rec_sele="protein", lig_sele="resname %s" % lig_code)
@@ -134,8 +133,9 @@ def generate_features(complex_fn, lig_code, ncutoffs):
     for e in new_lig:
         ligand_element_count[e] += 1
 
-    rec_lig_element_combines = ["_".join(x) for x in list(
-        itertools.product(new_rec, new_lig))]
+    rec_lig_element_combines = [
+        "_".join(x) for x in list(itertools.product(new_rec, new_lig))
+    ]
     cplx.distance_pairs()
 
     counts = []
@@ -177,16 +177,15 @@ if __name__ == "__main__":
             sys.exit(0)
 
         with open(sys.argv[1]) as lines:
-            lines = [x for x in lines if (
-                "#" not in x and len(x.split()) >= 2)].copy()
+            lines = [x for x in lines if ("#" not in x and len(x.split()) >= 2)].copy()
             inputs = [x.split()[0] for x in lines]
 
         inputs_list = []
         aver_size = int(len(inputs) / size)
         print(size, aver_size)
-        for i in range(size-1):
-            inputs_list.append(inputs[int(i*aver_size):int((i+1)*aver_size)])
-        inputs_list.append(inputs[(size-1)*aver_size:])
+        for i in range(size - 1):
+            inputs_list.append(inputs[int(i * aver_size) : int((i + 1) * aver_size)])
+        inputs_list.append(inputs[(size - 1) * aver_size :])
 
     else:
         inputs_list = None
@@ -208,14 +207,27 @@ if __name__ == "__main__":
         try:
             r, ele_pairs = generate_features(fn, lig_code, n_cutoffs)
             results.append(r)
-            success.append(1.)
+            success.append(1.0)
             print(rank, fn)
 
         except:
             # r = results[-1]
-            r = ['fn', ] + list([0., ]*3840) + [0.0, ]
+            r = (
+                [
+                    "fn",
+                ]
+                + list(
+                    [
+                        0.0,
+                    ]
+                    * 3840
+                )
+                + [
+                    0.0,
+                ]
+            )
             results.append(r)
-            success.append(0.)
+            success.append(0.0)
             print("Not successful. ", fn)
 
     df = pd.DataFrame(results)
@@ -226,8 +238,8 @@ if __name__ == "__main__":
 
     col_n = []
     for i, n in enumerate(ele_pairs * len(n_cutoffs)):
-        col_n.append(n+"_"+str(i))
+        col_n.append(n + "_" + str(i))
     df.columns = col_n
-    df.to_csv(str(rank)+"_"+out, sep=",", float_format="%.3f", index=True)
+    df.to_csv(str(rank) + "_" + out, sep=",", float_format="%.3f", index=True)
 
     print(rank, "Complete calculations. ")

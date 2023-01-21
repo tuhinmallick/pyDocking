@@ -1,4 +1,3 @@
-
 from pyDocking import builder
 import sys
 import os
@@ -23,14 +22,17 @@ if __name__ == "__main__":
 
             try:
                 # print(sm, i)
-                mol = builder.CompoundBuilder(out_format=out_format,
-                                              in_format="smile", )
+                mol = builder.CompoundBuilder(
+                    out_format=out_format,
+                    in_format="smile",
+                )
 
                 mol.load_mol(sm)
 
                 mol.write_mol("%s.%s" % (n, out_format))
-                builder.babel_converter("%s.%s" % (n, out_format),
-                                        "%s.pdbqt" % n, mode='AddPolarH')
+                builder.babel_converter(
+                    "%s.%s" % (n, out_format), "%s.pdbqt" % n, mode="AddPolarH"
+                )
             except:
                 print("Fail to generate %d.%s file " % (i, out_format))
             i += 1

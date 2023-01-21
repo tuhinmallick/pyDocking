@@ -1,4 +1,3 @@
-
 from rdkit import Chem
 from rdkit import DataStructs
 from rdkit.Chem.Fingerprints import FingerprintMols
@@ -16,8 +15,7 @@ def metric_fingerprints(metric="Tanimoto"):
     if metric in methods.keys():
         return methods[metric]
     else:
-        print("%s metric is not an option. Will use Tanimoto. "
-              % metric)
+        print("%s metric is not an option. Will use Tanimoto. " % metric)
         return methods["Tanimoto"]
 
 
@@ -52,8 +50,6 @@ def similarity(mol1, mol2, metric="Tanimoto"):
     m = metric_fingerprints(metric)
 
     try:
-        return DataStructs.FingerprintSimilarity(fps[0],
-                                                 fps[1],
-                                                 m)
+        return DataStructs.FingerprintSimilarity(fps[0], fps[1], m)
     except:
         return 0.0

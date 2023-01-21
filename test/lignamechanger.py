@@ -11,7 +11,7 @@ def lig_name_change(lig_in, lig_out, lig_code):
     tofile = open(lig_out, "w")
     with open(lig_in) as lines:
         for s in lines:
-            if len(s.split()) and s.split()[0] in ['ATOM', 'HETATM']:
+            if len(s.split()) and s.split()[0] in ["ATOM", "HETATM"]:
                 nl = pio.resNameChanger(s, lig_code)
                 # n2 = pio.chainIDChanger(nl, "Z")
                 tofile.write(nl)

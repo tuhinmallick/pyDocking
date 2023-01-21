@@ -15,7 +15,7 @@ if __name__ == "__main__":
 
     print(compounds)
 
-    tofile = open(output, 'w')
+    tofile = open(output, "w")
 
     smiles = {}
     cids = {}

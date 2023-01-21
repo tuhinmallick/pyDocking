@@ -91,8 +91,8 @@ class AtomTypeCounts(object):
 
         table, bond = top.to_dataframe()
 
-        self.rec_ele = table['element'][self.receptor_indices]
-        self.lig_ele = table['element'][self.ligand_indices]
+        self.rec_ele = table["element"][self.receptor_indices]
+        self.lig_ele = table["element"][self.ligand_indices]
 
         self.pdb_parsed_ = True
 
@@ -110,13 +110,13 @@ class AtomTypeCounts(object):
             self.parsePDB()
 
         # all combinations of the atom indices from the receptor and the ligand
-        all_pairs = itertools.product(
-            self.receptor_indices, self.ligand_indices)
+        all_pairs = itertools.product(self.receptor_indices, self.ligand_indices)
 
         # if distance matrix is not calculated
         if not self.distance_computed_:
             self.distance_matrix_ = mt.compute_distances(
-                self.pdb, atom_pairs=all_pairs)[0]
+                self.pdb, atom_pairs=all_pairs
+            )[0]
 
         self.distance_computed_ = True
 
@@ -145,7 +145,7 @@ def get_elementtype(e):
     all_elements = ["H", "C", "O", "N", "P", "S", "HAX", "DU"]
     if e in all_elements:
         return e
-    elif e in ['Br', 'Cl', 'F']:
+    elif e in ["Br", "Cl", "F"]:
         return "HAX"
     else:
         return "DU"
@@ -153,8 +153,7 @@ def get_elementtype(e):
 
 def generate_features(complex_fn, lig_code, ncutoffs):
 
-    keys = ["_".join(x) for x in list(
-        itertools.product(all_elements, all_elements))]
+    keys = ["_".join(x) for x in list(itertools.product(all_elements, all_elements))]
 
     # parse the pdb file and get the atom element information
     cplx = AtomTypeCounts(complex_fn, lig_code)
@@ -165,8 +164,9 @@ def generate_features(complex_fn, lig_code, ncutoffs):
     new_rec = list(map(get_elementtype, cplx.rec_ele))
 
     # the element-type combinations for all atom-atom pairs
-    rec_lig_element_combines = ["_".join(x) for x in list(
-        itertools.product(new_rec, new_lig))]
+    rec_lig_element_combines = [
+        "_".join(x) for x in list(itertools.product(new_rec, new_lig))
+    ]
     cplx.distance_pairs()
 
     counts = []
@@ -225,26 +225,38 @@ if __name__ == "__main__":
     """
 
     parser = argparse.ArgumentParser(
-        description=d, formatter_class=RawDescriptionHelpFormatter)
-    parser.add_argument("-inp", type=str, default="input.dat",
-                        help="Input. The input file containg the file path of each \n"
-                             "of the protein-ligand complexes files (in pdb format.)\n"
-                             "There should be only 1 column, each row or line containing\n"
-                             "the input file path, relative or absolute path.")
-    parser.add_argument("-out", type=str, default="output.csv",
-                        help="Output. Default is output.csv \n"
-                             "The output file name containing the features, each sample\n"
-                             "per row. ")
-    parser.add_argument("-lig", type=str, default="LIG",
-                        help="Input, optional. Default is LIG. \n"
-                             "The ligand molecule residue name (code, 3 characters) in the \n"
-                             "complex pdb file. ")
+        description=d, formatter_class=RawDescriptionHelpFormatter
+    )
+    parser.add_argument(
+        "-inp",
+        type=str,
+        default="input.dat",
+        help="Input. The input file containg the file path of each \n"
+        "of the protein-ligand complexes files (in pdb format.)\n"
+        "There should be only 1 column, each row or line containing\n"
+        "the input file path, relative or absolute path.",
+    )
+    parser.add_argument(
+        "-out",
+        type=str,
+        default="output.csv",
+        help="Output. Default is output.csv \n"
+        "The output file name containing the features, each sample\n"
+        "per row. ",
+    )
+    parser.add_argument(
+        "-lig",
+        type=str,
+        default="LIG",
+        help="Input, optional. Default is LIG. \n"
+        "The ligand molecule residue name (code, 3 characters) in the \n"
+        "complex pdb file. ",
+    )
 
     args = parser.parse_args()
 
     all_elements = ["H", "C", "O", "N", "P", "S", "HAX", "DU"]
-    keys = ["_".join(x) for x in list(
-        itertools.product(all_elements, all_elements))]
+    keys = ["_".join(x) for x in list(itertools.product(all_elements, all_elements))]
 
     if rank == 0:
         if len(sys.argv) < 3:
@@ -253,17 +265,15 @@ if __name__ == "__main__":
 
         # spreading the calculating list to different MPI ranks
         with open(args.inp) as lines:
-            lines = [x for x in lines if (
-                "#" not in x and len(x.split()) >= 1)].copy()
+            lines = [x for x in lines if ("#" not in x and len(x.split()) >= 1)].copy()
             inputs = [x.split()[0] for x in lines]
 
         inputs_list = []
         aver_size = int(len(inputs) / size)
         print(size, aver_size)
         for i in range(size - 1):
-            inputs_list.append(
-                inputs[int(i * aver_size):int((i + 1) * aver_size)])
-        inputs_list.append(inputs[(size - 1) * aver_size:])
+            inputs_list.append(inputs[int(i * aver_size) : int((i + 1) * aver_size)])
+        inputs_list.append(inputs[(size - 1) * aver_size :])
 
     else:
         inputs_list = None
@@ -292,7 +302,13 @@ if __name__ == "__main__":
 
         except:
             # r = results[-1]
-            r = list([0., ] * 64 * n_shells)
+            r = list(
+                [
+                    0.0,
+                ]
+                * 64
+                * n_shells
+            )
             results.append(r)
             # success.append(0.)
             print("Not successful. ", fn)
@@ -308,7 +324,6 @@ if __name__ == "__main__":
     for i, n in enumerate(keys * len(n_cutoffs)):
         col_n.append(n + "_" + str(i))
     df.columns = col_n
-    df.to_csv("rank%d_" % rank + args.out, sep=",",
-              float_format="%.1f", index=True)
+    df.to_csv("rank%d_" % rank + args.out, sep=",", float_format="%.1f", index=True)
 
     print(rank, "Complete calculations. ")

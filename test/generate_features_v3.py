@@ -64,7 +64,7 @@ class ProteinParser(object):
         table, bond = top.to_dataframe()
 
         # fetch the element type of each one of the protein atom
-        self.rec_ele = table['element'][self.receptor_indices].values
+        self.rec_ele = table["element"][self.receptor_indices].values
         # fetch the coordinates of each one of the protein atom
         self.get_coordinates()
 
@@ -94,7 +94,7 @@ class LigandParser(object):
     def __init__(self, ligand_fn):
 
         self.lig = PandasMol2().read_mol2(ligand_fn)
-     #   print(self.lig.df.head())
+        #   print(self.lig.df.head())
         self.lig_data = self.lig.df
 
         self.lig_ele = None
@@ -104,16 +104,16 @@ class LigandParser(object):
     def get_element(self):
 
         ele = list(self.lig_data["atom_type"].values)
-     #   print(ele)
+        #   print(ele)
 
         self.lig_ele = list(map(get_ligand_elementtype, ele))
 
-    #    print(self.lig_ele)
+        #    print(self.lig_ele)
         return self
 
     def get_coordinates(self):
-        self.coordinates = self.lig_data[['x', 'y', 'z']].values
-#        print(self.coordinates)
+        self.coordinates = self.lig_data[["x", "y", "z"]].values
+        #        print(self.coordinates)
         return self
 
     def parseMol2(self):
@@ -151,7 +151,7 @@ def atomic_distance(dat):
 
 def distance_pairs(coord_pro, coord_lig):
     pairs = list(itertools.product(coord_pro, coord_lig))
- #   print(pairs[:10])
+    #   print(pairs[:10])
     distances = map(atomic_distance, pairs)
 
     return list(distances)
@@ -162,7 +162,7 @@ def distance2counts(megadata):
     d = np.array(megadata[0])
     c = megadata[1]
 
-    return np.sum((np.array(d) <= c)*1.0)
+    return np.sum((np.array(d) <= c) * 1.0)
 
 
 def generate_features(pro_fn, lig_fn, ncutoffs):
@@ -172,37 +172,38 @@ def generate_features(pro_fn, lig_fn, ncutoffs):
     protein_data = pd.DataFrame([])
     protein_data["element"] = pro.rec_ele
     # print(pro.rec_ele)
-    for i, d in enumerate(['x', 'y', 'z']):
+    for i, d in enumerate(["x", "y", "z"]):
         # coordinates by mdtraj in unit nanometer
         protein_data[d] = pro.coordinates[:, i] * 10.0
 
     lig = LigandParser(lig_fn)
     lig.parseMol2()
     ligand_data = pd.DataFrame()
-    ligand_data['element'] = lig.lig_ele
-    for i, d in enumerate(['x', 'y', 'z']):
+    ligand_data["element"] = lig.lig_ele
+    for i, d in enumerate(["x", "y", "z"]):
         ligand_data[d] = lig.coordinates[:, i]
 
     # print("LIGAND COORD GENERATE")
-    elements_ligand = ["H", "C", "CAR", "O",
-                       "N", "S", "P", "DU", "Br", "Cl", "F"]
+    elements_ligand = ["H", "C", "CAR", "O", "N", "S", "P", "DU", "Br", "Cl", "F"]
     elements_protein = ["H", "C", "O", "N", "S", "DU"]
 
     onionnet_counts = pd.DataFrame()
 
     for el in elements_ligand:
         for ep in elements_protein:
-            protein_xyz = protein_data[protein_data['element'] == ep][[
-                'x', 'y', 'z']].values
-            ligand_xyz = ligand_data[ligand_data['element'] == el][[
-                'x', 'y', 'z']].values
+            protein_xyz = protein_data[protein_data["element"] == ep][
+                ["x", "y", "z"]
+            ].values
+            ligand_xyz = ligand_data[ligand_data["element"] == el][
+                ["x", "y", "z"]
+            ].values
 
-     #       print(ligand_xyz[:10], protein_xyz[:10])
+            #       print(ligand_xyz[:10], protein_xyz[:10])
             # distances = distance_pairs(protein_xyz, ligand_xyz)
             # print(distances[:10])
             counts = np.zeros(len(n_cutoffs))
 
-     #       print(el, ep, "GET ELE TYPE SPEC DISTANCES")
+            #       print(el, ep, "GET ELE TYPE SPEC DISTANCES")
             if len(protein_xyz) and len(ligand_xyz):
                 # print(protein_xyz.shape, ligand_xyz.shape)
                 distances = distance_pairs(protein_xyz, ligand_xyz)
@@ -211,7 +212,7 @@ def generate_features(pro_fn, lig_fn, ncutoffs):
                 for i, c in enumerate(n_cutoffs):
                     single_count = distance2counts((distances, c))
                     if i > 0:
-                        single_count = single_count - counts[i-1]
+                        single_count = single_count - counts[i - 1]
                     counts[i] = single_count
 
             feature_id = "%s_%s" % (el, ep)
@@ -244,20 +245,33 @@ if __name__ == "__main__":
     """
 
     parser = argparse.ArgumentParser(
-        description=d, formatter_class=RawDescriptionHelpFormatter)
-    parser.add_argument("-inp", type=str, default="input.dat",
-                        help="Input. The input file containg the file path of each \n"
-                             "of the protein-ligand complexes files (in pdb format.)\n"
-                             "There should be only 1 column, each row or line containing\n"
-                             "the input file path, relative or absolute path.")
-    parser.add_argument("-out", type=str, default="output.csv",
-                        help="Output. Default is output.csv \n"
-                             "The output file name containing the features, each sample\n"
-                             "per row. ")
-    parser.add_argument("-lig", type=str, default="LIG",
-                        help="Input, optional. Default is LIG. \n"
-                             "The ligand molecule residue name (code, 3 characters) in the \n"
-                             "complex pdb file. ")
+        description=d, formatter_class=RawDescriptionHelpFormatter
+    )
+    parser.add_argument(
+        "-inp",
+        type=str,
+        default="input.dat",
+        help="Input. The input file containg the file path of each \n"
+        "of the protein-ligand complexes files (in pdb format.)\n"
+        "There should be only 1 column, each row or line containing\n"
+        "the input file path, relative or absolute path.",
+    )
+    parser.add_argument(
+        "-out",
+        type=str,
+        default="output.csv",
+        help="Output. Default is output.csv \n"
+        "The output file name containing the features, each sample\n"
+        "per row. ",
+    )
+    parser.add_argument(
+        "-lig",
+        type=str,
+        default="LIG",
+        help="Input, optional. Default is LIG. \n"
+        "The ligand molecule residue name (code, 3 characters) in the \n"
+        "complex pdb file. ",
+    )
     # parser.add_argument("-np", type=str, )
 
     print("Start Now ... ")
@@ -274,17 +288,15 @@ if __name__ == "__main__":
 
         # spreading the calculating list to different MPI ranks
         with open(args.inp) as lines:
-            lines = [x for x in lines if (
-                "#" not in x and len(x.split()) >= 1)].copy()
+            lines = [x for x in lines if ("#" not in x and len(x.split()) >= 1)].copy()
             inputs = [x.split() for x in lines]
 
         inputs_list = []
         aver_size = int(len(inputs) / size)
         print(size, aver_size)
         for i in range(size - 1):
-            inputs_list.append(
-                inputs[int(i * aver_size):int((i + 1) * aver_size)])
-        inputs_list.append(inputs[(size - 1) * aver_size:])
+            inputs_list.append(inputs[int(i * aver_size) : int((i + 1) * aver_size)])
+        inputs_list.append(inputs[(size - 1) * aver_size :])
 
     else:
         inputs_list = None
@@ -305,21 +317,21 @@ if __name__ == "__main__":
         pro_fn = p + "/%s_protein.pdb" % p
         lig_fn = p + "/%s_ligand.mol2" % p
 
-#        try:
+        #        try:
         if True:
             # the main function for featurization ...
             r = generate_features(pro_fn, lig_fn, n_cutoffs)
- #           print(r.sum(axis=0))
+            #           print(r.sum(axis=0))
             keys = list(r.columns)
             results.append(r.values.ravel())
-#            print(rank, pro_fn, lig_fn)
+    #            print(rank, pro_fn, lig_fn)
 
-        # except:
-            # r = results[-1]
-         #   r = list([0., ] * 66 * n_shells)
-          #  results.append(r)
-            # success.append(0.)
-            # print("Not successful. ", pro_fn, lig_fn)
+    # except:
+    # r = results[-1]
+    #   r = list([0., ] * 66 * n_shells)
+    #  results.append(r)
+    # success.append(0.)
+    # print("Not successful. ", pro_fn, lig_fn)
 
     # saving features to a file now ...
     df = pd.DataFrame(results)
@@ -332,7 +344,6 @@ if __name__ == "__main__":
     for i, n in enumerate(keys * len(n_cutoffs)):
         col_n.append(n + "_" + str(i))
     df.columns = col_n
-    df.to_csv("rank%d_" % rank + args.out, sep=",",
-              float_format="%.1f", index=True)
+    df.to_csv("rank%d_" % rank + args.out, sep=",", float_format="%.1f", index=True)
 
     print(rank, "Complete calculations. ")

@@ -33,7 +33,7 @@ class rewritePDB(object):
         atomseq = int(atomStartNdx)
         chainname = chain
 
-        newfile = open(output, 'w')
+        newfile = open(output, "w")
         resseq_list = []
 
         try:
@@ -64,7 +64,7 @@ class rewritePDB(object):
         return 1
 
     def resSeqChanger(self, inline, resseq):
-        resseqstring = " "*(4 - len(str(resseq)))+str(resseq)
+        resseqstring = " " * (4 - len(str(resseq))) + str(resseq)
         newline = inline[:22] + resseqstring + inline[26:]
         return newline
 
@@ -126,7 +126,7 @@ class rewritePDB(object):
 
         """
 
-        tofile = open("temp.pdb", 'w')
+        tofile = open("temp.pdb", "w")
 
         crd_list = {}
 
@@ -147,12 +147,15 @@ class rewritePDB(object):
         tofile.close()
 
         if ln_source != ln_target:
-            print("Error: Number of lines in source and target pdb files are not equal. (%s %s)" % (
-                input, atomseq_pdb))
+            print(
+                "Error: Number of lines in source and target pdb files are not equal. (%s %s)"
+                % (input, atomseq_pdb)
+            )
 
         # re-sequence the atom index
-        self.pdbRewrite(input="temp.pdb", atomStartNdx=1,
-                        chain=chain, output=out_pdb, resStartNdx=1)
+        self.pdbRewrite(
+            input="temp.pdb", atomStartNdx=1, chain=chain, output=out_pdb, resStartNdx=1
+        )
 
         os.remove("temp.pdb")
 
@@ -185,9 +188,11 @@ class coordinatesPDB(object):
             head = line[:30]
             tail = line[54:]
 
-            newline = head + \
-                "{0:8.3f}{1:8.3f}{2:8.3f}".format(
-                    newxyz[0], newxyz[1], newxyz[2]) + tail
+            newline = (
+                head
+                + "{0:8.3f}{1:8.3f}{2:8.3f}".format(newxyz[0], newxyz[1], newxyz[2])
+                + tail
+            )
 
         else:
             print("WARNING: %s is not a coordination line" % line)
@@ -210,12 +215,26 @@ class coordinatesPDB(object):
             lines.
         """
 
-        atomCrd = list(map(lambda x: [float(x[30:38].strip()), float(x[38:46].strip()),
-                                      float(x[46:54].strip())], lines))
+        atomCrd = list(
+            map(
+                lambda x: [
+                    float(x[30:38].strip()),
+                    float(x[38:46].strip()),
+                    float(x[46:54].strip()),
+                ],
+                lines,
+            )
+        )
 
         return np.array(atomCrd)
 
-    def getAtomCrdByNdx(self, singleFramePDB, atomNdx=['1',]):
+    def getAtomCrdByNdx(
+        self,
+        singleFramePDB,
+        atomNdx=[
+            "1",
+        ],
+    ):
         """Input a pdb file and the atom index, return the crd of the atoms
 
         Parameters
@@ -235,13 +254,19 @@ class coordinatesPDB(object):
 
         atomCrd = []
         with open(singleFramePDB) as lines:
-            lines = [s for s in lines if len(s) > 4 and
-                     s[:4] in ["ATOM", "HETA"] and
-                     s.split()[1] in atomNdx]
-            atomCrd = map(lambda x: [float(x[30:38].strip()),
-                                     float(x[38:46].strip()),
-                                     float(x[46:54].strip())],
-                          lines)
+            lines = [
+                s
+                for s in lines
+                if len(s) > 4 and s[:4] in ["ATOM", "HETA"] and s.split()[1] in atomNdx
+            ]
+            atomCrd = map(
+                lambda x: [
+                    float(x[30:38].strip()),
+                    float(x[38:46].strip()),
+                    float(x[46:54].strip()),
+                ],
+                lines,
+            )
         return list(atomCrd)
 
 
@@ -261,8 +286,7 @@ def void_area(centriod, diameter):
 
     area = []
     for i in range(len(centriod)):
-        area.append([centriod[i] - 0.5 * diameter,
-                    centriod[i] + 0.5 * diameter])
+        area.append([centriod[i] - 0.5 * diameter, centriod[i] + 0.5 * diameter])
 
     return area
 
@@ -285,9 +309,9 @@ def sliding_box_centers(center, step_size=0.3, nstep=3, along_xyz=[True, True, T
 
     centriods = []
 
-    for i in range(-1*nstep, nstep+1):
-        for j in range(-1*nstep, nstep+1):
-            for k in range(-1*nstep, nstep+1):
+    for i in range(-1 * nstep, nstep + 1):
+        for j in range(-1 * nstep, nstep + 1):
+            for k in range(-1 * nstep, nstep + 1):
                 c = center.copy()
                 for m in range(3):
                     c[m] = center[m] + step_size * [i, j, k][m]
@@ -306,28 +330,33 @@ def atoms_in_boxs(fn, atom_ndx, box_center, box_diameter):
     return zip(atom_ndx, in_void_area)
 
 
-def get_atom_ndx(fn, atom_names=['CA'], lig_code="LIG"):
+def get_atom_ndx(fn, atom_names=["CA"], lig_code="LIG"):
     with open(fn) as lines:
         # only consider protein atoms
-        lines = [x for x in lines if (
-            "ATOM" in x and lig_code not in x and x.split()[2] in atom_names)]
+        lines = [
+            x
+            for x in lines
+            if ("ATOM" in x and lig_code not in x and x.split()[2] in atom_names)
+        ]
         atom_ndx = [x.split()[1] for x in lines if len(x.split()) > 2]
 
     return atom_ndx
 
 
-def get_resid(fn, atom_names=['CA'], lig_code="LIG"):
+def get_resid(fn, atom_names=["CA"], lig_code="LIG"):
     with open(fn) as lines:
         # only consider protein atoms
-        lines = [x for x in lines if (
-            "ATOM" in x and lig_code not in x and x.split()[2] in atom_names)]
-        resid = [x[22:26].strip()+"_"+x[21]
-                 for x in lines if len(x.split()) > 2]
+        lines = [
+            x
+            for x in lines
+            if ("ATOM" in x and lig_code not in x and x.split()[2] in atom_names)
+        ]
+        resid = [x[22:26].strip() + "_" + x[21] for x in lines if len(x.split()) > 2]
 
     return resid
 
 
-def resid_in_box(box_center, diameter, fn, atom_names=['CA'], lig_code="LIG"):
+def resid_in_box(box_center, diameter, fn, atom_names=["CA"], lig_code="LIG"):
 
     atom_ndx = get_atom_ndx(fn, atom_names, lig_code)
     resid = get_resid(fn, atom_names, lig_code)
@@ -345,11 +374,18 @@ def resid_in_box(box_center, diameter, fn, atom_names=['CA'], lig_code="LIG"):
     return selected_resid
 
 
-def trim_sidechain(fn, out_fn, resid_list, atoms_to_keep=['CA', 'N', 'O', 'C'], mutate_to="ALA", chains="A"):
+def trim_sidechain(
+    fn,
+    out_fn,
+    resid_list,
+    atoms_to_keep=["CA", "N", "O", "C"],
+    mutate_to="ALA",
+    chains="A",
+):
 
     rpdb = rewritePDB(fn)
 
-    tofile = open(out_fn, 'w')
+    tofile = open(out_fn, "w")
 
     with open(fn) as lines:
         for s in lines:
@@ -368,18 +404,25 @@ def trim_sidechain(fn, out_fn, resid_list, atoms_to_keep=['CA', 'N', 'O', 'C'], 
 def origin_to_zero(fn, out_fn, origin):
 
     with open(fn) as lines:
-        lines = [x for x in lines if (x.split()[0] in ["ATOM", "HETATM"]
-                                      and len(x.split()) > 3)]
+        lines = [
+            x
+            for x in lines
+            if (x.split()[0] in ["ATOM", "HETATM"] and len(x.split()) > 3)
+        ]
         plines = lines.copy()
 
     vector = -1.0 * np.array(origin)
 
     pio = coordinatesPDB()
 
-    tofile = open(out_fn, 'w')
+    tofile = open(out_fn, "w")
 
     for s in plines:
-        crds = pio.getAtomCrdFromLines([s, ])[0]
+        crds = pio.getAtomCrdFromLines(
+            [
+                s,
+            ]
+        )[0]
         new_crds = np.array(crds) + vector
         nl = pio.replaceCrdInPdbLine(s, new_crds)
 
@@ -394,9 +437,12 @@ def run_tleap_tofix(in_pdb, out_pdb):
     pdb = loadpdb %s
     check pdb
     savepdb pdb %s
-    """ % (in_pdb, out_pdb)
+    """ % (
+        in_pdb,
+        out_pdb,
+    )
 
-    tofile = open("LeapIn.in", 'w')
+    tofile = open("LeapIn.in", "w")
     tofile.write(leapin)
 
     job = sp.Popen("tleap -f LeapIn.in", shell=True)
@@ -424,7 +470,7 @@ def main():
 
     # set a center point here, give the x, y, z coordinate
     # of the center point, in unit nanometer
-    center = [29.582,  -3.843,  26.456]
+    center = [29.582, -3.843, 26.456]
     # the size of the void box, you may need to modify it. The paper use
     # 10.0 nm
     diameter = 20.0
@@ -437,13 +483,13 @@ def main():
     # for x, y, z direction
     dimensions = ["x", "y", "z"]
 
-    centroids = sliding_box_centers(center, step_size,
-                                    nsteps_to_slide,
-                                    [True, True, True])
+    centroids = sliding_box_centers(
+        center, step_size, nsteps_to_slide, [True, True, True]
+    )
     # print(centroids)
     for i, c in enumerate(centroids):
         print(c, i)
-        resids = resid_in_box(c, diameter, in_pdb, 'CA', 'LIG')
+        resids = resid_in_box(c, diameter, in_pdb, "CA", "LIG")
         # print(resids)
         tofile = trim_sidechain("temp.pdb", "t1.pdb", resids, chains=chains)
         tofile.close()
@@ -451,8 +497,10 @@ def main():
         # run_tleap_tofix("t1.pdb", "t2.pdb")
         tofile = open("out_%d.pdb" % i, "w")
         with open("t1.pdb") as lines:
-            tofile.write("CRYST1  %7.3f  %7.3f  %7.3f  90.00  90.00  90.00               1 \n" %
-                         (diameter, diameter, diameter))
+            tofile.write(
+                "CRYST1  %7.3f  %7.3f  %7.3f  90.00  90.00  90.00               1 \n"
+                % (diameter, diameter, diameter)
+            )
             for s in lines:
                 tofile.write(s)
             tofile.close()

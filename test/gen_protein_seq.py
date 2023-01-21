@@ -46,5 +46,5 @@ if __name__ == "__main__":
         tofile.write(l)
 
     with open(s, "w") as tofile:
-        l = lig+","+lig_smiles(lig)
+        l = lig + "," + lig_smiles(lig)
         tofile.write(l)

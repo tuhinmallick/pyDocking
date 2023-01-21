@@ -8,6 +8,7 @@
 
 import torch
 import torch.nn as nn
+
 # import torchvision.datasets as dsets
 # import torchvision.transforms as transforms
 from torch.autograd import Variable
@@ -16,8 +17,9 @@ from torch.autograd import Variable
 
 
 def conv4x4(in_channels, out_channels, stride=1):
-    return nn.Conv2d(in_channels, out_channels, kernel_size=4,
-                     stride=stride, padding=1, bias=False)
+    return nn.Conv2d(
+        in_channels, out_channels, kernel_size=4, stride=stride, padding=1, bias=False
+    )
 
 
 # Residual Block
@@ -48,6 +50,7 @@ class ResidualBlock(nn.Module):
 
         return out
 
+
 # ResNet Module
 
 
@@ -69,10 +72,10 @@ class ResNet(nn.Module):
         if (stride != 1) or (self.in_channels != out_channels):
             downsample = nn.Sequential(
                 conv4x4(self.in_channels, out_channels, stride=stride),
-                nn.BatchNorm2d(out_channels))
+                nn.BatchNorm2d(out_channels),
+            )
         layers = []
-        layers.append(
-            block(self.in_channels, out_channels, stride, downsample))
+        layers.append(block(self.in_channels, out_channels, stride, downsample))
         self.in_channels = out_channels
         for i in range(1, blocks):
             layers.append(block(out_channels, out_channels))

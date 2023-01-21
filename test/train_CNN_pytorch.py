@@ -57,32 +57,29 @@ class SimpleCNN(nn.Module):
         self.padding = 0
 
         self.conv1 = nn.Conv2d(
-            1, 60, kernel_size=self.kernel, stride=self.stride, padding=self.padding)
+            1, 60, kernel_size=self.kernel, stride=self.stride, padding=self.padding
+        )
         self.channel = 60
-        self.w = int((self.w - self.kernel + 2 *
-                     self.padding) / self.stride + 1)
-        self.h = int((self.h - self.kernel + 2 *
-                     self.padding) / self.stride + 1)
+        self.w = int((self.w - self.kernel + 2 * self.padding) / self.stride + 1)
+        self.h = int((self.h - self.kernel + 2 * self.padding) / self.stride + 1)
 
         self.relu1 = nn.ReLU(inplace=True)
 
         self.conv2 = nn.Conv2d(
-            60, 30, kernel_size=self.kernel, stride=self.stride, padding=self.padding)
+            60, 30, kernel_size=self.kernel, stride=self.stride, padding=self.padding
+        )
         self.channel = 30
-        self.w = int((self.w - self.kernel + 2 *
-                     self.padding) / self.stride + 1)
-        self.h = int((self.h - self.kernel + 2 *
-                     self.padding) / self.stride + 1)
+        self.w = int((self.w - self.kernel + 2 * self.padding) / self.stride + 1)
+        self.h = int((self.h - self.kernel + 2 * self.padding) / self.stride + 1)
 
         self.relu2 = nn.ReLU(inplace=True)
 
         self.conv3 = nn.Conv2d(
-            30, 15, kernel_size=self.kernel, stride=self.stride, padding=self.padding)
+            30, 15, kernel_size=self.kernel, stride=self.stride, padding=self.padding
+        )
         self.channel = 15
-        self.w = int((self.w - self.kernel + 2 *
-                     self.padding) / self.stride + 1)
-        self.h = int((self.h - self.kernel + 2 *
-                     self.padding) / self.stride + 1)
+        self.w = int((self.w - self.kernel + 2 * self.padding) / self.stride + 1)
+        self.h = int((self.h - self.kernel + 2 * self.padding) / self.stride + 1)
 
         self.relu3 = nn.ReLU(inplace=True)
 
@@ -121,7 +118,9 @@ def pcc(output, target):
     vx = x - torch.mean(x)
     vy = y - torch.mean(y)
 
-    return torch.sum(vx * vy) / (torch.sqrt(torch.sum(vx ** 2)) * torch.sqrt(torch.sum(vy ** 2)))
+    return torch.sum(vx * vy) / (
+        torch.sqrt(torch.sum(vx**2)) * torch.sqrt(torch.sum(vy**2))
+    )
 
 
 def PCC(output, target):
@@ -180,19 +179,23 @@ def rmse_pcc_loss(output, target):
     vx = x - torch.mean(x)
     vy = y - torch.mean(y)
 
-    pcc = torch.sum(vx * vy) / (torch.sqrt(torch.sum(vx ** 2))
-                                * torch.sqrt(torch.sum(vy ** 2)))
+    pcc = torch.sum(vx * vy) / (
+        torch.sqrt(torch.sum(vx**2)) * torch.sqrt(torch.sum(vy**2))
+    )
 
-    return alpha * rmse + (1-alpha) * (1 - pcc)
+    return alpha * rmse + (1 - alpha) * (1 - pcc)
 
 
 def debug_memory():
     import collections
     import gc
     import torch
-    tensors = collections.Counter((str(o.device), o.dtype, tuple(o.shape))
-                                  for o in gc.get_objects()
-                                  if torch.is_tensor(o))
+
+    tensors = collections.Counter(
+        (str(o.device), o.dtype, tuple(o.shape))
+        for o in gc.get_objects()
+        if torch.is_tensor(o)
+    )
     # for line in sorted(tensors.items()):
     #    print('{}\t{}'.format(*line))
     # print("Clean items number ", len(tensors.items()))
@@ -208,38 +211,107 @@ if __name__ == "__main__":
     """
 
     parser = argparse.ArgumentParser(
-        description=d, formatter_class=RawTextHelpFormatter)
-    parser.add_argument("-fn1", type=str, default=["features_1.csv", ], nargs="+",
-                        help="Input. The docked cplx feature set.")
-    parser.add_argument("-fn2", type=str, default=["features_2.csv", ], nargs="+",
-                        help="Input. The PDBBind feature set.")
-    parser.add_argument("-history", type=str, default="history.csv",
-                        help="Output. The history information. ")
-    parser.add_argument("-pKa_col", type=str, nargs="+", default=["pKa_relu", "pKa_true"],
-                        help="Input. The pKa colname as the target. ")
-    parser.add_argument("-scaler", type=str, default="StandardScaler.model",
-                        help="Output. The standard scaler file to save. ")
-    parser.add_argument("-model", type=str, default="DNN_Model.h5",
-                        help="Output. The trained DNN model file to save. ")
-    parser.add_argument("-log", type=str, default="logger.csv",
-                        help="Output. The logger file name to save. ")
-    parser.add_argument("-out", type=str, default="predicted_pKa.csv",
-                        help="Output. The predicted pKa values file name to save. ")
-    parser.add_argument("-lr_init", type=float, default=0.001,
-                        help="Input. Default is 0.001. The initial learning rate. ")
-    parser.add_argument("-epochs", type=int, default=100,
-                        help="Input. Default is 100. The number of epochs to train. ")
-    parser.add_argument("-train", type=int, default=1,
-                        help="Input. Default is 1. Whether train or predict. \n"
-                             "1: train, 0: predict. ")
-    parser.add_argument("-n_features", default=3840, type=int,
-                        help="Input. Default is 3840. Number of features in the input dataset.")
-    parser.add_argument("-reshape", type=int, default=[64, 60, 1], nargs="+",
-                        help="Input. Default is 64 60 1. Reshape the dataset. ")
-    parser.add_argument("-remove_H", type=int, default=0,
-                        help="Input, optional. Default is 0. Whether remove hydrogens. ")
-    parser.add_argument("-index_col", type=int, default=1,
-                        help="Input. Default is 1. Whether include the index col. ")
+        description=d, formatter_class=RawTextHelpFormatter
+    )
+    parser.add_argument(
+        "-fn1",
+        type=str,
+        default=[
+            "features_1.csv",
+        ],
+        nargs="+",
+        help="Input. The docked cplx feature set.",
+    )
+    parser.add_argument(
+        "-fn2",
+        type=str,
+        default=[
+            "features_2.csv",
+        ],
+        nargs="+",
+        help="Input. The PDBBind feature set.",
+    )
+    parser.add_argument(
+        "-history",
+        type=str,
+        default="history.csv",
+        help="Output. The history information. ",
+    )
+    parser.add_argument(
+        "-pKa_col",
+        type=str,
+        nargs="+",
+        default=["pKa_relu", "pKa_true"],
+        help="Input. The pKa colname as the target. ",
+    )
+    parser.add_argument(
+        "-scaler",
+        type=str,
+        default="StandardScaler.model",
+        help="Output. The standard scaler file to save. ",
+    )
+    parser.add_argument(
+        "-model",
+        type=str,
+        default="DNN_Model.h5",
+        help="Output. The trained DNN model file to save. ",
+    )
+    parser.add_argument(
+        "-log",
+        type=str,
+        default="logger.csv",
+        help="Output. The logger file name to save. ",
+    )
+    parser.add_argument(
+        "-out",
+        type=str,
+        default="predicted_pKa.csv",
+        help="Output. The predicted pKa values file name to save. ",
+    )
+    parser.add_argument(
+        "-lr_init",
+        type=float,
+        default=0.001,
+        help="Input. Default is 0.001. The initial learning rate. ",
+    )
+    parser.add_argument(
+        "-epochs",
+        type=int,
+        default=100,
+        help="Input. Default is 100. The number of epochs to train. ",
+    )
+    parser.add_argument(
+        "-train",
+        type=int,
+        default=1,
+        help="Input. Default is 1. Whether train or predict. \n"
+        "1: train, 0: predict. ",
+    )
+    parser.add_argument(
+        "-n_features",
+        default=3840,
+        type=int,
+        help="Input. Default is 3840. Number of features in the input dataset.",
+    )
+    parser.add_argument(
+        "-reshape",
+        type=int,
+        default=[64, 60, 1],
+        nargs="+",
+        help="Input. Default is 64 60 1. Reshape the dataset. ",
+    )
+    parser.add_argument(
+        "-remove_H",
+        type=int,
+        default=0,
+        help="Input, optional. Default is 0. Whether remove hydrogens. ",
+    )
+    parser.add_argument(
+        "-index_col",
+        type=int,
+        default=1,
+        help="Input. Default is 1. Whether include the index col. ",
+    )
 
     args = parser.parse_args()
 
@@ -266,12 +338,11 @@ if __name__ == "__main__":
                 if args.pKa_col[0] in df.columns.values:
                     y = y + list(df[args.pKa_col[0]].values)
                 else:
-                    print("No such column %s in input file. " %
-                          args.pKa_col[0])
+                    print("No such column %s in input file. " % args.pKa_col[0])
             if i == 0:
-                X = df.values[:, :args.n_features]
+                X = df.values[:, : args.n_features]
             else:
-                X = np.concatenate((X, df.values[:, :args.n_features]), axis=0)
+                X = np.concatenate((X, df.values[:, : args.n_features]), axis=0)
 
             if args.pKa_col[0] in df.columns.values:
                 ytrue = ytrue + list(df[args.pKa_col[0]].values)
@@ -284,7 +355,7 @@ if __name__ == "__main__":
             if args.remove_H:
                 df = remove_all_hydrogens(df, args.n_features)
 
-            X = np.concatenate((X, df.values[:, :args.n_features]), axis=0)
+            X = np.concatenate((X, df.values[:, : args.n_features]), axis=0)
             if args.train:
                 y = y + list(df[args.pKa_col[-1]].values)
 
@@ -305,10 +376,11 @@ if __name__ == "__main__":
         Xs = Xs.reshape(-1, args.reshape[0], args.reshape[1], args.reshape[2])
 
         Xtrain, Xtest, ytrain, ytest = model_selection.train_test_split(
-            Xs, y, test_size=0.2)
+            Xs, y, test_size=0.2
+        )
         print("Train and test split")
 
-        device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+        device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
         model = SimpleCNN(args.reshape)
         # if torch.cuda.device_count() > 1:
@@ -318,23 +390,24 @@ if __name__ == "__main__":
 
         model = model.to(device)
         loss_func = nn.MSELoss()
-        optimizer = optim.SGD(model.parameters(),
-                              lr=args.lr_init, momentum=0.9)
+        optimizer = optim.SGD(model.parameters(), lr=args.lr_init, momentum=0.9)
 
         print(model.eval())
 
         XTrain = torch.from_numpy(Xtrain).type(torch.FloatTensor)
-        YTrain = torch.from_numpy(np.array(ytrain).reshape(
-            (-1, 1))).type(torch.FloatTensor)
+        YTrain = torch.from_numpy(np.array(ytrain).reshape((-1, 1))).type(
+            torch.FloatTensor
+        )
 
         # Pytorch train and test sets
         train = torch.utils.data.TensorDataset(XTrain, YTrain)
         # test = torch.utils.data.TensorDataset(XTest, YTest)
 
-        train_loader = torch.utils.data.DataLoader(
-            train, batch_size=32, shuffle=False)
+        train_loader = torch.utils.data.DataLoader(train, batch_size=32, shuffle=False)
 
-        min_val = [[0.0, 999.9],]
+        min_val = [
+            [0.0, 999.9],
+        ]
         delta = 0.0001
         patience = 40
         history = []
@@ -345,10 +418,9 @@ if __name__ == "__main__":
             for i, data in enumerate(train_loader):
                 # get the inputs
                 inputs, labels = data
-                X, Y = Variable(torch.FloatTensor(inputs),
-                                requires_grad=False).to(device), \
-                    Variable(torch.FloatTensor(labels),
-                             requires_grad=False).to(device)
+                X, Y = Variable(torch.FloatTensor(inputs), requires_grad=False).to(
+                    device
+                ), Variable(torch.FloatTensor(labels), requires_grad=False).to(device)
 
                 # zero the parameter gradients
                 optimizer.zero_grad()
@@ -369,22 +441,50 @@ if __name__ == "__main__":
                 debug_memory()
 
             # do validating test
-            Xval = Variable(torch.from_numpy(Xtest).type(torch.FloatTensor),
-                            requires_grad=False).to(device)
+            Xval = Variable(
+                torch.from_numpy(Xtest).type(torch.FloatTensor), requires_grad=False
+            ).to(device)
             # Xval = torch.Tensor.cpu(Xval)
             yval = model(Xval).cpu()
 
-            val_rmse = float(rmse(yval, torch.from_numpy(
-                np.array(ytest).reshape(-1, 1)).type(torch.FloatTensor)))
-            val_pcc = float(PCC(yval, torch.from_numpy(
-                np.array(ytest).reshape(-1, 1)).type(torch.FloatTensor)))
+            val_rmse = float(
+                rmse(
+                    yval,
+                    torch.from_numpy(np.array(ytest).reshape(-1, 1)).type(
+                        torch.FloatTensor
+                    ),
+                )
+            )
+            val_pcc = float(
+                PCC(
+                    yval,
+                    torch.from_numpy(np.array(ytest).reshape(-1, 1)).type(
+                        torch.FloatTensor
+                    ),
+                )
+            )
 
             # del Xval, yval
             # debug_memory()
             # torch.cuda.empty_cache()
 
-            print('[%5d] loss: %.3f, val_loss: %.3f, val_pcc: %.3f, val_r: %.3f' %
-                  (epoch, running_loss / (i+1), val_rmse, val_pcc, float(pcc(yval, torch.from_numpy(np.array(ytest).reshape(-1, 1)).type(torch.FloatTensor)))))
+            print(
+                "[%5d] loss: %.3f, val_loss: %.3f, val_pcc: %.3f, val_r: %.3f"
+                % (
+                    epoch,
+                    running_loss / (i + 1),
+                    val_rmse,
+                    val_pcc,
+                    float(
+                        pcc(
+                            yval,
+                            torch.from_numpy(np.array(ytest).reshape(-1, 1)).type(
+                                torch.FloatTensor
+                            ),
+                        )
+                    ),
+                )
+            )
             # del val_rmse, val_pcc
             # debug_memory()
 
@@ -394,14 +494,16 @@ if __name__ == "__main__":
 
             # early stopping
             # do validating test
-            history.append([epoch, running_loss/(i+1), val_rmse, val_pcc])
+            history.append([epoch, running_loss / (i + 1), val_rmse, val_pcc])
             log = pd.DataFrame(history)
-            log.columns = ['epochs', 'loss', 'val_loss', 'val_pcc']
+            log.columns = ["epochs", "loss", "val_loss", "val_pcc"]
             log.to_csv(args.log, header=True, index=False, float_format="%.4f")
 
             if min_val[-1][1] - val_rmse >= delta:
-                print("Model improve from %.3f to %.3f . Save model to %s " %
-                      (min_val[-1][1], val_rmse, args.model))
+                print(
+                    "Model improve from %.3f to %.3f . Save model to %s "
+                    % (min_val[-1][1], val_rmse, args.model)
+                )
                 torch.save(model.state_dict(), args.model)
                 min_val.append([epoch, val_rmse])
             else:
@@ -411,4 +513,4 @@ if __name__ == "__main__":
                 else:
                     pass
 
-        print('Finished Training')
+        print("Finished Training")

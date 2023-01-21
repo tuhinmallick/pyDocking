@@ -26,15 +26,17 @@ def do_docking():
         # print(pdb_codes)
 
         for c in pdb_codes:
-            if not os.path.exists("%s/%s_vinaout.pdbqt" % (c, c)) and os.path.exists("%s/%s_protein.pdb.pdbqt" % (c, c)):
+            if not os.path.exists("%s/%s_vinaout.pdbqt" % (c, c)) and os.path.exists(
+                "%s/%s_protein.pdb.pdbqt" % (c, c)
+            ):
                 keep_codes.append(c)
         print(keep_codes)
         chunk = int(len(keep_codes) / size)
 
         input_lists = []
-        for i in range(size-1):
-            input_lists.append(keep_codes[i*chunk: i*chunk+chunk])
-        input_lists.append(keep_codes[(size-1)*chunk:])
+        for i in range(size - 1):
+            input_lists.append(keep_codes[i * chunk : i * chunk + chunk])
+        input_lists.append(keep_codes[(size - 1) * chunk :])
     else:
         input_lists = None
 
@@ -46,10 +48,13 @@ def do_docking():
 
         # process the ligand
         lig = "%s/%s_ligand.mol2" % (c, c)
-        docking.pdb2pdbqt(lig, lig + ".pdbqt", )
+        docking.pdb2pdbqt(
+            lig,
+            lig + ".pdbqt",
+        )
         docking.pdb2pdbqt(lig, lig + ".pdb", keep_polarH=False)
 
-        if os.path.exists(rec) and os.path.exists(lig+".pdbqt"):
+        if os.path.exists(rec) and os.path.exists(lig + ".pdbqt"):
 
             try:
                 out = "%s/%s_vinaout.pdbqt" % (c, c)
@@ -66,8 +71,18 @@ def do_docking():
                     # job = sp.Popen("awk '$1 ~ /ATOM/ {print $0}' temp.pdbqt > %s.pdbqt" % rec, shell=True)
                     # job.communicate()
                     vina = docking.VinaDocking()
-                    vina.vina_config(rec, lig + ".pdbqt", out, 16, 8, xyz_c, [20, 20, 20], log,
-                                     n_modes=20, config=config)
+                    vina.vina_config(
+                        rec,
+                        lig + ".pdbqt",
+                        out,
+                        16,
+                        8,
+                        xyz_c,
+                        [20, 20, 20],
+                        log,
+                        n_modes=20,
+                        config=config,
+                    )
                     vina.run_docking()
 
                 print("COMPLETE on rank %d: %s" % (rank, c))

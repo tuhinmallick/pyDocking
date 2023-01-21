@@ -17,7 +17,9 @@ def rmsd(mol1, mol2):
     m2 = mt.load(mol2).xyz[0]
 
     if m1.shape != m2.shape:
-        print("ERROR: Atom numbers are not the same in the two files. Check your input.")
+        print(
+            "ERROR: Atom numbers are not the same in the two files. Check your input."
+        )
         print("ERROR: Exit now!")
         sys.exit(0)
 
@@ -28,7 +30,9 @@ def rmsd(mol1, mol2):
 
 if __name__ == "__main__":
     if len(sys.argv) != 3:
-        print("Make sure that the atoms' sequences in both files are the same exactly. ")
+        print(
+            "Make sure that the atoms' sequences in both files are the same exactly. "
+        )
         print("Usage: python rmsd.py native_pose.pdb docked_pose.pdb")
         print("Only pdb files are accepted as inputs. ")
         sys.exit(0)

@@ -1,4 +1,3 @@
-
 from pyDocking import builder
 import sys
 import os
@@ -28,8 +27,10 @@ if __name__ == "__main__":
 
         if len(compound_dict[cid]):
             try:
-                mol = builder.CompoundBuilder(out_format=out_format,
-                                              in_format="smile", )
+                mol = builder.CompoundBuilder(
+                    out_format=out_format,
+                    in_format="smile",
+                )
                 # print(mol, compound_dict(cid))
                 mol.load_mol(compound_dict[cid])
                 # print(mol)

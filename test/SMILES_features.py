@@ -46,8 +46,13 @@ if __name__ == "__main__":
 
             if count % 20 == 0:
                 dat = pd.DataFrame(descriptors, columns=keys)
-                dat['Name'] = names
-                dat['SMI'] = smiles
+                dat["Name"] = names
+                dat["SMI"] = smiles
 
-                dat.to_csv("descriptors_%s" % sys.argv[1], header=True, index=False,
-                           sep=",", float_format="%.3f")
+                dat.to_csv(
+                    "descriptors_%s" % sys.argv[1],
+                    header=True,
+                    index=False,
+                    sep=",",
+                    float_format="%.3f",
+                )

@@ -11,12 +11,25 @@ if __name__ == "__main__":
     """
 
     parser = argparse.ArgumentParser(description=d)
-    parser.add_argument("-fn", default=["training_*.csv"], type=str, nargs="+",
-                        help="Input, optional. The input file list.")
-    parser.add_argument("-out", default="output.csv", type=str,
-                        help="Output, optional. The output file name.")
-    parser.add_argument("-target", default="training.csv", type=str,
-                        help="Input, optional. The target input file name.")
+    parser.add_argument(
+        "-fn",
+        default=["training_*.csv"],
+        type=str,
+        nargs="+",
+        help="Input, optional. The input file list.",
+    )
+    parser.add_argument(
+        "-out",
+        default="output.csv",
+        type=str,
+        help="Output, optional. The output file name.",
+    )
+    parser.add_argument(
+        "-target",
+        default="training.csv",
+        type=str,
+        help="Input, optional. The target input file name.",
+    )
 
     args = parser.parse_args()
     if len(sys.argv) <= 3:
@@ -49,7 +62,7 @@ if __name__ == "__main__":
             print("Number of samples unequal, exit now!")
             sys.exit(1)
         else:
-            dat['pKa'] = target['pKa'].values
+            dat["pKa"] = target["pKa"].values
             # dat = dat.reindex(target.index.values)
 
     dat.to_csv(args.out, header=True, index=True)

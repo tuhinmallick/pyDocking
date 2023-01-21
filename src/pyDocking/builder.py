@@ -1,4 +1,3 @@
-
 from rdkit import Chem
 from rdkit.Chem import AllChem
 import os
@@ -71,8 +70,9 @@ class Molecule(object):
 
         self.mol_file = mol_file
 
-        if self.format in ["mol2", "mol", "pdb", "sdf"] and\
-                os.path.exists(self.mol_file):
+        if self.format in ["mol2", "mol", "pdb", "sdf"] and os.path.exists(
+            self.mol_file
+        ):
             print("Molecule file not exists. ")
             return None
 
@@ -125,8 +125,7 @@ class CompoundBuilder(object):
 
     """
 
-    def __init__(self, out_format="pdb", in_format="smile",
-                 addHs=True, optimize=True):
+    def __init__(self, out_format="pdb", in_format="smile", addHs=True, optimize=True):
 
         self.out_format = out_format
         self.mol_file = None
@@ -249,8 +248,7 @@ def babel_converter(input, output, babelexe="obabel", mode="general"):
         cmd = "%s %s -O %s -d" % (babelexe, input, "xxx_temp_noH.pdbqt")
         job = Popen(cmd, shell=True)
         job.communicate()
-        cmd = "%s %s -O %s --AddPolarH" % (babelexe,
-                                           "xxx_temp_noH.pdbqt", output)
+        cmd = "%s %s -O %s --AddPolarH" % (babelexe, "xxx_temp_noH.pdbqt", output)
     else:
         pass
     job = Popen(cmd, shell=True)

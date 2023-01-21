@@ -100,7 +100,10 @@ class PubChemDownloader(object):
         else:
             return ""
 
-    def get_cid(self, compound, ):
+    def get_cid(
+        self,
+        compound,
+    ):
         """Return the cid of a compound
 
         Parameters
@@ -119,7 +122,6 @@ class PubChemDownloader(object):
 
 
 class ZINCDownloader(object):
-
     def __init__(self):
         pass
 
@@ -129,8 +131,8 @@ class ZINCDownloader(object):
             r = requests.get(url)
             soup = Soup(r.text)
 
-            if len(soup.find_all('input')) >= 4:
-                return soup.find_all('input')[3]['value']
+            if len(soup.find_all("input")) >= 4:
+                return soup.find_all("input")[3]["value"]
             else:
                 return ""
 
@@ -156,8 +158,8 @@ class ZINCDownloader(object):
         if os.path.exists(zinc_id):
             try:
                 soup = BeautifulSoup(open(zinc_id))
-                if len(soup.find_all('input')) >= 4:
-                    s = soup.find_all('input')[3]['value']
+                if len(soup.find_all("input")) >= 4:
+                    s = soup.find_all("input")[3]["value"]
                 else:
                     try:
                         url = "http://zinc.docking.org/substance/%s" % zinc_id

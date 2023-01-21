@@ -6,7 +6,6 @@ import operator
 
 
 class ParseVinaHistory(object):
-
     def __init__(self, vina_hist):
         if os.path.exists(vina_hist):
             self.history_fn = vina_hist
@@ -55,7 +54,7 @@ class ParseVinaHistory(object):
             print(id, start_ln)
             keep_lines = True
             s = ""
-            for ndx in range(start_ln, start_ln+999):
+            for ndx in range(start_ln, start_ln + 999):
                 if keep_lines:
                     s = linecache.getline(self.history_fn, ndx)
                     lines_id.append(s)
@@ -72,9 +71,9 @@ class ParseVinaHistory(object):
 
     def sort_energies(self, decending=True):
 
-        self.sorted_energies = OrderedDict(sorted(self.energies.items(),
-                                                  key=operator.itemgetter(1),
-                                                  reverse=decending))
+        self.sorted_energies = OrderedDict(
+            sorted(self.energies.items(), key=operator.itemgetter(1), reverse=decending)
+        )
 
         return self
 
@@ -85,8 +84,7 @@ class ParseVinaHistory(object):
             self.read_energies()
             # self.history_parsed_ = True
 
-        topn_models = [x[0]
-                       for x in list(self.sorted_energies.items())[: top_n]]
+        topn_models = [x[0] for x in list(self.sorted_energies.items())[:top_n]]
         topn_lines = self.get_model_lines(topn_models)
 
         return topn_lines
@@ -105,7 +103,7 @@ if __name__ == "__main__":
     model_lines = vinaout.get_first_n_models(topn)
 
     for i, ls in enumerate(model_lines):
-        with open(fout+"%d.pdbqt" % i, 'w') as tofile:
+        with open(fout + "%d.pdbqt" % i, "w") as tofile:
             for s in ls:
                 tofile.write(s)
 

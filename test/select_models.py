@@ -12,7 +12,7 @@ def load_pdb(fn):
     protein_indices = top.select("protein")
     t = t.atom_slice(protein_indices)
 
-    return t[int(t.n_frames * 0.8):]
+    return t[int(t.n_frames * 0.8) :]
 
 
 def distance_matrix(dat):
@@ -56,7 +56,9 @@ if __name__ == "__main__":
 
     for i in range(5):
         # cluster i
-        i_label = (labels == i)
+        i_label = labels == i
         dist = dist_matrix[i_label]
         i_pdb = dist.sum(axis=1).sort_values().index.values[0]
-        traj[i_pdb].save_pdb("center_%d.pdb" % i, )
+        traj[i_pdb].save_pdb(
+            "center_%d.pdb" % i,
+        )
