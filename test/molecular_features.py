@@ -1,7 +1,8 @@
-from pyDocking import builder
 import itertools
+
 import numpy as np
 from psikit import Psikit
+from pyDocking import builder
 
 
 def mol_reader(smile):
@@ -31,6 +32,7 @@ def cmap(coords):
 
     return distances
 
+
 def resp_charges(smile, bset="hf/6-31g"):
     # https://github.com/Mishima-syk/psikit
 
@@ -40,4 +42,3 @@ def resp_charges(smile, bset="hf/6-31g"):
     pk.optimize(basis_sets=bset)
 
     return pk.cal_resp_charges()
-

@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
-
-from pubchempy import get_compounds
-from bs4 import BeautifulSoup
-import subprocess as sp
 import os
+import subprocess as sp
 import time
 from random import random
-from bs4 import BeautifulSoup as Soup
+
 import requests
+from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup as Soup
+from pubchempy import get_compounds
 
 
 class PubChemDownloader(object):
@@ -100,7 +100,10 @@ class PubChemDownloader(object):
         else:
             return ""
 
-    def get_cid(self, compound, ):
+    def get_cid(
+        self,
+        compound,
+    ):
         """Return the cid of a compound
 
         Parameters
@@ -125,12 +128,12 @@ class ZINCDownloader(object):
 
     def crawl_smiles(self, url):
         try:
-            #url = "http://zinc.docking.org/substance/%s" % zinc_id
+            # url = "http://zinc.docking.org/substance/%s" % zinc_id
             r = requests.get(url)
             soup = Soup(r.text)
 
-            if len(soup.find_all('input')) >= 4:
-                return soup.find_all('input')[3]['value']
+            if len(soup.find_all("input")) >= 4:
+                return soup.find_all("input")[3]["value"]
             else:
                 return ""
 
@@ -156,13 +159,13 @@ class ZINCDownloader(object):
         if os.path.exists(zinc_id):
             try:
                 soup = BeautifulSoup(open(zinc_id))
-                if len(soup.find_all('input')) >= 4:
-                    s = soup.find_all('input')[3]['value']
+                if len(soup.find_all("input")) >= 4:
+                    s = soup.find_all("input")[3]["value"]
                 else:
                     try:
                         url = "http://zinc.docking.org/substance/%s" % zinc_id
                         s = self.crawl_smiles(url)
-                    except(ConnectionError, UnicodeDecodeError):
+                    except (ConnectionError, UnicodeDecodeError):
                         s = ""
 
                 return s
@@ -194,4 +197,3 @@ class ZINCDownloader(object):
             smiles.append(s)
 
         return smiles
-

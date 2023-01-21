@@ -1,6 +1,7 @@
+import os
+import sys
 
 from pyDocking import builder
-import sys, os
 
 if __name__ == "__main__":
 
@@ -21,15 +22,18 @@ if __name__ == "__main__":
                 print("Progress %d out 4900 k" % i)
 
             try:
-                #print(sm, i)
-                mol = builder.CompoundBuilder(out_format=out_format,
-                                              in_format="smile", )
+                # print(sm, i)
+                mol = builder.CompoundBuilder(
+                    out_format=out_format,
+                    in_format="smile",
+                )
 
                 mol.load_mol(sm)
 
                 mol.write_mol("%s.%s" % (n, out_format))
                 builder.babel_converter("%s.%s" % (n, out_format),
-                                        "%s.pdbqt" % n, mode='AddPolarH')
+                                        "%s.pdbqt" % n,
+                                        mode="AddPolarH")
             except:
                 print("Fail to generate %d.%s file " % (i, out_format))
             i += 1

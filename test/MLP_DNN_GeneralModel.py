@@ -1,14 +1,17 @@
 import sys
-from sklearn import preprocessing, model_selection
-import tensorflow as tf
+
 import pandas as pd
+import tensorflow as tf
+from sklearn import model_selection
+from sklearn import preprocessing
 
 
 def create_model(input_size):
 
     model = tf.keras.Sequential()
 
-    model.add(tf.keras.layers.Dense(100, input_shape=input_size, activation="relu"))
+    model.add(
+        tf.keras.layers.Dense(100, input_shape=input_size, activation="relu"))
     model.add(tf.keras.layers.BatchNormalization())
 
     model.add(tf.keras.layers.Dense(200, activation="relu"))
@@ -35,17 +38,19 @@ def create_model(input_size):
 
     return model
 
+
 if __name__ == "__main__":
 
     df = pd.read_csv(sys.argv[1], header=True)
 
-    y = df['logS']
+    y = df["logS"]
     X = df.values[:, :-3]
 
     scaler = preprocessing.StandardScaler()
     Xs = scaler.fit_transform(X)
 
-    Xtrain, Xtest, ytrain, ytest = model_selection.train_test_split(Xs, y, test_size=0.2)
+    Xtrain, Xtest, ytrain, ytest = model_selection.train_test_split(
+        Xs, y, test_size=0.2)
 
     model = create_model((Xtrain.shape[1], ))
 

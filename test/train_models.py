@@ -1,13 +1,15 @@
-import sys
-from sklearn import preprocessing, model_selection
-import tensorflow as tf
-import pandas as pd
-import numpy as np
-from sklearn.externals import joblib
 import argparse
-from argparse import RawTextHelpFormatter
 import os
+import sys
+from argparse import RawTextHelpFormatter
+
+import numpy as np
+import pandas as pd
+import tensorflow as tf
 from scipy import stats
+from sklearn import model_selection
+from sklearn import preprocessing
+from sklearn.externals import joblib
 
 
 def rmse(y_true, y_pred):
@@ -29,7 +31,9 @@ def PCC_RMSE(y_true, y_pred):
     devP = tf.keras.backend.std(y_pred)
     devT = tf.keras.backend.std(y_true)
 
-    rmse = tf.keras.backend.sqrt(tf.keras.backend.mean(tf.keras.backend.square(y_pred - y_true), axis=-1))
+    rmse = tf.keras.backend.sqrt(
+        tf.keras.backend.mean(tf.keras.backend.square(y_pred - y_true),
+                              axis=-1))
 
     pcc = 1.0 - tf.keras.backend.mean(fsp * fst) / (devP * devT)
 
@@ -39,7 +43,9 @@ def PCC_RMSE(y_true, y_pred):
 
 
 def RMSE(y_true, y_pred):
-    return tf.keras.backend.sqrt(tf.keras.backend.mean(tf.keras.backend.square(y_pred - y_true), axis=-1))
+    return tf.keras.backend.sqrt(
+        tf.keras.backend.mean(tf.keras.backend.square(y_pred - y_true),
+                              axis=-1))
 
 
 def PCC(y_true, y_pred):
@@ -104,31 +110,58 @@ def create_model(input_size, lr=0.0001):
 
     model.add(tf.keras.layers.Flatten())
 
-    model.add(tf.keras.layers.Dense(200, kernel_regularizer=tf.keras.regularizers.l2(0.01), ))
+    model.add(
+        tf.keras.layers.Dense(
+            200,
+            kernel_regularizer=tf.keras.regularizers.l2(0.01),
+        ))
     model.add(tf.keras.layers.Activation("relu"))
     model.add(tf.keras.layers.BatchNormalization())
 
-    model.add(tf.keras.layers.Dense(100,
-                                    kernel_regularizer=tf.keras.regularizers.l2(0.01), ))
+    model.add(
+        tf.keras.layers.Dense(
+            100,
+            kernel_regularizer=tf.keras.regularizers.l2(0.01),
+        ))
     model.add(tf.keras.layers.Activation("relu"))
     model.add(tf.keras.layers.BatchNormalization())
 
-    model.add(tf.keras.layers.Dense(40, kernel_regularizer=tf.keras.regularizers.l2(0.01), ))
+    model.add(
+        tf.keras.layers.Dense(
+            40,
+            kernel_regularizer=tf.keras.regularizers.l2(0.01),
+        ))
     model.add(tf.keras.layers.Activation("relu"))
     model.add(tf.keras.layers.BatchNormalization())
 
-    model.add(tf.keras.layers.Dense(20, kernel_regularizer=tf.keras.regularizers.l2(0.01), ))
+    model.add(
+        tf.keras.layers.Dense(
+            20,
+            kernel_regularizer=tf.keras.regularizers.l2(0.01),
+        ))
     model.add(tf.keras.layers.Activation("relu"))
     model.add(tf.keras.layers.BatchNormalization())
 
-    model.add(tf.keras.layers.Dense(10, kernel_regularizer=tf.keras.regularizers.l2(0.01), ))
+    model.add(
+        tf.keras.layers.Dense(
+            10,
+            kernel_regularizer=tf.keras.regularizers.l2(0.01),
+        ))
     model.add(tf.keras.layers.Activation("relu"))
     model.add(tf.keras.layers.BatchNormalization())
 
-    model.add(tf.keras.layers.Dense(1, kernel_regularizer=tf.keras.regularizers.l2(0.01), ))
+    model.add(
+        tf.keras.layers.Dense(
+            1,
+            kernel_regularizer=tf.keras.regularizers.l2(0.01),
+        ))
     model.add(tf.keras.layers.Activation("relu"))
 
-    sgd = tf.keras.optimizers.SGD(lr=lr, momentum=0.9, decay=1e-6, )
+    sgd = tf.keras.optimizers.SGD(
+        lr=lr,
+        momentum=0.9,
+        decay=1e-6,
+    )
     model.compile(optimizer=sgd, loss=PCC_RMSE, metrics=["mse", PCC, RMSE])
 
     return model
@@ -138,45 +171,121 @@ if __name__ == "__main__":
     d = """Train or predict the features based on protein-ligand complexes.
 
     Examples:
-    python CNN_model_keras.py -fn1 docked_training_features_12ksamples_rmsd_lessthan3a.csv 
+    python CNN_model_keras.py -fn1 docked_training_features_12ksamples_rmsd_lessthan3a.csv
            -fn2 training_pka_features.csv -history hist.csv -pKa_col pKa_mimic pKa -train 1
 
     """
 
-    parser = argparse.ArgumentParser(description=d, formatter_class=RawTextHelpFormatter)
-    parser.add_argument("-fn1", type=str, default=["features_1.csv", ], nargs="+",
-                        help="Input. The docked cplx feature set.")
-    parser.add_argument("-fn2", type=str, default=["features_2.csv", ], nargs="+",
-                        help="Input. The PDBBind feature set.")
-    parser.add_argument("-fn_val", type=str, default=["features_3.csv", ], nargs="+",
-                        help="Input. The validation feature set.")
-    parser.add_argument("-history", type=str, default="history.csv",
-                        help="Output. The history information. ")
-    parser.add_argument("-pKa_col", type=str, nargs="+", default=["pKa_relu", "pKa_true"],
-                        help="Input. The pKa colname as the target. ")
-    parser.add_argument("-scaler", type=str, default="StandardScaler.model",
-                        help="Output. The standard scaler file to save. ")
-    parser.add_argument("-model", type=str, default="DNN_Model.h5",
-                        help="Output. The trained DNN model file to save. ")
-    parser.add_argument("-log", type=str, default="logger.csv",
-                        help="Output. The logger file name to save. ")
-    parser.add_argument("-out", type=str, default="predicted_pKa.csv",
-                        help="Output. The predicted pKa values file name to save. ")
-    parser.add_argument("-lr_init", type=float, default=0.001,
-                        help="Input. Default is 0.001. The initial learning rate. ")
-    parser.add_argument("-epochs", type=int, default=100,
-                        help="Input. Default is 100. The number of epochs to train. ")
-    parser.add_argument("-batch", type=int, default=128,
-                        help="Input. Default is 128. The number of batch size to train. ")
-    parser.add_argument("-train", type=int, default=1,
-                        help="Input. Default is 1. Whether train or predict. \n"
-                             "1: train, 0: predict. ")
-    parser.add_argument("-n_features", default=3840, type=int,
-                        help="Input. Default is 3840. Number of features in the input dataset.")
-    parser.add_argument("-reshape", type=int, default=[64, 60, 1], nargs="+",
-                        help="Input. Default is 64 60 1. Reshape the dataset. ")
-    parser.add_argument("-remove_H", type=int, default=0,
-                        help="Input, optional. Default is 0. Whether remove hydrogens. ")
+    parser = argparse.ArgumentParser(description=d,
+                                     formatter_class=RawTextHelpFormatter)
+    parser.add_argument(
+        "-fn1",
+        type=str,
+        default=[
+            "features_1.csv",
+        ],
+        nargs="+",
+        help="Input. The docked cplx feature set.",
+    )
+    parser.add_argument(
+        "-fn2",
+        type=str,
+        default=[
+            "features_2.csv",
+        ],
+        nargs="+",
+        help="Input. The PDBBind feature set.",
+    )
+    parser.add_argument(
+        "-fn_val",
+        type=str,
+        default=[
+            "features_3.csv",
+        ],
+        nargs="+",
+        help="Input. The validation feature set.",
+    )
+    parser.add_argument(
+        "-history",
+        type=str,
+        default="history.csv",
+        help="Output. The history information. ",
+    )
+    parser.add_argument(
+        "-pKa_col",
+        type=str,
+        nargs="+",
+        default=["pKa_relu", "pKa_true"],
+        help="Input. The pKa colname as the target. ",
+    )
+    parser.add_argument(
+        "-scaler",
+        type=str,
+        default="StandardScaler.model",
+        help="Output. The standard scaler file to save. ",
+    )
+    parser.add_argument(
+        "-model",
+        type=str,
+        default="DNN_Model.h5",
+        help="Output. The trained DNN model file to save. ",
+    )
+    parser.add_argument(
+        "-log",
+        type=str,
+        default="logger.csv",
+        help="Output. The logger file name to save. ",
+    )
+    parser.add_argument(
+        "-out",
+        type=str,
+        default="predicted_pKa.csv",
+        help="Output. The predicted pKa values file name to save. ",
+    )
+    parser.add_argument(
+        "-lr_init",
+        type=float,
+        default=0.001,
+        help="Input. Default is 0.001. The initial learning rate. ",
+    )
+    parser.add_argument(
+        "-epochs",
+        type=int,
+        default=100,
+        help="Input. Default is 100. The number of epochs to train. ",
+    )
+    parser.add_argument(
+        "-batch",
+        type=int,
+        default=128,
+        help="Input. Default is 128. The number of batch size to train. ",
+    )
+    parser.add_argument(
+        "-train",
+        type=int,
+        default=1,
+        help="Input. Default is 1. Whether train or predict. \n"
+        "1: train, 0: predict. ",
+    )
+    parser.add_argument(
+        "-n_features",
+        default=3840,
+        type=int,
+        help="Input. Default is 3840. Number of features in the input dataset.",
+    )
+    parser.add_argument(
+        "-reshape",
+        type=int,
+        default=[64, 60, 1],
+        nargs="+",
+        help="Input. Default is 64 60 1. Reshape the dataset. ",
+    )
+    parser.add_argument(
+        "-remove_H",
+        type=int,
+        default=0,
+        help="Input, optional. Default is 0. Whether remove hydrogens. ",
+    )
 
     args = parser.parse_args()
 
@@ -190,7 +299,7 @@ if __name__ == "__main__":
 
     for fn in args.fn1:
         if os.path.exists(fn):
-            #print(fn)
+            # print(fn)
             df = pd.read_csv(fn, index_col=0, header=0).dropna()
             if args.remove_H:
                 df = remove_all_hydrogens(df, args.n_features)
@@ -200,7 +309,8 @@ if __name__ == "__main__":
                 if args.pKa_col[0] in df.columns.values:
                     y = y + list(df[args.pKa_col[0]].values)
                 else:
-                    print("No such column %s in input file. " % args.pKa_col[0])
+                    print("No such column %s in input file. " %
+                          args.pKa_col[0])
             if X.shape[0] == 0:
                 X = df.values[:, :args.n_features]
             else:
@@ -229,7 +339,7 @@ if __name__ == "__main__":
 
                 do_eval = True
 
-    col_names = ['pKa', 'pKa_relu']
+    col_names = ["pKa", "pKa_relu"]
     Xval, yval = np.array([]), []
 
     for i, fn in enumerate(args.fn_val):
@@ -242,7 +352,8 @@ if __name__ == "__main__":
             if Xval.shape[0] == 0:
                 Xval = df.values[:, :args.n_features]
             else:
-                Xval = np.concatenate((Xval, df.values[:, :args.n_features]), axis=0)
+                Xval = np.concatenate((Xval, df.values[:, :args.n_features]),
+                                      axis=0)
 
             if args.train > 0:
                 yval = yval + list(df[col_names[i]].values)
@@ -258,21 +369,44 @@ if __name__ == "__main__":
         joblib.dump(scaler, args.scaler)
         print("DataSet Scaled")
 
-        #Xtrain, Xtest, ytrain, ytest = model_selection.train_test_split(Xs, y, test_size=0.2)
-        #print("Train and test split")
-        Xtrain = Xs.reshape((-1, args.reshape[0], args.reshape[1], args.reshape[2]))
-        model = create_model((args.reshape[0], args.reshape[1], args.reshape[2]), lr=args.lr_init)
+        # Xtrain, Xtest, ytrain, ytest = model_selection.train_test_split(Xs, y, test_size=0.2)
+        # print("Train and test split")
+        Xtrain = Xs.reshape(
+            (-1, args.reshape[0], args.reshape[1], args.reshape[2]))
+        model = create_model(
+            (args.reshape[0], args.reshape[1], args.reshape[2]),
+            lr=args.lr_init)
 
         # callbacks
-        stop = tf.keras.callbacks.EarlyStopping(monitor='val_loss', min_delta=0.001, patience=20, verbose=1,
-                                                mode='auto', )
-        logger = tf.keras.callbacks.CSVLogger(args.log, separator=',', append=False)
-        bestmodel = tf.keras.callbacks.ModelCheckpoint(filepath="bestmodel_" + args.model, verbose=1,
+        stop = tf.keras.callbacks.EarlyStopping(
+            monitor="val_loss",
+            min_delta=0.001,
+            patience=20,
+            verbose=1,
+            mode="auto",
+        )
+        logger = tf.keras.callbacks.CSVLogger(args.log,
+                                              separator=",",
+                                              append=False)
+        bestmodel = tf.keras.callbacks.ModelCheckpoint(filepath="bestmodel_" +
+                                                       args.model,
+                                                       verbose=1,
                                                        save_best_only=True)
 
         # train the model
-        history = model.fit(Xtrain, y, validation_data=(Xval.reshape(-1, args.reshape[0], args.reshape[1], args.reshape[2]), yval),
-                            batch_size=args.batch, epochs=args.epochs, verbose=1, callbacks=[stop, logger, bestmodel])
+        history = model.fit(
+            Xtrain,
+            y,
+            validation_data=(
+                Xval.reshape(-1, args.reshape[0], args.reshape[1],
+                             args.reshape[2]),
+                yval,
+            ),
+            batch_size=args.batch,
+            epochs=args.epochs,
+            verbose=1,
+            callbacks=[stop, logger, bestmodel],
+        )
 
         model.save(args.model)
         print("Save model. ")
@@ -284,20 +418,22 @@ if __name__ == "__main__":
     else:
         scaler = joblib.load(args.scaler)
 
-        Xs = scaler.transform(X).reshape((-1, args.reshape[0], args.reshape[1], args.reshape[2]))
+        Xs = scaler.transform(X).reshape(
+            (-1, args.reshape[0], args.reshape[1], args.reshape[2]))
 
         model = tf.keras.models.load_model(args.model,
-                                           custom_objects={'RMSE': RMSE,
-                                                           'PCC': PCC,
-                                                           'PCC_RMSE': PCC_RMSE})
+                                           custom_objects={
+                                               "RMSE": RMSE,
+                                               "PCC": PCC,
+                                               "PCC_RMSE": PCC_RMSE
+                                           })
 
         ypred = pd.DataFrame()
-        ypred['pKa_predicted'] = model.predict(Xs).ravel()
+        ypred["pKa_predicted"] = model.predict(Xs).ravel()
         if do_eval:
-            print("PCC : %.3f" % pcc(ypred['pKa_predicted'].values, ytrue))
-            print("RMSE: %.3f" % rmse(ypred['pKa_predicted'].values, ytrue))
+            print("PCC : %.3f" % pcc(ypred["pKa_predicted"].values, ytrue))
+            print("RMSE: %.3f" % rmse(ypred["pKa_predicted"].values, ytrue))
 
-            ypred['pKa_true'] = ytrue
+            ypred["pKa_true"] = ytrue
 
         ypred.to_csv(args.out, header=True, index=True, float_format="%.3f")
-

@@ -1,9 +1,11 @@
-import mdtraj as mt
 import sys
-import sklearn
+
+import mdtraj as mt
 import numpy as np
-from sklearn import cluster
 import pandas as pd
+import sklearn
+from sklearn import cluster
+
 
 def load_pdb(fn):
     t = mt.load_pdb(fn)
@@ -11,7 +13,8 @@ def load_pdb(fn):
     protein_indices = top.select("protein")
     t = t.atom_slice(protein_indices)
 
-    return t[int(t.n_frames * 0.8): ]
+    return t[int(t.n_frames * 0.8):]
+
 
 def distance_matrix(dat):
     dist = []
@@ -21,6 +24,7 @@ def distance_matrix(dat):
             dist.append(d)
 
     return np.array(dist).reshape((dat.shape[0], -1))
+
 
 def rmse(x, y):
     return np.sqrt(np.mean(np.square(x - y)))
@@ -53,9 +57,7 @@ if __name__ == "__main__":
 
     for i in range(5):
         # cluster i
-        i_label = (labels == i)
+        i_label = labels == i
         dist = dist_matrix[i_label]
         i_pdb = dist.sum(axis=1).sort_values().index.values[0]
         traj[i_pdb].save_pdb("center_%d.pdb" % i, )
-
-

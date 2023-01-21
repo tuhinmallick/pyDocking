@@ -1,15 +1,15 @@
 #!/usr/bin/env python
-
-import numpy as np
-import pandas as pd
-import mdtraj as mt
+import argparse
 import itertools
 import re
 import sys
-from collections import OrderedDict
-from mpi4py import MPI
-import argparse
 from argparse import RawDescriptionHelpFormatter
+from collections import OrderedDict
+
+import mdtraj as mt
+import numpy as np
+import pandas as pd
+from mpi4py import MPI
 
 
 class ResidueCounts(object):
@@ -38,11 +38,14 @@ class ResidueCounts(object):
         self.seq = [pattern.match(x).group(0) for x in res_seq]
 
         self.receptor_ids_ = np.arange(len(self.seq))
-        self.ligand_ids_ = np.array([self.receptor_ids_[-1]+1, ])
+        self.ligand_ids_ = np.array([
+            self.receptor_ids_[-1] + 1,
+        ])
 
-        #print(self.receptor_ids_, self.ligand_ids_)
+        # print(self.receptor_ids_, self.ligand_ids_)
 
-        self.ligand_n_atoms_ = self.top.select("resid %d" % len(self.seq)).shape[0]
+        self.ligand_n_atoms_ = self.top.select("resid %d" %
+                                               len(self.seq)).shape[0]
 
         return self
 
@@ -65,17 +68,20 @@ class ResidueCounts(object):
         pairs_ = list(itertools.product(c_alpha_indices, c_alpha_indices))
 
         distance_matrix_ = mt.compute_distances(self.pdb, atom_pairs=pairs_)[0]
-        distance_matrix_ = distance_matrix_.reshape((-1, int(np.sqrt(distance_matrix_.shape[0]))))
+        distance_matrix_ = distance_matrix_.reshape(
+            (-1, int(np.sqrt(distance_matrix_.shape[0]))))
 
-        cmap = (distance_matrix_ <= cutoff)*1.0
+        cmap = (distance_matrix_ <= cutoff) * 1.0
 
         return np.sum(cmap, axis=0)
 
     def cal_distances(self, residue_pair, ignore_hydrogen=True):
 
         if ignore_hydrogen:
-            indices_a = self.pdb.topology.select("(resid %d) and (symbol != H)" % residue_pair[0])
-            indices_b = self.pdb.topology.select("(resid %d) and (symbol != H)" % residue_pair[1])
+            indices_a = self.pdb.topology.select(
+                "(resid %d) and (symbol != H)" % residue_pair[0])
+            indices_b = self.pdb.topology.select(
+                "(resid %d) and (symbol != H)" % residue_pair[1])
         else:
             indices_a = self.pdb.topology.select("resid %d" % residue_pair[0])
             indices_b = self.pdb.topology.select("resid %d" % residue_pair[1])
@@ -88,7 +94,9 @@ class ResidueCounts(object):
 
         # if not self.distance_calculated_:
         distances = np.sum(self.cal_distances(resid_pair) <= cutoff)
-        nbyn = np.sqrt(self.top.select("resid %d" % resid_pair[0]).shape[0] * self.ligand_n_atoms_)
+        nbyn = np.sqrt(
+            self.top.select("resid %d" % resid_pair[0]).shape[0] *
+            self.ligand_n_atoms_)
 
         return distances / nbyn
 
@@ -138,7 +146,8 @@ def distance_padding(dist, max_pairs_=500, padding_with=0.0):
     """
 
     if dist.shape[0] < max_pairs_:
-        d = np.concatenate((dist, np.repeat(padding_with, max_pairs_ - dist.shape[0])))
+        d = np.concatenate(
+            (dist, np.repeat(padding_with, max_pairs_ - dist.shape[0])))
     elif dist.shape == max_pairs_:
         d = dist
     else:
@@ -149,29 +158,29 @@ def distance_padding(dist, max_pairs_=500, padding_with=0.0):
 
 
 def hydrophobicity():
-    '''http://assets.geneious.com/manual/8.0/GeneiousManualsu41.html'''
+    """http://assets.geneious.com/manual/8.0/GeneiousManualsu41.html"""
     hydrophobic = {
-        'PHE': 1.0,
-        'LEU': 0.943,
-        'ILE': 0.943,
-        'TYR': 0.880,
-        'TRP': 0.878,
-        'VAL': 0.825,
-        'MET': 0.738,
-        'PRO': 0.711,
-        'CYS': 0.680,
-        'ALA': 0.616,
-        'GLY': 0.501,
-        'THR': 0.450,
-        'SER': 0.359,
-        'LYS': 0.283,
-        'GLN': 0.251,
-        'ASN': 0.236,
-        'HIS': 0.165,
-        'GLU': 0.043,
-        'ASP': 0.028,
-        'ARG': 0.0,
-        'UNK': 0.501,
+        "PHE": 1.0,
+        "LEU": 0.943,
+        "ILE": 0.943,
+        "TYR": 0.880,
+        "TRP": 0.878,
+        "VAL": 0.825,
+        "MET": 0.738,
+        "PRO": 0.711,
+        "CYS": 0.680,
+        "ALA": 0.616,
+        "GLY": 0.501,
+        "THR": 0.450,
+        "SER": 0.359,
+        "LYS": 0.283,
+        "GLN": 0.251,
+        "ASN": 0.236,
+        "HIS": 0.165,
+        "GLU": 0.043,
+        "ASP": 0.028,
+        "ARG": 0.0,
+        "UNK": 0.501,
     }
 
     return hydrophobic
@@ -180,27 +189,27 @@ def hydrophobicity():
 def polarizability():
     """https://www.researchgate.net/publication/220043303_Polarizabilities_of_amino_acid_residues/figures"""
     polar = {
-        'PHE': 121.43,
-        'LEU': 91.6,
-        'ILE': 91.21,
-        'TYR': 126.19,
-        'TRP': 153.06,
-        'VAL': 76.09,
-        'MET': 102.31,
-        'PRO': 73.47,
-        'CYS': 74.99,
-        'ALA': 50.16,
-        'GLY': 36.66,
-        'THR': 66.46,
-        'SER': 53.82,
-        'LYS': 101.73,
-        'GLN': 88.79,
-        'ASN': 73.15,
-        'HIS': 99.35,
-        'GLU': 84.67,
-        'ASP': 69.09,
-        'ARG': 114.81,
-        'UNK': 36.66,
+        "PHE": 121.43,
+        "LEU": 91.6,
+        "ILE": 91.21,
+        "TYR": 126.19,
+        "TRP": 153.06,
+        "VAL": 76.09,
+        "MET": 102.31,
+        "PRO": 73.47,
+        "CYS": 74.99,
+        "ALA": 50.16,
+        "GLY": 36.66,
+        "THR": 66.46,
+        "SER": 53.82,
+        "LYS": 101.73,
+        "GLN": 88.79,
+        "ASN": 73.15,
+        "HIS": 99.35,
+        "GLU": 84.67,
+        "ASP": 69.09,
+        "ARG": 114.81,
+        "UNK": 36.66,
     }
 
     return polar
@@ -211,27 +220,27 @@ def stringcoding():
     on-nice-home-designing-ideas-with-amino-acid-table/"""
 
     sequence = {
-        'PHE': 18,
-        'LEU': 16,
-        'ILE': 15,
-        'TYR': 19,
-        'TRP': 20,
-        'VAL': 14,
-        'MET': 17,
-        'PRO': 12,
-        'CYS': 10,
-        'ALA': 13,
-        'GLY': 11,
-        'THR': 7,
-        'SER': 6,
-        'LYS': 3,
-        'GLN': 8,
-        'ASN': 8,
-        'HIS': 2,
-        'GLU': 4,
-        'ASP': 5,
-        'ARG': 1,
-        'UNK': 11,
+        "PHE": 18,
+        "LEU": 16,
+        "ILE": 15,
+        "TYR": 19,
+        "TRP": 20,
+        "VAL": 14,
+        "MET": 17,
+        "PRO": 12,
+        "CYS": 10,
+        "ALA": 13,
+        "GLY": 11,
+        "THR": 7,
+        "SER": 6,
+        "LYS": 3,
+        "GLN": 8,
+        "ASN": 8,
+        "HIS": 2,
+        "GLU": 4,
+        "ASP": 5,
+        "ARG": 1,
+        "UNK": 11,
     }
 
     return sequence
@@ -239,50 +248,61 @@ def stringcoding():
 
 def residue_string2code(seq, method=stringcoding):
     mapper = method()
-    return [mapper[x] if x in mapper.keys()
-            else mapper['UNK']
-            for x in seq]
+    return [mapper[x] if x in mapper.keys() else mapper["UNK"] for x in seq]
 
 
 def generate_contact_features(complex_fn, ncutoffs, verbose=True):
 
     rescont = ResidueCounts(complex_fn)
 
-    if verbose: print("START preparation")
+    if verbose:
+        print("START preparation")
     rescont.do_preparation()
-    if verbose: print("COMPLETE preparation")
+    if verbose:
+        print("COMPLETE preparation")
 
     seq = rescont.seq
-    if verbose: print("Length of residues ", len(seq))
+    if verbose:
+        print("Length of residues ", len(seq))
 
-    if verbose: print("START alpha-C contact map")
+    if verbose:
+        print("START alpha-C contact map")
     r = np.array([])
     for c in np.linspace(0.3, 1.2, 4):
         cmap = rescont.contact_calpha(cutoff=c)
         cmap = distance_padding(cmap)
         r = np.concatenate((r, cmap))
-        if verbose: print(cmap)
-    if verbose:print("COMPLETE contactmap")
+        if verbose:
+            print(cmap)
+    if verbose:
+        print("COMPLETE contactmap")
 
     for m in [stringcoding, polarizability, hydrophobicity]:
         coding = np.array(residue_string2code(seq, m))
-        if verbose: print("START sequence to coding")
+        if verbose:
+            print("START sequence to coding")
         mapper = m()
-        coding = distance_padding(coding, padding_with=mapper['GLY'])
-        if verbose: print(coding)
+        coding = distance_padding(coding, padding_with=mapper["GLY"])
+        if verbose:
+            print(coding)
         r = np.concatenate((r, coding))
 
-    if verbose:print("COMPLETE sequence to coding")
-    if verbose:print("SHAPE of result: ", r.shape)
+    if verbose:
+        print("COMPLETE sequence to coding")
+    if verbose:
+        print("SHAPE of result: ", r.shape)
 
     for c in ncutoffs:
-        if verbose: print("START residue based atom contact nbyn, cutoff=", c)
+        if verbose:
+            print("START residue based atom contact nbyn, cutoff=", c)
         rescont.distances_all_pairs(c, verbose)
         d = distance_padding(rescont.distances_all_pairs_)
-        if verbose: print(d)
+        if verbose:
+            print(d)
         r = np.concatenate((r, d))
 
-    if verbose: print("SHAPE of result: ", r.shape)
+    if verbose:
+        print("SHAPE of result: ", r.shape)
 
     return r
 
@@ -295,12 +315,12 @@ if __name__ == "__main__":
     size = comm.Get_size()
 
     d = """
-    Predicting protein-ligand binding affinities (pKa) with OnionNet model. 
+    Predicting protein-ligand binding affinities (pKa) with OnionNet model.
     Citation: Coming soon ... ...
     Author: Liangzhen Zheng
 
-    This script is used to generate inter-molecular element-type specific 
-    contact features. Installation instructions should be refered to 
+    This script is used to generate inter-molecular element-type specific
+    contact features. Installation instructions should be refered to
     https://github.com/zhenglz/onionnet
 
     Examples:
@@ -310,41 +330,74 @@ if __name__ == "__main__":
     Run the script with one CPU core
     python generate_features.py -inp input_samples.dat -out features_samples.csv
 
-    Run the script with MPI 
-    mpirun -np 12 python generate_contact_features.py -inp input_testing.dat -out testing_features_rescount.csv 
+    Run the script with MPI
+    mpirun -np 12 python generate_contact_features.py -inp input_testing.dat -out testing_features_rescount.csv
                          -start 0.4 -end 2.0 -n_shells 5 -v 0
 
     """
 
-    parser = argparse.ArgumentParser(description=d, formatter_class=RawDescriptionHelpFormatter)
-    parser.add_argument("-inp", type=str, default="input.dat",
-                        help="Input. The input file containg the file path of each \n"
-                             "of the protein-ligand complexes files (in pdb format.)\n"
-                             "There should be only 1 column, each row or line containing\n"
-                             "the input file path, relative or absolute path.")
-    parser.add_argument("-out", type=str, default="output.csv",
-                        help="Output. Default is output.csv \n"
-                             "The output file name containing the features, each sample\n"
-                             "per row. ")
-    parser.add_argument("-lig", type=str, default="LIG",
-                        help="Input, optional. Default is LIG. \n"
-                             "The ligand molecule residue name (code, 3 characters) in the \n"
-                             "complex pdb file. ")
-    parser.add_argument("-start", type=float, default=0.1,
-                        help="Input, optional. Default is 0.05 nm. "
-                             "The initial shell thickness. ")
-    parser.add_argument("-end", type=float, default=3.0,
-                        help="Input, optional. Default is 3.05 nm. "
-                             "The boundary of last shell.")
-    parser.add_argument("-delta", type=float, default=0.05,
-                        help="Input, optional. Default is 0.05 nm. "
-                             "The thickness of the shells.")
-    parser.add_argument("-n_shells", type=int, default=60,
-                        help="Input, optional. Default is 60. "
-                             "The number of shells for featurization. ")
-    parser.add_argument("-v", default=1, type=int,
-                        help="Input, optional. Default is 1. "
-                             "Whether output detail information.")
+    parser = argparse.ArgumentParser(
+        description=d, formatter_class=RawDescriptionHelpFormatter)
+    parser.add_argument(
+        "-inp",
+        type=str,
+        default="input.dat",
+        help="Input. The input file containg the file path of each \n"
+        "of the protein-ligand complexes files (in pdb format.)\n"
+        "There should be only 1 column, each row or line containing\n"
+        "the input file path, relative or absolute path.",
+    )
+    parser.add_argument(
+        "-out",
+        type=str,
+        default="output.csv",
+        help="Output. Default is output.csv \n"
+        "The output file name containing the features, each sample\n"
+        "per row. ",
+    )
+    parser.add_argument(
+        "-lig",
+        type=str,
+        default="LIG",
+        help="Input, optional. Default is LIG. \n"
+        "The ligand molecule residue name (code, 3 characters) in the \n"
+        "complex pdb file. ",
+    )
+    parser.add_argument(
+        "-start",
+        type=float,
+        default=0.1,
+        help="Input, optional. Default is 0.05 nm. "
+        "The initial shell thickness. ",
+    )
+    parser.add_argument(
+        "-end",
+        type=float,
+        default=3.0,
+        help="Input, optional. Default is 3.05 nm. "
+        "The boundary of last shell.",
+    )
+    parser.add_argument(
+        "-delta",
+        type=float,
+        default=0.05,
+        help="Input, optional. Default is 0.05 nm. "
+        "The thickness of the shells.",
+    )
+    parser.add_argument(
+        "-n_shells",
+        type=int,
+        default=60,
+        help="Input, optional. Default is 60. "
+        "The number of shells for featurization. ",
+    )
+    parser.add_argument(
+        "-v",
+        default=1,
+        type=int,
+        help="Input, optional. Default is 1. "
+        "Whether output detail information.",
+    )
 
     args = parser.parse_args()
 
@@ -355,7 +408,9 @@ if __name__ == "__main__":
 
         # spreading the calculating list to different MPI ranks
         with open(args.inp) as lines:
-            lines = [x for x in lines if ("#" not in x and len(x.split()) >= 1)].copy()
+            lines = [
+                x for x in lines if ("#" not in x and len(x.split()) >= 1)
+            ].copy()
             inputs = [x.split()[0] for x in lines]
 
         inputs_list = []
@@ -363,7 +418,8 @@ if __name__ == "__main__":
         if args.v:
             print(size, aver_size)
         for i in range(size - 1):
-            inputs_list.append(inputs[int(i * aver_size):int((i + 1) * aver_size)])
+            inputs_list.append(inputs[int(i * aver_size):int((i + 1) *
+                                                             aver_size)])
         inputs_list.append(inputs[(size - 1) * aver_size:])
 
     else:
@@ -384,12 +440,14 @@ if __name__ == "__main__":
 
         try:
             # the main function for featurization ...
-            r= generate_contact_features(p, n_cutoffs, verbose=args.v)
+            r = generate_contact_features(p, n_cutoffs, verbose=args.v)
 
             print(rank, p)
 
         except RuntimeError:
-            r = [0., ] * 500 * (args.n_shells + 4 + 3)
+            r = ([
+                0.0,
+            ] * 500 * (args.n_shells + 4 + 3))
             print(rank, "Not successful. ", p)
 
         results.append(r)
@@ -401,9 +459,11 @@ if __name__ == "__main__":
     except:
         df.index = np.arange(df.shape[0])
 
-    col_n = ["F"+ str(x) for x in range(df.shape[1])]
+    col_n = ["F" + str(x) for x in range(df.shape[1])]
     df.columns = col_n
-    df.to_csv("rank%d_" % rank + args.out, sep=",", float_format="%.4f", index=True)
+    df.to_csv("rank%d_" % rank + args.out,
+              sep=",",
+              float_format="%.4f",
+              index=True)
 
     print(rank, "Complete calculations. ")
-

@@ -1,9 +1,11 @@
+import os
+import sys
+
+import numpy as np
+import pandas as pd
+from pyDocking import builder
 from rdkit import Chem
 from rdkit.Chem.Fingerprints import FingerprintMols
-import pandas as pd
-import numpy as np
-import os, sys
-from pyDocking import builder
 
 
 def get_top_features(fn, converter):
@@ -18,6 +20,7 @@ def get_top_features(fn, converter):
 
     return f
 
+
 if __name__ == "__main__":
 
     Mol = builder.Molecule()
@@ -26,7 +29,9 @@ if __name__ == "__main__":
     out = sys.argv[2]
 
     if not os.path.exists(inp):
-        print("python gen_top_feat.py input_pdb_code.dat output_top_features.csv")
+        print(
+            "python gen_top_feat.py input_pdb_code.dat output_top_features.csv"
+        )
         sys.exit(0)
 
     with open(inp) as lines:
@@ -36,10 +41,9 @@ if __name__ == "__main__":
     for fn in fn_list:
         lig = "%s/%s_ligand.mol2" % (fn, fn)
 
-        f = get_top_features(lig, Mol.converter_['mol2'])
+        f = get_top_features(lig, Mol.converter_["mol2"])
         features.append(f)
 
     df = pd.DataFrame(features)
-    df.columns = ["FP"+str(x) for x in range(df.shape[1])]
+    df.columns = ["FP" + str(x) for x in range(df.shape[1])]
     df.to_csv(out, header=True, index=False, sep=",", float_format="%.1f")
-

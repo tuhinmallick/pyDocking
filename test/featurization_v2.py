@@ -1,13 +1,13 @@
 #!/usr/bin/env python
-
-import numpy as np
-import pandas as pd
-import mdtraj as mt
 import itertools
 import sys
-from mpi4py import MPI
 import time
 from collections import OrderedDict
+
+import mdtraj as mt
+import numpy as np
+import pandas as pd
+from mpi4py import MPI
 
 
 class AtomTypeCounts(object):
@@ -75,8 +75,8 @@ class AtomTypeCounts(object):
 
         table, bond = top.to_dataframe()
 
-        self.rec_ele = table['element'][self.receptor_indices]
-        self.lig_ele = table['element'][self.ligand_indices]
+        self.rec_ele = table["element"][self.receptor_indices]
+        self.lig_ele = table["element"][self.ligand_indices]
 
         self.pdb_parsed_ = True
 
@@ -87,10 +87,12 @@ class AtomTypeCounts(object):
         if not self.pdb_parsed_:
             self.parsePDB()
 
-        all_pairs = itertools.product(self.receptor_indices, self.ligand_indices)
+        all_pairs = itertools.product(self.receptor_indices,
+                                      self.ligand_indices)
 
         if not self.distance_computed_:
-            self.distance_matrix_ = mt.compute_distances(self.pdb, atom_pairs=all_pairs)[0]
+            self.distance_matrix_ = mt.compute_distances(
+                self.pdb, atom_pairs=all_pairs)[0]
 
         self.distance_computed_ = True
 
@@ -120,7 +122,9 @@ def generate_features(complex_fn, lig_code, ncutoffs, all_elements, keys):
     new_rec = [x if x in all_elements else "Du" for x in cplx.rec_ele]
 
     # combinations of the element types for each atoms
-    rec_lig_ele_combines = ["_".join(x) for x in list(itertools.product(new_rec, new_lig))]
+    rec_lig_ele_combines = [
+        "_".join(x) for x in list(itertools.product(new_rec, new_lig))
+    ]
     cplx.distance_pairs()
 
     counts = []
@@ -129,7 +133,7 @@ def generate_features(complex_fn, lig_code, ncutoffs, all_elements, keys):
 
     for i, cutoff in enumerate(ncutoffs):
         c = cplx.cutoff_count(cutoff)
-        #print("COUNTS", c)
+        # print("COUNTS", c)
         if i == 0:
             onion_counts.append(c)
         else:
@@ -159,7 +163,10 @@ if __name__ == "__main__":
 
     # A list of different types of molecules
     all_elements = ["H", "C", "O", "N", "P", "S", "Br", "Du"]
-    keys = ["_".join(x) for x in list(itertools.product(all_elements, all_elements))]
+    keys = [
+        "_".join(x)
+        for x in list(itertools.product(all_elements, all_elements))
+    ]
 
     # preprocessing the list of files for analysis
     if rank == 0:
@@ -168,17 +175,20 @@ if __name__ == "__main__":
             sys.exit(0)
 
         with open(sys.argv[1]) as lines:
-            lines = [x for x in lines if ("#" not in x and len(x.split()) >= 2)].copy()
+            lines = [
+                x for x in lines if ("#" not in x and len(x.split()) >= 2)
+            ].copy()
             inputs = [x.split()[0] for x in lines]
 
         inputs_list = []
         aver_size = int(len(inputs) / size)
         print(size, aver_size)
-        for i in range(size-1):
-            inputs_list.append(inputs[int(i*aver_size):int((i+1)*aver_size)])
-        inputs_list.append(inputs[(size-1)*aver_size:])
+        for i in range(size - 1):
+            inputs_list.append(inputs[int(i * aver_size):int((i + 1) *
+                                                             aver_size)])
+        inputs_list.append(inputs[(size - 1) * aver_size:])
 
-        #print(inputs_list)
+        # print(inputs_list)
 
     else:
         inputs_list = None
@@ -203,14 +213,16 @@ if __name__ == "__main__":
             # do the calculations
             r = generate_features(fn, lig_code, n_cutoffs, all_elements, keys)
             results.append(r)
-            success.append(1.)
+            success.append(1.0)
             print(rank, fn)
             print("Successful. ", fn)
         except:
-            #r = results[-1]
-            r = list([0., ]* len(all_elements)*len(n_cutoffs))
+            # r = results[-1]
+            r = list([
+                0.0,
+            ] * len(all_elements) * len(n_cutoffs))
             results.append(r)
-            success.append(0.)
+            success.append(0.0)
             print("Not successful. ", fn)
 
     df = pd.DataFrame(results)
@@ -219,15 +231,17 @@ if __name__ == "__main__":
     except:
         df.index = np.arange(df.shape[0])
 
-    #col_n = []
-    #for i, n in enumerate(keys * len(n_cutoffs)):
+    # col_n = []
+    # for i, n in enumerate(keys * len(n_cutoffs)):
     #    col_n.append(n+"_"+str(i))
     #    col_n.append('success')
-    #df.columns = col_n
+    # df.columns = col_n
     #    df['success'] = success
-    df.to_csv(str(rank)+"_"+out, sep=",", float_format="%.1f", index=True, columns=False)
+    df.to_csv(str(rank) + "_" + out,
+              sep=",",
+              float_format="%.1f",
+              index=True,
+              columns=False)
 
     print(time.time() - start)
     print(rank, "Complete calculations. ")
-
-

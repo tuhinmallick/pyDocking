@@ -1,6 +1,7 @@
+import sys
+
 import mdtraj as mt
 from rdkit import Chem
-import sys
 
 
 def long2short(code):
@@ -42,10 +43,9 @@ if __name__ == "__main__":
     seq = res_seq(p)
 
     with open(o, "w") as tofile:
-        l = p +","+ "".join(seq) + "\n"
+        l = p + "," + "".join(seq) + "\n"
         tofile.write(l)
 
     with open(s, "w") as tofile:
-        l = lig+","+lig_smiles(lig)
+        l = lig + "," + lig_smiles(lig)
         tofile.write(l)
-

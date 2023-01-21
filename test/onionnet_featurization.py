@@ -1,11 +1,11 @@
 #!/usr/bin/env python
-
-import numpy as np
-import pandas as pd
-import mdtraj as mt
 import itertools
 import sys
 from collections import OrderedDict
+
+import mdtraj as mt
+import numpy as np
+import pandas as pd
 from mpi4py import MPI
 
 
@@ -74,8 +74,8 @@ class AtomTypeCounts(object):
 
         table, bond = top.to_dataframe()
 
-        self.rec_ele = table['element'][self.receptor_indices]
-        self.lig_ele = table['element'][self.ligand_indices]
+        self.rec_ele = table["element"][self.receptor_indices]
+        self.lig_ele = table["element"][self.ligand_indices]
 
         self.pdb_parsed_ = True
 
@@ -86,10 +86,12 @@ class AtomTypeCounts(object):
         if not self.pdb_parsed_:
             self.parsePDB()
 
-        all_pairs = itertools.product(self.receptor_indices, self.ligand_indices)
+        all_pairs = itertools.product(self.receptor_indices,
+                                      self.ligand_indices)
 
         if not self.distance_computed_:
-            self.distance_matrix_ = mt.compute_distances(self.pdb, atom_pairs=all_pairs)[0]
+            self.distance_matrix_ = mt.compute_distances(
+                self.pdb, atom_pairs=all_pairs)[0]
 
         self.distance_computed_ = True
 
@@ -105,7 +107,10 @@ class AtomTypeCounts(object):
 def generate_features(complex_fn, lig_code, ncutoffs):
 
     all_elements = ["H", "C", "O", "N", "P", "S", "Br", "Du"]
-    keys = ["_".join(x) for x in list(itertools.product(all_elements, all_elements))]
+    keys = [
+        "_".join(x)
+        for x in list(itertools.product(all_elements, all_elements))
+    ]
 
     cplx = AtomTypeCounts(complex_fn, lig_code)
     cplx.parsePDB(rec_sele="protein", lig_sele="resname %s" % lig_code)
@@ -125,7 +130,9 @@ def generate_features(complex_fn, lig_code, ncutoffs):
         else:
             new_rec.append(e)
 
-    rec_lig_element_combines = ["_".join(x) for x in list(itertools.product(new_rec, new_lig))]
+    rec_lig_element_combines = [
+        "_".join(x) for x in list(itertools.product(new_rec, new_lig))
+    ]
     cplx.distance_pairs()
 
     counts = []
@@ -145,7 +152,7 @@ def generate_features(complex_fn, lig_code, ncutoffs):
     results = []
 
     for n in range(len(ncutoffs)):
-        #count_dict = dict.fromkeys(keys, 0.0)
+        # count_dict = dict.fromkeys(keys, 0.0)
         d = OrderedDict()
         d = d.fromkeys(keys, 0.0)
         for e_e, c in zip(rec_lig_element_combines, onion_counts[n]):
@@ -157,24 +164,28 @@ def generate_features(complex_fn, lig_code, ncutoffs):
 
 
 if __name__ == "__main__":
-    #print("Start Now ... ")
+    # print("Start Now ... ")
     inp = sys.argv[1]
     lig = "LIG"
     out = sys.argv[2]
     n_cutoffs = np.linspace(0.1, 3.05, 60)
 
     results = []
-    ele_pairs =[]
+    ele_pairs = []
 
     try:
         results, ele_pairs = generate_features(inp, lig, n_cutoffs)
 
     except:
-        #r = results[-1]
-        results = list([0., ]*3840) + [0.0, ]
+        # r = results[-1]
+        results = list([
+            0.0,
+        ] * 3840) + [
+            0.0,
+        ]
 
-    #results = [inp, ] + results
+    # results = [inp, ] + results
     print(len(results))
     with open(out, "w") as tofile:
-        l = inp+","+",".join(format(x, ".3f") for x in results)+"\n"
+        l = inp + "," + ",".join(format(x, ".3f") for x in results) + "\n"
         tofile.write(l)

@@ -1,12 +1,13 @@
 import sys
-from rdkit import Chem
+
 import pandas as pd
 from PyBioMed import Pymolecule
+from rdkit import Chem
 
 
 def SMI2Descriptor(smi):
 
-    #m = Chem.MolFromSmiles(smi)
+    # m = Chem.MolFromSmiles(smi)
     mol = Pymolecule.PyMolecule()
     mol.ReadMolFromSmile(smi)
 
@@ -32,7 +33,7 @@ if __name__ == "__main__":
     smiles = []
     for (smi, n) in zip(SMIs, df["Compound ID"].values):
         count += 1
-        if count > -2 :
+        if count > -2:
             try:
                 d, k = SMI2Descriptor(smi)
                 keys = k
@@ -42,14 +43,17 @@ if __name__ == "__main__":
             except:
                 print("Failed %s " % n)
 
-
             print("Progress: %d " % count)
 
             if count % 20 == 0:
                 dat = pd.DataFrame(descriptors, columns=keys)
-                dat['Name'] = names
-                dat['SMI'] = smiles
+                dat["Name"] = names
+                dat["SMI"] = smiles
 
-                dat.to_csv("descriptors_%s" % sys.argv[1], header=True, index=False,
-                           sep=",", float_format="%.3f")
-
+                dat.to_csv(
+                    "descriptors_%s" % sys.argv[1],
+                    header=True,
+                    index=False,
+                    sep=",",
+                    float_format="%.3f",
+                )

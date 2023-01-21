@@ -1,5 +1,6 @@
-from pyDocking import PubChemDownloader
 import sys
+
+from pyDocking import PubChemDownloader
 
 if __name__ == "__main__":
     dowloader = PubChemDownloader()
@@ -15,7 +16,7 @@ if __name__ == "__main__":
 
     print(compounds)
 
-    tofile = open(output, 'w')
+    tofile = open(output, "w")
 
     smiles = {}
     cids = {}
@@ -33,4 +34,3 @@ if __name__ == "__main__":
         tofile.write("%s,%s,%s\n" % (c, smiles[c], cids[c]))
 
     print("Completed!")
-

@@ -5,5 +5,4 @@ parts:
   - caption: Examples
     numbered: True
     chapters:
-    - file: notebooks/pyDock.ipynb
-  
+      - file: notebooks/pyDock.ipynb

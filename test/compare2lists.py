@@ -1,7 +1,7 @@
-from pyDocking import fingerprints
-import sys
 import itertools
+import sys
 
+from pyDocking import fingerprints
 
 if __name__ == "__main__":
     fn1 = sys.argv[1]
@@ -9,13 +9,15 @@ if __name__ == "__main__":
 
     smiles = []
     with open(fn1) as lines:
-        smiles.append([x.split(",")[1] for x in lines
-                       if (len(x.split(",")) and "#" not in x)])
+        smiles.append([
+            x.split(",")[1] for x in lines
+            if (len(x.split(",")) and "#" not in x)
+        ])
 
     with open(fn2) as lines:
-        smiles.append([x.split()[0] for x in lines
-                   if (len(x.split()) and "#" not in x)])
-    #print(smiles)
+        smiles.append(
+            [x.split()[0] for x in lines if (len(x.split()) and "#" not in x)])
+    # print(smiles)
     smile_pairs = list(itertools.product(smiles[0], smiles[1]))
 
     similarities = [(fingerprints.similarity(x[0], x[1]), x[0], x[1])
@@ -26,5 +28,3 @@ if __name__ == "__main__":
         if item[0] > 0.7:
             print(item)
             tofile.write("%.3f  %s  %s \n" % (item[0], item[1], item[2]))
-
-

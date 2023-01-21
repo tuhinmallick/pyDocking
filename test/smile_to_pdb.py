@@ -1,6 +1,7 @@
+import os
+import sys
 
 from pyDocking import builder
-import sys, os
 
 if __name__ == "__main__":
 
@@ -27,15 +28,15 @@ if __name__ == "__main__":
 
         if len(compound_dict[cid]):
             try:
-                mol = builder.CompoundBuilder(out_format=out_format,
-                                              in_format="smile", )
-                #print(mol, compound_dict(cid))
+                mol = builder.CompoundBuilder(
+                    out_format=out_format,
+                    in_format="smile",
+                )
+                # print(mol, compound_dict(cid))
                 mol.load_mol(compound_dict[cid])
-                #print(mol)
+                # print(mol)
                 mol.write_mol("mol_%s.%s" % (cid, out_format))
             except:
                 print("Fail to generate %s.%s file " % (cid, out_format))
 
     print("Completed ... ...")
-
-
