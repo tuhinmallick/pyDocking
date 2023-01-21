@@ -9,7 +9,7 @@ from pyDocking import docking
 """
 Docking Routine
 
-perform docking with vina with MPI 
+perform docking with vina with MPI
 
 """
 

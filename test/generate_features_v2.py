@@ -204,12 +204,12 @@ if __name__ == "__main__":
     size = comm.Get_size()
 
     d = """
-    Predicting protein-ligand binding affinities (pKa) with OnionNet model. 
+    Predicting protein-ligand binding affinities (pKa) with OnionNet model.
     Citation: Coming soon ... ...
     Author: Liangzhen Zheng
 
-    This script is used to generate inter-molecular element-type specific 
-    contact features. Installation instructions should be refered to 
+    This script is used to generate inter-molecular element-type specific
+    contact features. Installation instructions should be refered to
     https://github.com/zhenglz/onionnet
 
     Examples:
@@ -219,7 +219,7 @@ if __name__ == "__main__":
     Run the script with one CPU core
     python generate_features.py -inp input_samples.dat -out features_samples.csv
 
-    Run the script with MPI 
+    Run the script with MPI
     mpirun -np 16 python generate_features.py -inp input_samples.dat -out features_samples.csv
 
     """

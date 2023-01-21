@@ -146,18 +146,18 @@ def run_docking():
 
     d = """
     Perform molecular docking using AutoDock Vina.
-    
+
     Input protein and ligand structures with pdb, pdbqt and mol2 file formats.
-    
-    Vina only accepts .pdbqt files, thus the input coordination files would be 
-    converted into pdbqt format. Only polar hydrogen atoms would be kept. 
-    
-    
+
+    Vina only accepts .pdbqt files, thus the input coordination files would be
+    converted into pdbqt format. Only polar hydrogen atoms would be kept.
+
+
     Examples:
-    
+
     python docking.py -rec receptor.pdb -lig ligand.mol2 -out output_vina.pdbqt
-    
-    
+
+
     """
 
     parser = argparse.ArgumentParser(description=d)

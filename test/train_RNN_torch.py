@@ -280,7 +280,7 @@ if __name__ == "__main__":
     The model is saved from a DNN model built with pytorch.
 
     Examples:
-    python CNN_model_keras.py -fn1 docked_training_features_12ksamples_rmsd_lessthan3a.csv 
+    python CNN_model_keras.py -fn1 docked_training_features_12ksamples_rmsd_lessthan3a.csv
            -fn2 training_pka_features.csv -history hist.csv -pKa_col pKa_mimic pKa -train 1
 
     """
