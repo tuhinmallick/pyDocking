@@ -7,6 +7,7 @@
 import torch
 import torch.nn as nn
 from torch.autograd import Variable
+
 # import torchvision.datasets as dsets
 # import torchvision.transforms as transforms
 
@@ -14,23 +15,14 @@ from torch.autograd import Variable
 
 
 def conv4x4(in_channels, out_channels, stride=1):
-    return nn.Conv2d(in_channels,
-                     out_channels,
-                     kernel_size=4,
-                     stride=stride,
-                     padding=1,
-                     bias=False)
+    return nn.Conv2d(
+        in_channels, out_channels, kernel_size=4, stride=stride, padding=1, bias=False
+    )
 
 
 # Residual Block
 class ResidualBlock(nn.Module):
-
-    def __init__(self,
-                 in_channels,
-                 out_channels,
-                 stride=1,
-                 downsample=None,
-                 H=0.1):
+    def __init__(self, in_channels, out_channels, stride=1, downsample=None, H=0.1):
         super(ResidualBlock, self).__init__()
         self.conv1 = conv4x4(in_channels, out_channels, stride)
         self.bn1 = nn.BatchNorm2d(out_channels)
@@ -61,7 +53,6 @@ class ResidualBlock(nn.Module):
 
 
 class ResNet(nn.Module):
-
     def __init__(self, block, layers, num_classes=10):
         super(ResNet, self).__init__()
         self.in_channels = 16
@@ -82,8 +73,7 @@ class ResNet(nn.Module):
                 nn.BatchNorm2d(out_channels),
             )
         layers = []
-        layers.append(block(self.in_channels, out_channels, stride,
-                            downsample))
+        layers.append(block(self.in_channels, out_channels, stride, downsample))
         self.in_channels = out_channels
         for i in range(1, blocks):
             layers.append(block(out_channels, out_channels))

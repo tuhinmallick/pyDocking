@@ -30,42 +30,30 @@ class SimpleCNN(nn.Module):
         self.stride = 1
         self.padding = 0
 
-        self.conv1 = nn.Conv2d(1,
-                               128,
-                               kernel_size=self.kernel,
-                               stride=self.stride,
-                               padding=self.padding)
+        self.conv1 = nn.Conv2d(
+            1, 128, kernel_size=self.kernel, stride=self.stride, padding=self.padding
+        )
         self.channel = 128
-        self.w = int((self.w - self.kernel + 2 * self.padding) / self.stride +
-                     1)
-        self.h = int((self.h - self.kernel + 2 * self.padding) / self.stride +
-                     1)
+        self.w = int((self.w - self.kernel + 2 * self.padding) / self.stride + 1)
+        self.h = int((self.h - self.kernel + 2 * self.padding) / self.stride + 1)
 
         self.relu1 = nn.ReLU(inplace=True)
 
-        self.conv2 = nn.Conv2d(128,
-                               64,
-                               kernel_size=self.kernel,
-                               stride=self.stride,
-                               padding=self.padding)
+        self.conv2 = nn.Conv2d(
+            128, 64, kernel_size=self.kernel, stride=self.stride, padding=self.padding
+        )
         self.channel = 64
-        self.w = int((self.w - self.kernel + 2 * self.padding) / self.stride +
-                     1)
-        self.h = int((self.h - self.kernel + 2 * self.padding) / self.stride +
-                     1)
+        self.w = int((self.w - self.kernel + 2 * self.padding) / self.stride + 1)
+        self.h = int((self.h - self.kernel + 2 * self.padding) / self.stride + 1)
 
         self.relu2 = nn.ReLU(inplace=True)
 
-        self.conv3 = nn.Conv2d(64,
-                               32,
-                               kernel_size=self.kernel,
-                               stride=self.stride,
-                               padding=self.padding)
+        self.conv3 = nn.Conv2d(
+            64, 32, kernel_size=self.kernel, stride=self.stride, padding=self.padding
+        )
         self.channel = 32
-        self.w = int((self.w - self.kernel + 2 * self.padding) / self.stride +
-                     1)
-        self.h = int((self.h - self.kernel + 2 * self.padding) / self.stride +
-                     1)
+        self.w = int((self.w - self.kernel + 2 * self.padding) / self.stride + 1)
+        self.h = int((self.h - self.kernel + 2 * self.padding) / self.stride + 1)
 
         self.relu3 = nn.ReLU(inplace=True)
 
@@ -96,7 +84,7 @@ class SimpleCNN(nn.Module):
 
 def rmse(output, target):
 
-    return torch.sqrt(torch.mean((output - target)**2))
+    return torch.sqrt(torch.mean((output - target) ** 2))
 
 
 def PCC(output, target):
@@ -104,8 +92,9 @@ def PCC(output, target):
     vx = target.view(-1) - torch.mean(target.view(-1))
     vy = output.view(-1) - torch.mean(output.view(-1))
 
-    P = torch.sum(vx * vy) / (torch.sqrt(torch.sum(vx**2)) *
-                              torch.sqrt(torch.sum(vy**2)))
+    P = torch.sum(vx * vy) / (
+        torch.sqrt(torch.sum(vx**2)) * torch.sqrt(torch.sum(vy**2))
+    )
     # P = vx * vy * torch.rsqrt(torch.sum(vx ** 2)) * torch.rsqrt(torch.sum(vy ** 2))
 
     # x = output.detach().numpy().ravel()
@@ -120,8 +109,9 @@ def PCC_loss(output, target):
     vx = target.view(-1) - torch.mean(target.view(-1))
     vy = output.view(-1) - torch.mean(output.view(-1))
 
-    P = torch.sum(vx * vy) / (torch.sqrt(torch.sum(vx**2)) *
-                              torch.sqrt(torch.sum(vy**2)))
+    P = torch.sum(vx * vy) / (
+        torch.sqrt(torch.sum(vx**2)) * torch.sqrt(torch.sum(vy**2))
+    )
     # P = vx * vy * torch.rsqrt(torch.sum(vx ** 2)) * torch.rsqrt(torch.sum(vy ** 2))
 
     # x = output.detach().numpy().ravel()
@@ -171,14 +161,13 @@ def remove_all_hydrogens(dat, n_features):
 
 def rmse_pcc_loss(output, target):
     alpha = 0.8
-    RMSE = torch.sqrt(torch.mean((output - target)**2))
+    RMSE = torch.sqrt(torch.mean((output - target) ** 2))
 
     vx = target - torch.mean(target)
     vy = output - torch.mean(output)
 
     # pcc = torch.sum(vx * vy) / (torch.sqrt(torch.sum(vx ** 2)) * torch.sqrt(torch.sum(vy ** 2)))
-    PCC = vx * vy * torch.rsqrt(torch.sum(vx**2)) * torch.rsqrt(
-        torch.sum(vy**2))
+    PCC = vx * vy * torch.rsqrt(torch.sum(vx**2)) * torch.rsqrt(torch.sum(vy**2))
 
     return alpha * RMSE + (1 - alpha) * (1 - PCC)
 
@@ -189,9 +178,11 @@ def debug_memory():
 
     import torch
 
-    tensors = collections.Counter((str(o.device), o.dtype, tuple(o.shape))
-                                  for o in gc.get_objects()
-                                  if torch.is_tensor(o))
+    tensors = collections.Counter(
+        (str(o.device), o.dtype, tuple(o.shape))
+        for o in gc.get_objects()
+        if torch.is_tensor(o)
+    )
 
 
 if __name__ == "__main__":
@@ -203,8 +194,9 @@ if __name__ == "__main__":
 
     """
 
-    parser = argparse.ArgumentParser(description=d,
-                                     formatter_class=RawTextHelpFormatter)
+    parser = argparse.ArgumentParser(
+        description=d, formatter_class=RawTextHelpFormatter
+    )
     parser.add_argument(
         "-fn1",
         type=str,
@@ -348,12 +340,11 @@ if __name__ == "__main__":
                 if args.pKa_col[0] in df.columns.values:
                     y = y + list(df[args.pKa_col[0]].values)
                 else:
-                    print("No such column %s in input file. " %
-                          args.pKa_col[0])
+                    print("No such column %s in input file. " % args.pKa_col[0])
             if X.shape[0] == 0:
-                X = df.values[:, :args.n_features]
+                X = df.values[:, : args.n_features]
             else:
-                X = np.concatenate((X, df.values[:, :args.n_features]), axis=0)
+                X = np.concatenate((X, df.values[:, : args.n_features]), axis=0)
 
             if args.pKa_col[0] in df.columns.values and args.train == 0:
                 ytrue = ytrue + list(df[args.pKa_col[0]].values)
@@ -369,7 +360,7 @@ if __name__ == "__main__":
             if args.remove_H:
                 df = remove_all_hydrogens(df, args.n_features)
 
-            X = np.concatenate((X, df.values[:, :args.n_features]), axis=0)
+            X = np.concatenate((X, df.values[:, : args.n_features]), axis=0)
             if args.train > 0:
                 y = y + list(df[args.pKa_col[-1]].values)
 
@@ -384,10 +375,9 @@ if __name__ == "__main__":
                 df = remove_all_hydrogens(df, args.n_features)
 
             if Xval.shape[0] == 0:
-                Xval = df.values[:, :args.n_features]
+                Xval = df.values[:, : args.n_features]
             else:
-                Xval = np.concatenate((Xval, df.values[:, :args.n_features]),
-                                      axis=0)
+                Xval = np.concatenate((Xval, df.values[:, : args.n_features]), axis=0)
 
             if args.train > 0:
                 yval = yval + list(df[col_names[i]].values)
@@ -404,12 +394,10 @@ if __name__ == "__main__":
         joblib.dump(scaler, args.scaler)
         print("DataSet Scaled")
 
-        Xtrain = Xs.reshape(
-            (-1, args.reshape[0], args.reshape[1], args.reshape[2]))
+        Xtrain = Xs.reshape((-1, args.reshape[0], args.reshape[1], args.reshape[2]))
         ytrain = np.array(y).reshape((-1, 1))
 
-        Xtest = Xval.reshape(
-            (-1, args.reshape[0], args.reshape[1], args.reshape[2]))
+        Xtest = Xval.reshape((-1, args.reshape[0], args.reshape[1], args.reshape[2]))
         ytest = np.array(yval).reshape((-1, 1))
 
         device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -422,9 +410,7 @@ if __name__ == "__main__":
 
         model = model.to(device)
         loss_func = nn.MSELoss()
-        optimizer = optim.SGD(model.parameters(),
-                              lr=args.lr_init,
-                              momentum=0.9)
+        optimizer = optim.SGD(model.parameters(), lr=args.lr_init, momentum=0.9)
 
         # print model summary
         print(model.eval())
@@ -434,9 +420,9 @@ if __name__ == "__main__":
 
         # Pytorch train and test sets
         train = torch.utils.data.TensorDataset(XTrain, YTrain)
-        train_loader = torch.utils.data.DataLoader(train,
-                                                   batch_size=args.batch,
-                                                   shuffle=False)
+        train_loader = torch.utils.data.DataLoader(
+            train, batch_size=args.batch, shuffle=False
+        )
 
         min_val = [
             [0, 999.9],
@@ -446,18 +432,16 @@ if __name__ == "__main__":
 
         history = []
 
-        for epoch in range(
-                args.epochs):  # loop over the dataset multiple times
+        for epoch in range(args.epochs):  # loop over the dataset multiple times
 
             running_loss = 0.0
             running_pcc = 0.0
             for i, data in enumerate(train_loader):
                 # get the inputs
                 inputs, labels = data
-                X, Y = Variable(torch.FloatTensor(inputs),
-                                requires_grad=False).to(device), Variable(
-                                    torch.FloatTensor(labels),
-                                    requires_grad=False).to(device)
+                X, Y = Variable(torch.FloatTensor(inputs), requires_grad=False).to(
+                    device
+                ), Variable(torch.FloatTensor(labels), requires_grad=False).to(device)
 
                 # zero the parameter gradients
                 optimizer.zero_grad()
@@ -481,36 +465,39 @@ if __name__ == "__main__":
                 # debug_memory()
 
                 # do validating test
-            Xval = Variable(torch.from_numpy(Xtest).type(torch.FloatTensor),
-                            requires_grad=False).to(device)
+            Xval = Variable(
+                torch.from_numpy(Xtest).type(torch.FloatTensor), requires_grad=False
+            ).to(device)
             # Xval = torch.Tensor.cpu(Xval)
             yval = model(Xval).cpu()
 
             val_rmse = float(
-                rmse(yval,
-                     torch.from_numpy(np.array(ytest)).type(
-                         torch.FloatTensor)))
+                rmse(yval, torch.from_numpy(np.array(ytest)).type(torch.FloatTensor))
+            )
             val_pcc = float(
-                PCC(yval,
-                    torch.from_numpy(ytest.ravel()).type(torch.FloatTensor)))
+                PCC(yval, torch.from_numpy(ytest.ravel()).type(torch.FloatTensor))
+            )
 
             del Xval, yval
             debug_memory()
             torch.cuda.empty_cache()
 
-            print("[%5d] loss: %.3f, pcc: %.3f val_loss: %.3f, val_pcc: %.3f" %
-                  (epoch, running_loss /
-                   (i + 1), running_pcc, val_rmse, val_pcc))
+            print(
+                "[%5d] loss: %.3f, pcc: %.3f val_loss: %.3f, val_pcc: %.3f"
+                % (epoch, running_loss / (i + 1), running_pcc, val_rmse, val_pcc)
+            )
 
-            history.append([
-                epoch, running_loss / (i + 1), running_pcc, val_rmse, val_pcc
-            ])
+            history.append(
+                [epoch, running_loss / (i + 1), running_pcc, val_rmse, val_pcc]
+            )
 
             # early stopping
             # do validating test
             if min_val[-1][1] - val_rmse >= delta:
-                print("Model improve from %.3f to %.3f . Save model to %s " %
-                      (min_val[-1][1], val_rmse, args.model))
+                print(
+                    "Model improve from %.3f to %.3f . Save model to %s "
+                    % (min_val[-1][1], val_rmse, args.model)
+                )
                 torch.save(model.state_dict(), args.model)
                 min_val.append([epoch, val_rmse])
 
@@ -522,19 +509,17 @@ if __name__ == "__main__":
                     pass
 
             hist = pd.DataFrame(
-                history,
-                columns=["epochs", "loss", "pcc", "val_loss", "val_pcc"])
-            hist.to_csv(args.log,
-                        header=True,
-                        index=False,
-                        float_format="%.4f")
+                history, columns=["epochs", "loss", "pcc", "val_loss", "val_pcc"]
+            )
+            hist.to_csv(args.log, header=True, index=False, float_format="%.4f")
 
         print("Finished Training")
 
     else:
         scaler = joblib.load(args.scaler)
         Xs = scaler.transform(X).reshape(
-            (-1, args.reshape[0], args.reshape[1], args.reshape[2]))
+            (-1, args.reshape[0], args.reshape[1], args.reshape[2])
+        )
 
         model = None
 

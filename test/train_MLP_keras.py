@@ -42,8 +42,8 @@ def PCC_RMSE(y_true, y_pred):
     devT = tf.keras.backend.std(y_true)
 
     rmse = tf.keras.backend.sqrt(
-        tf.keras.backend.mean(tf.keras.backend.square(y_pred - y_true),
-                              axis=-1))
+        tf.keras.backend.mean(tf.keras.backend.square(y_pred - y_true), axis=-1)
+    )
 
     pcc = 1.0 - tf.keras.backend.mean(fsp * fst) / (devP * devT)
 
@@ -54,8 +54,8 @@ def PCC_RMSE(y_true, y_pred):
 
 def RMSE(y_true, y_pred):
     return tf.keras.backend.sqrt(
-        tf.keras.backend.mean(tf.keras.backend.square(y_pred - y_true),
-                              axis=-1))
+        tf.keras.backend.mean(tf.keras.backend.square(y_pred - y_true), axis=-1)
+    )
 
 
 def PCC(y_true, y_pred):
@@ -110,11 +110,10 @@ def create_model(input_size, lr=0.0001, maxpool=True, dropout=0.1):
     model = tf.keras.Sequential()
 
     model.add(
-        tf.keras.layers.Conv2D(128,
-                               kernel_size=4,
-                               strides=1,
-                               padding=0,
-                               input_shape=input_size))
+        tf.keras.layers.Conv2D(
+            128, kernel_size=4, strides=1, padding=0, input_shape=input_size
+        )
+    )
     model.add(tf.keras.layers.Activation("relu"))
     if maxpool:
         model.add(
@@ -122,7 +121,8 @@ def create_model(input_size, lr=0.0001, maxpool=True, dropout=0.1):
                 pool_size=2,
                 strides=2,
                 padding="same",  # Padding method
-            ))
+            )
+        )
 
     model.add(tf.keras.layers.Conv2D(64, 4, 1, padding=0))
     model.add(tf.keras.layers.Activation("relu"))
@@ -132,7 +132,8 @@ def create_model(input_size, lr=0.0001, maxpool=True, dropout=0.1):
                 pool_size=2,
                 strides=2,
                 padding="same",  # Padding method
-            ))
+            )
+        )
 
     model.add(tf.keras.layers.Conv2D(32, 4, 1, padding=0))
     model.add(tf.keras.layers.Activation("relu"))
@@ -142,7 +143,8 @@ def create_model(input_size, lr=0.0001, maxpool=True, dropout=0.1):
                 pool_size=2,
                 strides=2,
                 padding="same",  # Padding method
-            ))
+            )
+        )
 
     model.add(tf.keras.layers.Flatten())
 
@@ -150,7 +152,8 @@ def create_model(input_size, lr=0.0001, maxpool=True, dropout=0.1):
         tf.keras.layers.Dense(
             128,
             kernel_regularizer=tf.keras.regularizers.l2(0.01),
-        ))
+        )
+    )
     model.add(tf.keras.layers.Activation("relu"))
     model.add(tf.keras.layers.BatchNormalization())
     model.add(tf.keras.layers.Dropout(dropout))
@@ -159,7 +162,8 @@ def create_model(input_size, lr=0.0001, maxpool=True, dropout=0.1):
         tf.keras.layers.Dense(
             64,
             kernel_regularizer=tf.keras.regularizers.l2(0.01),
-        ))
+        )
+    )
     model.add(tf.keras.layers.Activation("relu"))
     model.add(tf.keras.layers.BatchNormalization())
     model.add(tf.keras.layers.Dropout(dropout))
@@ -168,7 +172,8 @@ def create_model(input_size, lr=0.0001, maxpool=True, dropout=0.1):
         tf.keras.layers.Dense(
             32,
             kernel_regularizer=tf.keras.regularizers.l2(0.01),
-        ))
+        )
+    )
     model.add(tf.keras.layers.Activation("relu"))
     model.add(tf.keras.layers.BatchNormalization())
     model.add(tf.keras.layers.Dropout(dropout))
@@ -177,7 +182,8 @@ def create_model(input_size, lr=0.0001, maxpool=True, dropout=0.1):
         tf.keras.layers.Dense(
             16,
             kernel_regularizer=tf.keras.regularizers.l2(0.01),
-        ))
+        )
+    )
     model.add(tf.keras.layers.Activation("relu"))
     model.add(tf.keras.layers.BatchNormalization())
     model.add(tf.keras.layers.Dropout(dropout))
@@ -186,7 +192,8 @@ def create_model(input_size, lr=0.0001, maxpool=True, dropout=0.1):
         tf.keras.layers.Dense(
             1,
             kernel_regularizer=tf.keras.regularizers.l2(0.01),
-        ))
+        )
+    )
     model.add(tf.keras.layers.Activation("relu"))
 
     sgd = tf.keras.optimizers.SGD(
@@ -215,7 +222,8 @@ if __name__ == "__main__":
     """
 
     parser = argparse.ArgumentParser(
-        description=d, formatter_class=RawDescriptionHelpFormatter)
+        description=d, formatter_class=RawDescriptionHelpFormatter
+    )
     parser.add_argument(
         "-fn_train",
         type=str,
@@ -262,10 +270,9 @@ if __name__ == "__main__":
         default="DNN_Model.h5",
         help="Output. The trained DNN model file to save. ",
     )
-    parser.add_argument("-log",
-                        type=str,
-                        default="",
-                        help="Output. The logger file name to save. ")
+    parser.add_argument(
+        "-log", type=str, default="", help="Output. The logger file name to save. "
+    )
     parser.add_argument(
         "-out",
         type=str,
@@ -284,10 +291,9 @@ if __name__ == "__main__":
         default=100,
         help="Input. Default is 100. The number of epochs to train. ",
     )
-    parser.add_argument("-batch",
-                        type=int,
-                        default=128,
-                        help="Input. Default is 128. The batch size. ")
+    parser.add_argument(
+        "-batch", type=int, default=128, help="Input. Default is 128. The batch size. "
+    )
     parser.add_argument(
         "-patience",
         type=int,
@@ -373,9 +379,9 @@ if __name__ == "__main__":
                     print("No such column %s in input file. " % args.y_col[0])
 
             if i == 0:
-                X = df.values[:, :args.n_features]
+                X = df.values[:, : args.n_features]
             else:
-                X = np.concatenate((X, df.values[:, :args.n_features]), axis=0)
+                X = np.concatenate((X, df.values[:, : args.n_features]), axis=0)
 
     Xval, yval = None, []
     for i, fn in enumerate(args.fn_validate):
@@ -385,10 +391,9 @@ if __name__ == "__main__":
                 df = remove_all_hydrogens(df, args.n_features)
 
             if i == 0:
-                Xval = df.values[:, :args.n_features]
+                Xval = df.values[:, : args.n_features]
             else:
-                Xval = np.concatenate((Xval, df.values[:, :args.n_features]),
-                                      axis=0)
+                Xval = np.concatenate((Xval, df.values[:, : args.n_features]), axis=0)
 
             if args.train:
                 yval = yval + list(df[args.y_col[-1]].values)
@@ -401,10 +406,9 @@ if __name__ == "__main__":
                 df = remove_all_hydrogens(df, args.n_features)
 
             if i == 0:
-                Xtest = df.values[:, :args.n_features]
+                Xtest = df.values[:, : args.n_features]
             else:
-                Xtest = np.concatenate((Xtest, df.values[:, :args.n_features]),
-                                       axis=0)
+                Xtest = np.concatenate((Xtest, df.values[:, : args.n_features]), axis=0)
 
             if args.train:
                 ytest = ytest + list(df[args.y_col[-1]].values)
@@ -420,11 +424,14 @@ if __name__ == "__main__":
         joblib.dump(scaler, args.scaler)
 
         Xtrain = scaler.transform(X).reshape(
-            (-1, args.reshape[0], args.reshape[1], args.reshape[2]))
+            (-1, args.reshape[0], args.reshape[1], args.reshape[2])
+        )
         Xval = scaler.transform(Xval).reshape(
-            (-1, args.reshape[0], args.reshape[1], args.reshape[2]))
+            (-1, args.reshape[0], args.reshape[1], args.reshape[2])
+        )
         Xtest = scaler.transform(Xtest).reshape(
-            (-1, args.reshape[0], args.reshape[1], args.reshape[2]))
+            (-1, args.reshape[0], args.reshape[1], args.reshape[2])
+        )
         ytrain = np.array(y).reshape((-1, 1))
         yval = np.array(yval).reshape((-1, 1))
         ytest = np.array(ytest).reshape((-1, 1))
@@ -468,18 +475,20 @@ if __name__ == "__main__":
             pcc_test = pcc(ytest.ravel(), ytest_pred)
             rmse_test = rmse(ytest.ravel(), ytest_pred)
 
-            history.append([
-                e,
-                loss,
-                pcc_train,
-                rmse_train,
-                loss_val,
-                pcc_val,
-                rmse_val,
-                loss_test,
-                pcc_test,
-                rmse_test,
-            ])
+            history.append(
+                [
+                    e,
+                    loss,
+                    pcc_train,
+                    rmse_train,
+                    loss_val,
+                    pcc_val,
+                    rmse_val,
+                    loss_test,
+                    pcc_test,
+                    rmse_test,
+                ]
+            )
             history = pd.DataFrame(
                 history,
                 columns=[
@@ -506,15 +515,13 @@ if __name__ == "__main__":
             else:
                 log = args.log
 
-            history.to_csv(log,
-                           header=True,
-                           index=False,
-                           sep=",",
-                           float_format="%.4f")
+            history.to_csv(log, header=True, index=False, sep=",", float_format="%.4f")
 
             if stopping[-1][1] - loss_val >= args.delta:
-                print("Model improve from %.3f to %.3f. Save model to %s." %
-                      (stopping[-1][1], loss_val, args.model))
+                print(
+                    "Model improve from %.3f to %.3f. Save model to %s."
+                    % (stopping[-1][1], loss_val, args.model)
+                )
 
                 model.save(args.model)
                 stopping.append([e, loss_val])
@@ -529,14 +536,12 @@ if __name__ == "__main__":
         scaler = joblib.load(args.scaler)
 
         Xs = scaler.transform(X).reshape(
-            (-1, args.reshape[0], args.reshape[1], args.reshape[2]))
+            (-1, args.reshape[0], args.reshape[1], args.reshape[2])
+        )
 
-        model = tf.keras.models.load_model(args.model,
-                                           custom_objects={
-                                               "RMSE": RMSE,
-                                               "PCC": PCC,
-                                               "PCC_RMSE": PCC_RMSE
-                                           })
+        model = tf.keras.models.load_model(
+            args.model, custom_objects={"RMSE": RMSE, "PCC": PCC, "PCC_RMSE": PCC_RMSE}
+        )
 
         ypred = pd.DataFrame()
         ypred["pKa_predicted"] = model.predict(Xs).ravel()

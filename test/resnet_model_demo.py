@@ -26,11 +26,9 @@ def _conv_bn_relu(**conv_params):
     filters = conv_params["filters"]
     kernel_size = conv_params["kernel_size"]
     strides = conv_params.setdefault("strides", (1, 1))
-    kernel_initializer = conv_params.setdefault("kernel_initializer",
-                                                "he_normal")
+    kernel_initializer = conv_params.setdefault("kernel_initializer", "he_normal")
     padding = conv_params.setdefault("padding", "same")
-    kernel_regularizer = conv_params.setdefault("kernel_regularizer",
-                                                l2(1.0e-4))
+    kernel_regularizer = conv_params.setdefault("kernel_regularizer", l2(1.0e-4))
 
     def f(input):
         conv = Conv2D(
@@ -53,11 +51,9 @@ def _bn_relu_conv(**conv_params):
     filters = conv_params["filters"]
     kernel_size = conv_params["kernel_size"]
     strides = conv_params.setdefault("strides", (1, 1))
-    kernel_initializer = conv_params.setdefault("kernel_initializer",
-                                                "he_normal")
+    kernel_initializer = conv_params.setdefault("kernel_initializer", "he_normal")
     padding = conv_params.setdefault("padding", "same")
-    kernel_regularizer = conv_params.setdefault("kernel_regularizer",
-                                                l2(1.0e-4))
+    kernel_regularizer = conv_params.setdefault("kernel_regularizer", l2(1.0e-4))
 
     def f(input):
         activation = _bn_relu(input)
@@ -81,8 +77,7 @@ def _shortcut(input, residual):
     input_shape = K.int_shape(input)
     residual_shape = K.int_shape(residual)
     stride_width = int(round(input_shape[ROW_AXIS] / residual_shape[ROW_AXIS]))
-    stride_height = int(round(input_shape[COL_AXIS] /
-                              residual_shape[COL_AXIS]))
+    stride_height = int(round(input_shape[COL_AXIS] / residual_shape[COL_AXIS]))
     equal_channels = input_shape[CHANNEL_AXIS] == residual_shape[CHANNEL_AXIS]
 
     shortcut = input
@@ -100,10 +95,7 @@ def _shortcut(input, residual):
     return add([shortcut, residual])
 
 
-def _residual_block(block_function,
-                    filters,
-                    repetitions,
-                    is_first_layer=False):
+def _residual_block(block_function, filters, repetitions, is_first_layer=False):
     """Builds a residual block with repeating bottleneck blocks."""
 
     def f(input):
@@ -121,9 +113,7 @@ def _residual_block(block_function,
     return f
 
 
-def basic_block(filters,
-                init_strides=(1, 1),
-                is_first_block_of_first_layer=False):
+def basic_block(filters, init_strides=(1, 1), is_first_block_of_first_layer=False):
     """Basic 3 X 3 convolution blocks for use on resnets with layers <= 34.
     Follows improved proposed scheme in http://arxiv.org/pdf/1603.05027v2.pdf
     """
@@ -141,9 +131,9 @@ def basic_block(filters,
                 kernel_regularizer=l2(1e-4),
             )(input)
         else:
-            conv1 = _bn_relu_conv(filters=filters,
-                                  kernel_size=(3, 3),
-                                  strides=init_strides)(input)
+            conv1 = _bn_relu_conv(
+                filters=filters, kernel_size=(3, 3), strides=init_strides
+            )(input)
 
         residual = _bn_relu_conv(filters=filters, kernel_size=(3, 3))(conv1)
         return _shortcut(input, residual)
@@ -151,9 +141,7 @@ def basic_block(filters,
     return f
 
 
-def bottleneck(filters,
-               init_strides=(1, 1),
-               is_first_block_of_first_layer=False):
+def bottleneck(filters, init_strides=(1, 1), is_first_block_of_first_layer=False):
     """Bottleneck architecture for > 34 layer resnet.
     Follows improved proposed scheme in http://arxiv.org/pdf/1603.05027v2.pdf
     Returns:
@@ -173,13 +161,12 @@ def bottleneck(filters,
                 kernel_regularizer=l2(1e-4),
             )(input)
         else:
-            conv_1_1 = _bn_relu_conv(filters=filters,
-                                     kernel_size=(1, 1),
-                                     strides=init_strides)(input)
+            conv_1_1 = _bn_relu_conv(
+                filters=filters, kernel_size=(1, 1), strides=init_strides
+            )(input)
 
         conv_3_3 = _bn_relu_conv(filters=filters, kernel_size=(3, 3))(conv_1_1)
-        residual = _bn_relu_conv(filters=filters * 4,
-                                 kernel_size=(1, 1))(conv_3_3)
+        residual = _bn_relu_conv(filters=filters * 4, kernel_size=(1, 1))(conv_3_3)
         return _shortcut(input, residual)
 
     return f
@@ -209,7 +196,6 @@ def _get_block(identifier):
 
 
 class ResnetBuilder(object):
-
     @staticmethod
     def build(input_shape, num_outputs, block_fn, repetitions):
         """Builds a custom ResNet like architecture.
@@ -237,18 +223,15 @@ class ResnetBuilder(object):
         block_fn = _get_block(block_fn)
 
         input = Input(shape=input_shape)
-        conv1 = _conv_bn_relu(filters=64, kernel_size=(7, 7),
-                              strides=(2, 2))(input)
-        pool1 = MaxPooling2D(pool_size=(3, 3), strides=(2, 2),
-                             padding="same")(conv1)
+        conv1 = _conv_bn_relu(filters=64, kernel_size=(7, 7), strides=(2, 2))(input)
+        pool1 = MaxPooling2D(pool_size=(3, 3), strides=(2, 2), padding="same")(conv1)
 
         block = pool1
         filters = 64
         for i, r in enumerate(repetitions):
-            block = _residual_block(block_fn,
-                                    filters=filters,
-                                    repetitions=r,
-                                    is_first_layer=(i == 0))(block)
+            block = _residual_block(
+                block_fn, filters=filters, repetitions=r, is_first_layer=(i == 0)
+            )(block)
             filters *= 2
 
         # Last activation
@@ -256,38 +239,33 @@ class ResnetBuilder(object):
 
         # Classifier block
         block_shape = K.int_shape(block)
-        pool2 = AveragePooling2D(pool_size=(block_shape[ROW_AXIS],
-                                            block_shape[COL_AXIS]),
-                                 strides=(1, 1))(block)
+        pool2 = AveragePooling2D(
+            pool_size=(block_shape[ROW_AXIS], block_shape[COL_AXIS]), strides=(1, 1)
+        )(block)
         flatten1 = Flatten()(pool2)
-        dense = Dense(units=num_outputs,
-                      kernel_initializer="he_normal",
-                      activation="softmax")(flatten1)
+        dense = Dense(
+            units=num_outputs, kernel_initializer="he_normal", activation="softmax"
+        )(flatten1)
 
         model = Model(inputs=input, outputs=dense)
         return model
 
     @staticmethod
     def build_resnet_18(input_shape, num_outputs):
-        return ResnetBuilder.build(input_shape, num_outputs, basic_block,
-                                   [2, 2, 2, 2])
+        return ResnetBuilder.build(input_shape, num_outputs, basic_block, [2, 2, 2, 2])
 
     @staticmethod
     def build_resnet_34(input_shape, num_outputs):
-        return ResnetBuilder.build(input_shape, num_outputs, basic_block,
-                                   [3, 4, 6, 3])
+        return ResnetBuilder.build(input_shape, num_outputs, basic_block, [3, 4, 6, 3])
 
     @staticmethod
     def build_resnet_50(input_shape, num_outputs):
-        return ResnetBuilder.build(input_shape, num_outputs, bottleneck,
-                                   [3, 4, 6, 3])
+        return ResnetBuilder.build(input_shape, num_outputs, bottleneck, [3, 4, 6, 3])
 
     @staticmethod
     def build_resnet_101(input_shape, num_outputs):
-        return ResnetBuilder.build(input_shape, num_outputs, bottleneck,
-                                   [3, 4, 23, 3])
+        return ResnetBuilder.build(input_shape, num_outputs, bottleneck, [3, 4, 23, 3])
 
     @staticmethod
     def build_resnet_152(input_shape, num_outputs):
-        return ResnetBuilder.build(input_shape, num_outputs, bottleneck,
-                                   [3, 8, 36, 3])
+        return ResnetBuilder.build(input_shape, num_outputs, bottleneck, [3, 8, 36, 3])

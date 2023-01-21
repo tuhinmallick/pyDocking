@@ -13,7 +13,6 @@ from mpi4py import MPI
 
 
 class ResidueCounts(object):
-
     def __init__(self, pdb_fn, ligcode="LIG"):
 
         self.pdb = mt.load_pdb(pdb_fn)
@@ -38,14 +37,15 @@ class ResidueCounts(object):
         self.seq = [pattern.match(x).group(0) for x in res_seq]
 
         self.receptor_ids_ = np.arange(len(self.seq))
-        self.ligand_ids_ = np.array([
-            self.receptor_ids_[-1] + 1,
-        ])
+        self.ligand_ids_ = np.array(
+            [
+                self.receptor_ids_[-1] + 1,
+            ]
+        )
 
         # print(self.receptor_ids_, self.ligand_ids_)
 
-        self.ligand_n_atoms_ = self.top.select("resid %d" %
-                                               len(self.seq)).shape[0]
+        self.ligand_n_atoms_ = self.top.select("resid %d" % len(self.seq)).shape[0]
 
         return self
 
@@ -53,7 +53,7 @@ class ResidueCounts(object):
 
         pairs_ = list(itertools.product(self.receptor_ids_, self.ligand_ids_))
         if len(pairs_) > self.max_pairs_:
-            self.resid_pairs_ = pairs_[:self.max_pairs_]
+            self.resid_pairs_ = pairs_[: self.max_pairs_]
         else:
             self.resid_pairs_ = pairs_
 
@@ -69,7 +69,8 @@ class ResidueCounts(object):
 
         distance_matrix_ = mt.compute_distances(self.pdb, atom_pairs=pairs_)[0]
         distance_matrix_ = distance_matrix_.reshape(
-            (-1, int(np.sqrt(distance_matrix_.shape[0]))))
+            (-1, int(np.sqrt(distance_matrix_.shape[0])))
+        )
 
         cmap = (distance_matrix_ <= cutoff) * 1.0
 
@@ -79,9 +80,11 @@ class ResidueCounts(object):
 
         if ignore_hydrogen:
             indices_a = self.pdb.topology.select(
-                "(resid %d) and (symbol != H)" % residue_pair[0])
+                "(resid %d) and (symbol != H)" % residue_pair[0]
+            )
             indices_b = self.pdb.topology.select(
-                "(resid %d) and (symbol != H)" % residue_pair[1])
+                "(resid %d) and (symbol != H)" % residue_pair[1]
+            )
         else:
             indices_a = self.pdb.topology.select("resid %d" % residue_pair[0])
             indices_b = self.pdb.topology.select("resid %d" % residue_pair[1])
@@ -95,8 +98,8 @@ class ResidueCounts(object):
         # if not self.distance_calculated_:
         distances = np.sum(self.cal_distances(resid_pair) <= cutoff)
         nbyn = np.sqrt(
-            self.top.select("resid %d" % resid_pair[0]).shape[0] *
-            self.ligand_n_atoms_)
+            self.top.select("resid %d" % resid_pair[0]).shape[0] * self.ligand_n_atoms_
+        )
 
         return distances / nbyn
 
@@ -146,8 +149,7 @@ def distance_padding(dist, max_pairs_=500, padding_with=0.0):
     """
 
     if dist.shape[0] < max_pairs_:
-        d = np.concatenate(
-            (dist, np.repeat(padding_with, max_pairs_ - dist.shape[0])))
+        d = np.concatenate((dist, np.repeat(padding_with, max_pairs_ - dist.shape[0])))
     elif dist.shape == max_pairs_:
         d = dist
     else:
@@ -337,7 +339,8 @@ if __name__ == "__main__":
     """
 
     parser = argparse.ArgumentParser(
-        description=d, formatter_class=RawDescriptionHelpFormatter)
+        description=d, formatter_class=RawDescriptionHelpFormatter
+    )
     parser.add_argument(
         "-inp",
         type=str,
@@ -367,22 +370,19 @@ if __name__ == "__main__":
         "-start",
         type=float,
         default=0.1,
-        help="Input, optional. Default is 0.05 nm. "
-        "The initial shell thickness. ",
+        help="Input, optional. Default is 0.05 nm. " "The initial shell thickness. ",
     )
     parser.add_argument(
         "-end",
         type=float,
         default=3.0,
-        help="Input, optional. Default is 3.05 nm. "
-        "The boundary of last shell.",
+        help="Input, optional. Default is 3.05 nm. " "The boundary of last shell.",
     )
     parser.add_argument(
         "-delta",
         type=float,
         default=0.05,
-        help="Input, optional. Default is 0.05 nm. "
-        "The thickness of the shells.",
+        help="Input, optional. Default is 0.05 nm. " "The thickness of the shells.",
     )
     parser.add_argument(
         "-n_shells",
@@ -395,8 +395,7 @@ if __name__ == "__main__":
         "-v",
         default=1,
         type=int,
-        help="Input, optional. Default is 1. "
-        "Whether output detail information.",
+        help="Input, optional. Default is 1. " "Whether output detail information.",
     )
 
     args = parser.parse_args()
@@ -408,9 +407,7 @@ if __name__ == "__main__":
 
         # spreading the calculating list to different MPI ranks
         with open(args.inp) as lines:
-            lines = [
-                x for x in lines if ("#" not in x and len(x.split()) >= 1)
-            ].copy()
+            lines = [x for x in lines if ("#" not in x and len(x.split()) >= 1)].copy()
             inputs = [x.split()[0] for x in lines]
 
         inputs_list = []
@@ -418,9 +415,8 @@ if __name__ == "__main__":
         if args.v:
             print(size, aver_size)
         for i in range(size - 1):
-            inputs_list.append(inputs[int(i * aver_size):int((i + 1) *
-                                                             aver_size)])
-        inputs_list.append(inputs[(size - 1) * aver_size:])
+            inputs_list.append(inputs[int(i * aver_size) : int((i + 1) * aver_size)])
+        inputs_list.append(inputs[(size - 1) * aver_size :])
 
     else:
         inputs_list = None
@@ -445,9 +441,13 @@ if __name__ == "__main__":
             print(rank, p)
 
         except RuntimeError:
-            r = ([
-                0.0,
-            ] * 500 * (args.n_shells + 4 + 3))
+            r = (
+                [
+                    0.0,
+                ]
+                * 500
+                * (args.n_shells + 4 + 3)
+            )
             print(rank, "Not successful. ", p)
 
         results.append(r)
@@ -461,9 +461,6 @@ if __name__ == "__main__":
 
     col_n = ["F" + str(x) for x in range(df.shape[1])]
     df.columns = col_n
-    df.to_csv("rank%d_" % rank + args.out,
-              sep=",",
-              float_format="%.4f",
-              index=True)
+    df.to_csv("rank%d_" % rank + args.out, sep=",", float_format="%.4f", index=True)
 
     print(rank, "Complete calculations. ")

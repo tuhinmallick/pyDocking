@@ -30,8 +30,8 @@ if __name__ == "__main__":
         bits_list.append(fingerprints(smi))
 
     bits = pd.DataFrame(
-        bits_list,
-        columns=["FP" + str(x) for x in np.arange(len(bits_list[0]))])
+        bits_list, columns=["FP" + str(x) for x in np.arange(len(bits_list[0]))]
+    )
     bits.index = df.values[:, 0]
     bits["logD"] = df["exp"].values
 

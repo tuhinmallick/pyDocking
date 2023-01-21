@@ -6,7 +6,6 @@ from collections import OrderedDict
 
 
 class ParseVinaHistory(object):
-
     def __init__(self, vina_hist):
         if os.path.exists(vina_hist):
             self.history_fn = vina_hist
@@ -73,9 +72,8 @@ class ParseVinaHistory(object):
     def sort_energies(self, decending=True):
 
         self.sorted_energies = OrderedDict(
-            sorted(self.energies.items(),
-                   key=operator.itemgetter(1),
-                   reverse=decending))
+            sorted(self.energies.items(), key=operator.itemgetter(1), reverse=decending)
+        )
 
         return self
 
@@ -86,9 +84,7 @@ class ParseVinaHistory(object):
             self.read_energies()
             # self.history_parsed_ = True
 
-        topn_models = [
-            x[0] for x in list(self.sorted_energies.items())[:top_n]
-        ]
+        topn_models = [x[0] for x in list(self.sorted_energies.items())[:top_n]]
         topn_lines = self.get_model_lines(topn_models)
 
         return topn_lines

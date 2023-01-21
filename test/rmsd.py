@@ -23,7 +23,7 @@ def rmsd(mol1, mol2):
         print("ERROR: Exit now!")
         sys.exit(0)
 
-    rmsd = np.sum((m1 - m2).ravel()**2 / m1.shape[0])
+    rmsd = np.sum((m1 - m2).ravel() ** 2 / m1.shape[0])
 
     return np.sqrt(rmsd)
 

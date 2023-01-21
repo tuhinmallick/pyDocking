@@ -122,7 +122,6 @@ class PubChemDownloader(object):
 
 
 class ZINCDownloader(object):
-
     def __init__(self):
         pass
 
