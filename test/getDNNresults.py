@@ -39,19 +39,15 @@ if __name__ == "__main__":
             )
 
         if not os.path.exists(fn):
-            print("TF log file %s not exists. " % fn)
-            # sys.exit(0)
+            print(f"TF log file {fn} not exists. ")
+                    # sys.exit(0)
         else:
             df = pd.read_csv(fn, header=0, index_col=0)
 
             batch = fn.split("batch")[1].split("_")[0]
             dropout = fn.split("dropout")[1].split("_")[0]
             alpha = fn.split("alpha")[1][:3]
-            if "with" in fn:
-                pooling = "yes"
-            else:
-                pooling = "no"
-
+            pooling = "yes" if "with" in fn else "no"
             if df.index.values[-1] == EPOCHS or df.shape[0] < args.patience + 1:
                 print(
                     fn,

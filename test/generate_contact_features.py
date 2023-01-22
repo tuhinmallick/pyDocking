@@ -35,7 +35,7 @@ class ResidueCounts(object):
 
         res_seq = [str(x) for x in list(self.top.residues)[:-1]]
 
-        self.seq = [pattern.match(x).group(0) for x in res_seq]
+        self.seq = [pattern.match(x)[0] for x in res_seq]
 
         self.receptor_ids_ = np.arange(len(self.seq))
         self.ligand_ids_ = np.array([
@@ -159,7 +159,7 @@ def distance_padding(dist, max_pairs_=500, padding_with=0.0):
 
 def hydrophobicity():
     """http://assets.geneious.com/manual/8.0/GeneiousManualsu41.html"""
-    hydrophobic = {
+    return {
         "PHE": 1.0,
         "LEU": 0.943,
         "ILE": 0.943,
@@ -183,12 +183,10 @@ def hydrophobicity():
         "UNK": 0.501,
     }
 
-    return hydrophobic
-
 
 def polarizability():
     """https://www.researchgate.net/publication/220043303_Polarizabilities_of_amino_acid_residues/figures"""
-    polar = {
+    return {
         "PHE": 121.43,
         "LEU": 91.6,
         "ILE": 91.21,
@@ -212,14 +210,12 @@ def polarizability():
         "UNK": 36.66,
     }
 
-    return polar
-
 
 def stringcoding():
     """Sequence from http://www.bligbi.com/amino-acid-table_242763/epic-amino-acid-table-l99-
     on-nice-home-designing-ideas-with-amino-acid-table/"""
 
-    sequence = {
+    return {
         "PHE": 18,
         "LEU": 16,
         "ILE": 15,
@@ -242,8 +238,6 @@ def stringcoding():
         "ARG": 1,
         "UNK": 11,
     }
-
-    return sequence
 
 
 def residue_string2code(seq, method=stringcoding):
@@ -413,13 +407,13 @@ if __name__ == "__main__":
             ].copy()
             inputs = [x.split()[0] for x in lines]
 
-        inputs_list = []
         aver_size = int(len(inputs) / size)
         if args.v:
             print(size, aver_size)
-        for i in range(size - 1):
-            inputs_list.append(inputs[int(i * aver_size):int((i + 1) *
-                                                             aver_size)])
+        inputs_list = [
+            inputs[int(i * aver_size) : int((i + 1) * aver_size)]
+            for i in range(size - 1)
+        ]
         inputs_list.append(inputs[(size - 1) * aver_size:])
 
     else:
@@ -459,7 +453,7 @@ if __name__ == "__main__":
     except:
         df.index = np.arange(df.shape[0])
 
-    col_n = ["F" + str(x) for x in range(df.shape[1])]
+    col_n = [f"F{str(x)}" for x in range(df.shape[1])]
     df.columns = col_n
     df.to_csv("rank%d_" % rank + args.out,
               sep=",",

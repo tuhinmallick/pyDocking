@@ -34,58 +34,48 @@ class rewritePDB(object):
         atomseq = int(atomStartNdx)
         chainname = chain
 
-        newfile = open(output, "w")
-        resseq_list = []
+        with open(output, "w") as newfile:
+            resseq_list = []
 
-        try:
-            with open(input) as lines:
-                for s in lines:
-                    if "ATOM" in s and len(s.split()) > 6:
-                        atomseq += 1
-                        newline = s
-                        newline = self.atomSeqChanger(newline, atomseq)
-                        newline = self.chainIDChanger(newline, chainname)
-                        if len(resseq_list) == 0:
+            try:
+                with open(input) as lines:
+                    for s in lines:
+                        if "ATOM" in s and len(s.split()) > 6:
+                            atomseq += 1
+                            newline = s
+                            newline = self.atomSeqChanger(newline, atomseq)
+                            newline = self.chainIDChanger(newline, chainname)
+                            if resseq_list and resseq_list[-1] != int(
+                                s[22:26].strip()
+                            ):
+                                resseq += 1
                             newline = self.resSeqChanger(newline, resseq)
                             resseq_list.append(int(s[22:26].strip()))
+                            newfile.write(newline)
                         else:
-                            if resseq_list[-1] == int(s[22:26].strip()):
-                                newline = self.resSeqChanger(newline, resseq)
-                            else:
-                                resseq += 1
-                                newline = self.resSeqChanger(newline, resseq)
-                            resseq_list.append(int(s[22:26].strip()))
-                        newfile.write(newline)
-                    else:
-                        newfile.write(s)
-        except FileExistsError:
-            print("File %s not exist" % self.pdb)
+                            newfile.write(s)
+            except FileExistsError:
+                print(f"File {self.pdb} not exist")
 
-        newfile.close()
         return 1
 
     def resSeqChanger(self, inline, resseq):
         resseqstring = " " * (4 - len(str(resseq))) + str(resseq)
-        newline = inline[:22] + resseqstring + inline[26:]
-        return newline
+        return inline[:22] + resseqstring + inline[26:]
 
     def atomSeqChanger(self, inline, atomseq):
         atomseqstring = " " * (5 - len(str(atomseq))) + str(atomseq)
-        newline = inline[:6] + atomseqstring + inline[11:]
-        return newline
+        return inline[:6] + atomseqstring + inline[11:]
 
     def resNameChanger(self, inline, resname):
         resnamestr = " " * (4 - len(str(resname))) + str(resname)
-        newline = inline[:16] + resnamestr + inline[20:]
-        return newline
+        return inline[:16] + resnamestr + inline[20:]
 
     def chainIDChanger(self, inline, chainid):
-        newline = inline[:21] + str(chainid) + inline[22:]
-        return newline
+        return inline[:21] + str(chainid) + inline[22:]
 
     def atomNameChanger(self, inline, new_atom_name):
-        newline = inline[:12] + "%4s" % new_atom_name + inline[16:]
-        return newline
+        return inline[:12] + "%4s" % new_atom_name + inline[16:]
 
     def combinePDBFromLines(self, output, lines):
         """
@@ -127,30 +117,27 @@ class rewritePDB(object):
 
         """
 
-        tofile = open("temp.pdb", "w")
+        with open("temp.pdb", "w") as tofile:
+            crd_list = {}
 
-        crd_list = {}
+            ln_target, ln_source = 0, 0
+            # generate a dict { atomname: pdbline}
+            with open(input) as lines:
+                for s in [x for x in lines if ("ATOM" in x or "HETATM" in x)]:
+                    crd_list[s.split()[2]] = s
+                    ln_source += 1
 
-        ln_target, ln_source = 0, 0
-        # generate a dict { atomname: pdbline}
-        with open(input) as lines:
-            for s in [x for x in lines if ("ATOM" in x or "HETATM" in x)]:
-                crd_list[s.split()[2]] = s
-                ln_source += 1
-
-        # reorder the crd_pdb pdblines, according to the atomseq_pdb lines
-        with open(atomseq_pdb) as lines:
-            for s in [x for x in lines if ("ATOM" in x or "HETATM" in x)]:
-                newline = crd_list[s.split()[2]]
-                tofile.write(newline)
-                ln_target += 1
-
-        tofile.close()
+            # reorder the crd_pdb pdblines, according to the atomseq_pdb lines
+            with open(atomseq_pdb) as lines:
+                for s in [x for x in lines if ("ATOM" in x or "HETATM" in x)]:
+                    newline = crd_list[s.split()[2]]
+                    tofile.write(newline)
+                    ln_target += 1
 
         if ln_source != ln_target:
             print(
-                "Error: Number of lines in source and target pdb files are not equal. (%s %s)"
-                % (input, atomseq_pdb))
+                f"Error: Number of lines in source and target pdb files are not equal. ({input} {atomseq_pdb})"
+            )
 
         # re-sequence the atom index
         self.pdbRewrite(input="temp.pdb",
@@ -191,14 +178,17 @@ class coordinatesPDB(object):
             head = line[:30]
             tail = line[54:]
 
-            newline = (head + "{0:8.3f}{1:8.3f}{2:8.3f}".format(
-                newxyz[0], newxyz[1], newxyz[2]) + tail)
+            return (
+                head
+                + "{0:8.3f}{1:8.3f}{2:8.3f}".format(
+                    newxyz[0], newxyz[1], newxyz[2]
+                )
+                + tail
+            )
 
         else:
-            print("WARNING: %s is not a coordination line" % line)
-            newline = ""
-
-        return newline
+            print(f"WARNING: {line} is not a coordination line")
+            return ""
 
     def getAtomCrdFromLines(self, lines):
         """Given a list of atom pbd lines, return their coordinates in a 2d list
@@ -282,12 +272,10 @@ def void_area(centriod, diameter):
 
     """
 
-    area = []
-    for i in range(len(centriod)):
-        area.append(
-            [centriod[i] - 0.5 * diameter, centriod[i] + 0.5 * diameter])
-
-    return area
+    return [
+        [centriod[i] - 0.5 * diameter, centriod[i] + 0.5 * diameter]
+        for i in range(len(centriod))
+    ]
 
 
 def dot_in_range(dot, xy_range):
@@ -297,10 +285,7 @@ def dot_in_range(dot, xy_range):
 
 def point_in_area(area, point):
 
-    in_area = []
-    for i in range(len(point)):
-        in_area.append(dot_in_range(point[i], area[i]))
-
+    in_area = [dot_in_range(point[i], area[i]) for i in range(len(point))]
     return all(in_area)
 
 
@@ -351,9 +336,7 @@ def get_resid(fn, atom_names=["CA"], lig_code="LIG"):
             x for x in lines if ("ATOM" in x and lig_code not in x
                                  and x.split()[2] in atom_names)
         ]
-        resid = [
-            x[22:26].strip() + "_" + x[21] for x in lines if len(x.split()) > 2
-        ]
+        resid = [f"{x[22:26].strip()}_{x[21]}" for x in lines if len(x.split()) > 2]
 
     return resid
 
@@ -367,13 +350,7 @@ def resid_in_box(box_center, diameter, fn, atom_names=["CA"], lig_code="LIG"):
 
     resid_is_inbox = atoms_in_boxs(fn, atom_ndx, box_center, diameter)
 
-    selected_resid = []
-
-    for item in resid_is_inbox:
-        if item[1]:
-            selected_resid.append(resid_atomndx[item[0]])
-
-    return selected_resid
+    return [resid_atomndx[item[0]] for item in resid_is_inbox if item[1]]
 
 
 def trim_sidechain(
@@ -393,9 +370,7 @@ def trim_sidechain(
         for s in lines:
             if "ATOM" in s and s[22:26].strip(
             ) in resid_list and s[21] in chains:
-                if s.split()[2] not in atoms_to_keep:
-                    pass
-                else:
+                if s.split()[2] in atoms_to_keep:
                     new_line = rpdb.resNameChanger(s, mutate_to)
                     tofile.write(new_line)
             elif "ATOM" in s or "HETATM" in s or "TER" in s:
@@ -417,17 +392,15 @@ def origin_to_zero(fn, out_fn, origin):
 
     pio = coordinatesPDB()
 
-    tofile = open(out_fn, "w")
+    with open(out_fn, "w") as tofile:
+        for s in plines:
+            crds = pio.getAtomCrdFromLines([
+                s,
+            ])[0]
+            new_crds = np.array(crds) + vector
+            nl = pio.replaceCrdInPdbLine(s, new_crds)
 
-    for s in plines:
-        crds = pio.getAtomCrdFromLines([
-            s,
-        ])[0]
-        new_crds = np.array(crds) + vector
-        nl = pio.replaceCrdInPdbLine(s, new_crds)
-
-        tofile.write(nl)
-    tofile.close()
+            tofile.write(nl)
 
 
 def run_tleap_tofix(in_pdb, out_pdb):

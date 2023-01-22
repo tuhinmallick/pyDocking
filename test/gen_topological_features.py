@@ -39,11 +39,11 @@ if __name__ == "__main__":
 
     features = []
     for fn in fn_list:
-        lig = "%s/%s_ligand.mol2" % (fn, fn)
+        lig = f"{fn}/{fn}_ligand.mol2"
 
         f = get_top_features(lig, Mol.converter_["mol2"])
         features.append(f)
 
     df = pd.DataFrame(features)
-    df.columns = ["FP" + str(x) for x in range(df.shape[1])]
+    df.columns = [f"FP{str(x)}" for x in range(df.shape[1])]
     df.to_csv(out, header=True, index=False, sep=",", float_format="%.1f")

@@ -20,22 +20,20 @@ def do_docking():
     size = comm.Get_size()
 
     if rank == 0:
-        keep_codes = []
         with open(sys.argv[1]) as lines:
             pdb_codes = [x.strip("\n") for x in lines]
-        # print(pdb_codes)
-
-        for c in pdb_codes:
-            if not os.path.exists("%s/%s_vinaout.pdbqt" %
-                                  (c, c)) and os.path.exists(
-                                      "%s/%s_protein.pdb.pdbqt" % (c, c)):
-                keep_codes.append(c)
+        keep_codes = [
+            c
+            for c in pdb_codes
+            if not os.path.exists(f"{c}/{c}_vinaout.pdbqt")
+            and os.path.exists(f"{c}/{c}_protein.pdb.pdbqt")
+        ]
         print(keep_codes)
         chunk = int(len(keep_codes) / size)
 
-        input_lists = []
-        for i in range(size - 1):
-            input_lists.append(keep_codes[i * chunk:i * chunk + chunk])
+        input_lists = [
+            keep_codes[i * chunk : i * chunk + chunk] for i in range(size - 1)
+        ]
         input_lists.append(keep_codes[(size - 1) * chunk:])
     else:
         input_lists = None
@@ -44,28 +42,25 @@ def do_docking():
 
     for c in inputs:
 
-        rec = "%s/%s_protein.pdb.pdbqt" % (c, c)
+        rec = f"{c}/{c}_protein.pdb.pdbqt"
 
         # process the ligand
-        lig = "%s/%s_ligand.mol2" % (c, c)
-        docking.pdb2pdbqt(
-            lig,
-            lig + ".pdbqt",
-        )
-        docking.pdb2pdbqt(lig, lig + ".pdb", keep_polarH=False)
+        lig = f"{c}/{c}_ligand.mol2"
+        docking.pdb2pdbqt(lig, f"{lig}.pdbqt")
+        docking.pdb2pdbqt(lig, f"{lig}.pdb", keep_polarH=False)
 
-        if os.path.exists(rec) and os.path.exists(lig + ".pdbqt"):
+        if os.path.exists(rec) and os.path.exists(f"{lig}.pdbqt"):
 
             try:
-                out = "%s/%s_vinaout.pdbqt" % (c, c)
-                log = "%s/log_vina.log" % c
+                out = f"{c}/{c}_vinaout.pdbqt"
+                log = f"{c}/log_vina.log"
 
-                config = "%s/vina.config" % c
+                config = f"{c}/vina.config"
 
                 if not os.path.exists(out):
                     rec_prep = docking.ReceptorPrepare(rec)
                     # rec_prep.receptor_addH("H_"+rec)
-                    xyz_c = rec_prep.pocket_center(LIG=lig + ".pdb")
+                    xyz_c = rec_prep.pocket_center(LIG=f"{lig}.pdb")
 
                     # docking.pdb2pdbqt(rec, "temp.pdbqt")
                     # job = sp.Popen("awk '$1 ~ /ATOM/ {print $0}' temp.pdbqt > %s.pdbqt" % rec, shell=True)
@@ -73,7 +68,7 @@ def do_docking():
                     vina = docking.VinaDocking()
                     vina.vina_config(
                         rec,
-                        lig + ".pdbqt",
+                        f"{lig}.pdbqt",
                         out,
                         16,
                         8,

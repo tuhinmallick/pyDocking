@@ -104,15 +104,9 @@ def PCC(output, target):
     vx = target.view(-1) - torch.mean(target.view(-1))
     vy = output.view(-1) - torch.mean(output.view(-1))
 
-    P = torch.sum(vx * vy) / (torch.sqrt(torch.sum(vx**2)) *
-                              torch.sqrt(torch.sum(vy**2)))
-    # P = vx * vy * torch.rsqrt(torch.sum(vx ** 2)) * torch.rsqrt(torch.sum(vy ** 2))
-
-    # x = output.detach().numpy().ravel()
-    # y = target.detach().numpy().ravel()
-
-    # return stats.pearsonr(x, y)[0]
-    return P
+    return torch.sum(vx * vy) / (
+        torch.sqrt(torch.sum(vx**2)) * torch.sqrt(torch.sum(vy**2))
+    )
 
 
 def PCC_loss(output, target):

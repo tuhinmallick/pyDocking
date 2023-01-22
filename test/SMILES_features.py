@@ -28,11 +28,9 @@ if __name__ == "__main__":
 
     descriptors = []
     names = []
-    count = 0
     keys = []
     smiles = []
-    for (smi, n) in zip(SMIs, df["Compound ID"].values):
-        count += 1
+    for count, (smi, n) in enumerate(zip(SMIs, df["Compound ID"].values), start=1):
         if count > -2:
             try:
                 d, k = SMI2Descriptor(smi)
@@ -41,7 +39,7 @@ if __name__ == "__main__":
                 names.append(n)
                 descriptors.append(d)
             except:
-                print("Failed %s " % n)
+                print(f"Failed {n} ")
 
             print("Progress: %d " % count)
 
@@ -51,7 +49,7 @@ if __name__ == "__main__":
                 dat["SMI"] = smiles
 
                 dat.to_csv(
-                    "descriptors_%s" % sys.argv[1],
+                    f"descriptors_{sys.argv[1]}",
                     header=True,
                     index=False,
                     sep=",",

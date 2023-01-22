@@ -128,10 +128,7 @@ class LigandParser(object):
 
 def get_protein_elementtype(e):
     all_elements = ["H", "C", "O", "N", "S", "DU"]
-    if e in all_elements:
-        return e
-    else:
-        return "DU"
+    return e if e in all_elements else "DU"
 
 
 def get_ligand_elementtype(e):
@@ -191,34 +188,33 @@ def generate_features(pro_fn, lig_fn, ncutoffs):
 
     onionnet_counts = pd.DataFrame()
 
-    for el in elements_ligand:
-        for ep in elements_protein:
-            protein_xyz = protein_data[protein_data["element"] == ep][[
-                "x", "y", "z"
-            ]].values
-            ligand_xyz = ligand_data[ligand_data["element"] == el][[
-                "x", "y", "z"
-            ]].values
+    for el, ep in itertools.product(elements_ligand, elements_protein):
+        protein_xyz = protein_data[protein_data["element"] == ep][[
+            "x", "y", "z"
+        ]].values
+        ligand_xyz = ligand_data[ligand_data["element"] == el][[
+            "x", "y", "z"
+        ]].values
 
-            #       print(ligand_xyz[:10], protein_xyz[:10])
-            # distances = distance_pairs(protein_xyz, ligand_xyz)
-            # print(distances[:10])
-            counts = np.zeros(len(n_cutoffs))
+        #       print(ligand_xyz[:10], protein_xyz[:10])
+        # distances = distance_pairs(protein_xyz, ligand_xyz)
+        # print(distances[:10])
+        counts = np.zeros(len(n_cutoffs))
 
-            #       print(el, ep, "GET ELE TYPE SPEC DISTANCES")
-            if len(protein_xyz) and len(ligand_xyz):
-                # print(protein_xyz.shape, ligand_xyz.shape)
-                distances = distance_pairs(protein_xyz, ligand_xyz)
+        #       print(el, ep, "GET ELE TYPE SPEC DISTANCES")
+        if len(protein_xyz) and len(ligand_xyz):
+            # print(protein_xyz.shape, ligand_xyz.shape)
+            distances = distance_pairs(protein_xyz, ligand_xyz)
 
-                # print(sorted(distances)[:10], sorted(distances)[-10:])
-                for i, c in enumerate(n_cutoffs):
-                    single_count = distance2counts((distances, c))
-                    if i > 0:
-                        single_count = single_count - counts[i - 1]
-                    counts[i] = single_count
+            # print(sorted(distances)[:10], sorted(distances)[-10:])
+            for i, c in enumerate(n_cutoffs):
+                single_count = distance2counts((distances, c))
+                if i > 0:
+                    single_count = single_count - counts[i - 1]
+                counts[i] = single_count
 
-            feature_id = "%s_%s" % (el, ep)
-            onionnet_counts[feature_id] = counts
+        feature_id = f"{el}_{ep}"
+        onionnet_counts[feature_id] = counts
 
     return onionnet_counts
 
@@ -294,12 +290,12 @@ if __name__ == "__main__":
             ].copy()
             inputs = [x.split() for x in lines]
 
-        inputs_list = []
         aver_size = int(len(inputs) / size)
         print(size, aver_size)
-        for i in range(size - 1):
-            inputs_list.append(inputs[int(i * aver_size):int((i + 1) *
-                                                             aver_size)])
+        inputs_list = [
+            inputs[int(i * aver_size) : int((i + 1) * aver_size)]
+            for i in range(size - 1)
+        ]
         inputs_list.append(inputs[(size - 1) * aver_size:])
 
     else:
@@ -318,16 +314,14 @@ if __name__ == "__main__":
     # computing the features now ...
     for p in inputs:
         p = p[0]
-        pro_fn = p + "/%s_protein.pdb" % p
-        lig_fn = p + "/%s_ligand.mol2" % p
+        pro_fn = p + f"/{p}_protein.pdb"
+        lig_fn = p + f"/{p}_ligand.mol2"
 
-        #        try:
-        if True:
-            # the main function for featurization ...
-            r = generate_features(pro_fn, lig_fn, n_cutoffs)
-            #           print(r.sum(axis=0))
-            keys = list(r.columns)
-            results.append(r.values.ravel())
+        # the main function for featurization ...
+        r = generate_features(pro_fn, lig_fn, n_cutoffs)
+        #           print(r.sum(axis=0))
+        keys = list(r.columns)
+        results.append(r.values.ravel())
     #            print(rank, pro_fn, lig_fn)
 
     # except:
@@ -344,9 +338,7 @@ if __name__ == "__main__":
     except:
         df.index = np.arange(df.shape[0])
 
-    col_n = []
-    for i, n in enumerate(keys * len(n_cutoffs)):
-        col_n.append(n + "_" + str(i))
+    col_n = [n + "_" + str(i) for i, n in enumerate(keys * len(n_cutoffs))]
     df.columns = col_n
     df.to_csv("rank%d_" % rank + args.out,
               sep=",",

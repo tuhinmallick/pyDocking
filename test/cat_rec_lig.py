@@ -35,15 +35,14 @@ def cat_rec_lig(rec, lig, out):
 def lig_name_change(lig_in, lig_out, lig_code):
 
     pio = pdbio.rewritePDB(lig_in)
-    tofile = open(lig_out, "w")
-    with open(lig_in) as lines:
-        for s in lines:
-            if len(s.split()) and s.split()[0] in ["ATOM", "HETATM"]:
-                nl = pio.resNameChanger(s, lig_code)
-                n2 = pio.chainIDChanger(nl, "Z")
-                tofile.write(n2)
+    with open(lig_out, "w") as tofile:
+        with open(lig_in) as lines:
+            for s in lines:
+                if len(s.split()) and s.split()[0] in ["ATOM", "HETATM"]:
+                    nl = pio.resNameChanger(s, lig_code)
+                    n2 = pio.chainIDChanger(nl, "Z")
+                    tofile.write(n2)
 
-    tofile.close()
     return None
 
 
@@ -55,16 +54,14 @@ def main():
     print(inputs)
     for p in inputs:
 
-        rec = os.path.join(p, p + "_protein.pdb")
-        lig = os.path.join(p, p + "_ligand.mol2")
-        if True:  # if not os.path.exists(os.path.join(p, "%s_cplx.pdb" % p)):
-            try:
-                convert_lig(lig, "t1_%s.pdb" % p)
-                lig_name_change("t1_%s.pdb" % p, "t2_%s.pdb" % p, "LIG")
-                cat_rec_lig(rec, "t2_%s.pdb" % p,
-                            os.path.join(p, "%s_cplx.pdb" % p))
-            except:
-                print("Not successful : ", p)
+        rec = os.path.join(p, f"{p}_protein.pdb")
+        lig = os.path.join(p, f"{p}_ligand.mol2")
+        try:
+            convert_lig(lig, f"t1_{p}.pdb")
+            lig_name_change(f"t1_{p}.pdb", f"t2_{p}.pdb", "LIG")
+            cat_rec_lig(rec, f"t2_{p}.pdb", os.path.join(p, f"{p}_cplx.pdb"))
+        except:
+            print("Not successful : ", p)
 
 
 #        print(p)

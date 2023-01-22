@@ -12,11 +12,10 @@ def metric_fingerprints(metric="Tanimoto"):
         "Cosine": DataStructs.CosineSimilarity,
     }
 
-    if metric in methods.keys():
+    if metric in methods:
         return methods[metric]
-    else:
-        print("%s metric is not an option. Will use Tanimoto. " % metric)
-        return methods["Tanimoto"]
+    print(f"{metric} metric is not an option. Will use Tanimoto. ")
+    return methods["Tanimoto"]
 
 
 def similarity(mol1, mol2, metric="Tanimoto"):

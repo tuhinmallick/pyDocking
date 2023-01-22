@@ -37,11 +37,7 @@ if __name__ == "__main__":
     traj = None
 
     for i, fn in enumerate(traj_fns):
-        if i == 0:
-            traj = load_pdb(fn)
-        else:
-            traj = traj.join(load_pdb(fn))
-
+        traj = load_pdb(fn) if i == 0 else traj.join(load_pdb(fn))
     traj = traj.superpose(traj[0])
 
     xyz = traj.xyz.reshape((traj.n_frames, -1))

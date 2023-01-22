@@ -23,7 +23,7 @@ if __name__ == "__main__":
             if len(s.split(",")) and s.split(",")[1] != "":
                 compound_dict[s.split(",")[2]] = s.split(",")[1]
 
-    for cid in compound_dict.keys():
+    for cid in compound_dict:
         print("Start ", cid, compound_dict[cid])
 
         if len(compound_dict[cid]):
@@ -35,8 +35,8 @@ if __name__ == "__main__":
                 # print(mol, compound_dict(cid))
                 mol.load_mol(compound_dict[cid])
                 # print(mol)
-                mol.write_mol("mol_%s.%s" % (cid, out_format))
+                mol.write_mol(f"mol_{cid}.{out_format}")
             except:
-                print("Fail to generate %s.%s file " % (cid, out_format))
+                print(f"Fail to generate {cid}.{out_format} file ")
 
     print("Completed ... ...")

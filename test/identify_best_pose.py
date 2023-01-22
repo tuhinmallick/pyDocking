@@ -13,7 +13,7 @@ from pyDocking import rmsd
 def converter_multiple(inp, out, multiple=True):
 
     if multiple:
-        cmd = "obabel %s -O %s -m" % (inp, out)
+        cmd = f"obabel {inp} -O {out} -m"
         job = sp.Popen(cmd, shell=True)
         job.communicate()
     else:
@@ -64,18 +64,12 @@ if __name__ == "__main__":
 
         # change ligand resname to LIG
         rpdb = region_mutate.rewritePDB(lig2combine)
-        tofile = open(lig2combine + "_rew", "w")
-        with open(lig2combine) as lines:
-            for s in [x for x in lines if "ATOM" in x]:
-                new_line = rpdb.resNameChanger(s, "LIG")
-                tofile.write(new_line)
-        tofile.close()
-
-        cmd = "cat %s %s > %s" % (
-            prefix + "_protein.pdb",
-            lig2combine + "_rew",
-            "temp_cplx",
-        )
+        with open(lig2combine + "_rew", "w") as tofile:
+            with open(lig2combine) as lines:
+                for s in [x for x in lines if "ATOM" in x]:
+                    new_line = rpdb.resNameChanger(s, "LIG")
+                    tofile.write(new_line)
+        cmd = f'cat {prefix + "_protein.pdb"} {lig2combine + "_rew"} > temp_cplx'
 
         job = sp.Popen(cmd, shell=True)
         job.communicate()

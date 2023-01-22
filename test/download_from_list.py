@@ -10,10 +10,7 @@ if __name__ == "__main__":
 
     compounds = []
     with open(input) as lines:
-        for s in lines:
-            if len(s.split()):
-                compounds.append(s.strip("\n"))
-
+        compounds.extend(s.strip("\n") for s in lines if len(s.split()))
     print(compounds)
 
     tofile = open(output, "w")

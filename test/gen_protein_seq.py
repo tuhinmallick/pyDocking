@@ -7,15 +7,10 @@ from rdkit import Chem
 def long2short(code):
 
     with open("amino-acid.lib") as lines:
-        code_mapper = {}
-        for s in lines:
-            if len(s) and s[0] != "#":
-                code_mapper[s.split()[2]] = s.split()[3]
-
-    if code in code_mapper.keys():
-        return code_mapper[code]
-    else:
-        return ""
+        code_mapper = {
+            s.split()[2]: s.split()[3] for s in lines if len(s) and s[0] != "#"
+        }
+    return code_mapper.get(code, "")
 
 
 def res_seq(pdb):
@@ -43,9 +38,9 @@ if __name__ == "__main__":
     seq = res_seq(p)
 
     with open(o, "w") as tofile:
-        l = p + "," + "".join(seq) + "\n"
+        l = f"{p}," + "".join(seq) + "\n"
         tofile.write(l)
 
     with open(s, "w") as tofile:
-        l = lig + "," + lig_smiles(lig)
+        l = f"{lig},{lig_smiles(lig)}"
         tofile.write(l)

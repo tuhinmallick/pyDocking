@@ -30,10 +30,8 @@ if __name__ == "__main__":
 
                 mol.load_mol(sm)
 
-                mol.write_mol("%s.%s" % (n, out_format))
-                builder.babel_converter("%s.%s" % (n, out_format),
-                                        "%s.pdbqt" % n,
-                                        mode="AddPolarH")
+                mol.write_mol(f"{n}.{out_format}")
+                builder.babel_converter(f"{n}.{out_format}", f"{n}.pdbqt", mode="AddPolarH")
             except:
                 print("Fail to generate %d.%s file " % (i, out_format))
             i += 1

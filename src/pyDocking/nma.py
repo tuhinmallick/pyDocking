@@ -31,9 +31,7 @@ class EssentialDynamics(object):
 
         """
 
-        newxyz = list(map(lambda x, y: x + y * delta, xyz, vectors))
-
-        return newxyz
+        return list(map(lambda x, y: x + y * delta, xyz, vectors))
 
     def pdbIncreaseMotion(self, pdbin, vectors, delta=0.5):
         """Increase motions of a pdb given its PC component eigenvectors

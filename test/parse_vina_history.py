@@ -12,7 +12,7 @@ class ParseVinaHistory(object):
             self.history_fn = vina_hist
         else:
             self.history_fn = None
-            print("Warning: %s not exist. " % self.history_fn)
+            print(f"Warning: {self.history_fn} not exist. ")
 
         self.energies = OrderedDict()
         self.model_ln = OrderedDict()
@@ -33,9 +33,6 @@ class ParseVinaHistory(object):
 
                         self.energies[model] = energy
                         self.model_ln[model] = ln_start
-
-                    else:
-                        pass
 
         self.history_parsed_ = True
 
@@ -89,9 +86,7 @@ class ParseVinaHistory(object):
         topn_models = [
             x[0] for x in list(self.sorted_energies.items())[:top_n]
         ]
-        topn_lines = self.get_model_lines(topn_models)
-
-        return topn_lines
+        return self.get_model_lines(topn_models)
 
 
 if __name__ == "__main__":
