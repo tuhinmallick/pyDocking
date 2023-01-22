@@ -31,7 +31,8 @@ if __name__ == "__main__":
 
     bits = pd.DataFrame(
         bits_list,
-        columns=["FP" + str(x) for x in np.arange(len(bits_list[0]))])
+        columns=[f"FP{str(x)}" for x in np.arange(len(bits_list[0]))],
+    )
     bits.index = df.values[:, 0]
     bits["logD"] = df["exp"].values
 

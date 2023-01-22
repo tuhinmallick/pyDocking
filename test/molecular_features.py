@@ -28,9 +28,7 @@ def distance(pair):
 def cmap(coords):
 
     pairs = itertools.product(coords)
-    distances = list(map(distance, pairs))
-
-    return distances
+    return list(map(distance, pairs))
 
 
 def resp_charges(smile, bset="hf/6-31g"):

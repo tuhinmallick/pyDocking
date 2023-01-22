@@ -201,10 +201,10 @@ def _handle_dim_ordering():
 
 def _get_block(identifier):
     if isinstance(identifier, six.string_types):
-        res = globals().get(identifier)
-        if not res:
-            raise ValueError("Invalid {}".format(identifier))
-        return res
+        if res := globals().get(identifier):
+            return res
+        else:
+            raise ValueError(f"Invalid {identifier}")
     return identifier
 
 
@@ -264,8 +264,7 @@ class ResnetBuilder(object):
                       kernel_initializer="he_normal",
                       activation="softmax")(flatten1)
 
-        model = Model(inputs=input, outputs=dense)
-        return model
+        return Model(inputs=input, outputs=dense)
 
     @staticmethod
     def build_resnet_18(input_shape, num_outputs):

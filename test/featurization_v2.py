@@ -115,7 +115,7 @@ def generate_features(complex_fn, lig_code, ncutoffs, all_elements, keys):
 
     # define a pdb parser and calculate the distance matrix
     cplx = AtomTypeCounts(complex_fn, lig_code)
-    cplx.parsePDB(rec_sele="protein", lig_sele="resname %s" % lig_code)
+    cplx.parsePDB(rec_sele="protein", lig_sele=f"resname {lig_code}")
 
     # element types of all atoms in the proteins and ligands
     new_lig = [x if x in all_elements else "Du" for x in cplx.lig_ele]
@@ -180,15 +180,15 @@ if __name__ == "__main__":
             ].copy()
             inputs = [x.split()[0] for x in lines]
 
-        inputs_list = []
         aver_size = int(len(inputs) / size)
         print(size, aver_size)
-        for i in range(size - 1):
-            inputs_list.append(inputs[int(i * aver_size):int((i + 1) *
-                                                             aver_size)])
+        inputs_list = [
+            inputs[int(i * aver_size) : int((i + 1) * aver_size)]
+            for i in range(size - 1)
+        ]
         inputs_list.append(inputs[(size - 1) * aver_size:])
 
-        # print(inputs_list)
+            # print(inputs_list)
 
     else:
         inputs_list = None
@@ -205,10 +205,10 @@ if __name__ == "__main__":
     results = []
     success = []
 
+    lig_code = "LIG UNK"
+
     for p in inputs:
         fn = p
-        lig_code = "LIG UNK"
-
         try:
             # do the calculations
             r = generate_features(fn, lig_code, n_cutoffs, all_elements, keys)
@@ -237,11 +237,13 @@ if __name__ == "__main__":
     #    col_n.append('success')
     # df.columns = col_n
     #    df['success'] = success
-    df.to_csv(str(rank) + "_" + out,
-              sep=",",
-              float_format="%.1f",
-              index=True,
-              columns=False)
+    df.to_csv(
+        f"{str(rank)}_" + out,
+        sep=",",
+        float_format="%.1f",
+        index=True,
+        columns=False,
+    )
 
     print(time.time() - start)
     print(rank, "Complete calculations. ")

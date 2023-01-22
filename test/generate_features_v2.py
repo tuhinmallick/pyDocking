@@ -160,7 +160,7 @@ def generate_features(complex_fn, lig_code, ncutoffs):
 
     # parse the pdb file and get the atom element information
     cplx = AtomTypeCounts(complex_fn, lig_code)
-    cplx.parsePDB(rec_sele="protein", lig_sele="resname %s" % lig_code)
+    cplx.parsePDB(rec_sele="protein", lig_sele=f"resname {lig_code}")
 
     # element types of all atoms in the proteins and ligands
     new_lig = list(map(get_elementtype, cplx.lig_ele))
@@ -275,12 +275,12 @@ if __name__ == "__main__":
             ].copy()
             inputs = [x.split()[0] for x in lines]
 
-        inputs_list = []
         aver_size = int(len(inputs) / size)
         print(size, aver_size)
-        for i in range(size - 1):
-            inputs_list.append(inputs[int(i * aver_size):int((i + 1) *
-                                                             aver_size)])
+        inputs_list = [
+            inputs[int(i * aver_size) : int((i + 1) * aver_size)]
+            for i in range(size - 1)
+        ]
         inputs_list.append(inputs[(size - 1) * aver_size:])
 
     else:
@@ -324,9 +324,7 @@ if __name__ == "__main__":
     except:
         df.index = np.arange(df.shape[0])
 
-    col_n = []
-    for i, n in enumerate(keys * len(n_cutoffs)):
-        col_n.append(n + "_" + str(i))
+    col_n = [n + "_" + str(i) for i, n in enumerate(keys * len(n_cutoffs))]
     df.columns = col_n
     df.to_csv("rank%d_" % rank + args.out,
               sep=",",

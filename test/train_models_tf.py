@@ -115,22 +115,13 @@ def create_model_DNN(input_size,
                      dropout=0.1):
     model = tf.keras.Sequential()
 
-    for i, hl in enumerate(hidden_layers):
-        if i == 0:
-            model.add(
-                tf.keras.layers.Dense(
-                    hl,
-                    input_dim=input_size,
-                    kernel_regularizer=tf.keras.regularizers.l2(0.01),
-                ))
-        else:
-            model.add(
-                tf.keras.layers.Dense(
-                    hl,
-                    input_dim=input_size,
-                    kernel_regularizer=tf.keras.regularizers.l2(0.01),
-                ))
-
+    for hl in hidden_layers:
+        model.add(
+            tf.keras.layers.Dense(
+                hl,
+                input_dim=input_size,
+                kernel_regularizer=tf.keras.regularizers.l2(0.01),
+            ))
         model.add(tf.keras.layers.Activation("relu"))
         model.add(tf.keras.layers.BatchNormalization())
         model.add(tf.keras.layers.Dropout(dropout))
@@ -403,7 +394,7 @@ if __name__ == "__main__":
                 if args.y_col[0] in df.columns.values:
                     y = y + list(df[args.y_col[0]].values)
                 else:
-                    print("No such column %s in input file. " % args.y_col[0])
+                    print(f"No such column {args.y_col[0]} in input file. ")
 
             if i == 0:
                 X = df.values[:, :args.n_features]

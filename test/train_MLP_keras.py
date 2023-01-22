@@ -370,7 +370,7 @@ if __name__ == "__main__":
                 if args.pKa_col[0] in df.columns.values:
                     y = y + list(df[args.y_col[0]].values)
                 else:
-                    print("No such column %s in input file. " % args.y_col[0])
+                    print(f"No such column {args.y_col[0]} in input file. ")
 
             if i == 0:
                 X = df.values[:, :args.n_features]
@@ -518,13 +518,9 @@ if __name__ == "__main__":
 
                 model.save(args.model)
                 stopping.append([e, loss_val])
-            else:
-                if e - history[-1][0] >= args.patience:
-                    print("Get best model at epoch = %d." % stopping[-1][0])
-                    break
-                else:
-                    pass
-
+            elif e - history[-1][0] >= args.patience:
+                print("Get best model at epoch = %d." % stopping[-1][0])
+                break
     else:
         scaler = joblib.load(args.scaler)
 

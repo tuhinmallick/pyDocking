@@ -309,8 +309,7 @@ if __name__ == "__main__":
                 if args.pKa_col[0] in df.columns.values:
                     y = y + list(df[args.pKa_col[0]].values)
                 else:
-                    print("No such column %s in input file. " %
-                          args.pKa_col[0])
+                    print(f"No such column {args.pKa_col[0]} in input file. ")
             if X.shape[0] == 0:
                 X = df.values[:, :args.n_features]
             else:

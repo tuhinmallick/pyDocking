@@ -175,11 +175,10 @@ class CompoundBuilder(object):
             if self.optimize_:
                 AllChem.MMFFOptimizeMolecule(self.molecule_)
 
-            return self
-
         else:
             print("Load molecule first. ")
-            return self
+
+        return self
 
     def load_mol(self, mol_file):
         """Load a molecule from a file or a SMILE string
@@ -247,15 +246,12 @@ def babel_converter(input, output, babelexe="obabel", mode="general"):
 
     cmd = ""
     if mode == "general":
-        cmd = "%s %s -O %s" % (babelexe, input, output)
+        cmd = f"{babelexe} {input} -O {output}"
     elif mode == "AddPolarH":
-        cmd = "%s %s -O %s -d" % (babelexe, input, "xxx_temp_noH.pdbqt")
+        cmd = f"{babelexe} {input} -O xxx_temp_noH.pdbqt -d"
         job = Popen(cmd, shell=True)
         job.communicate()
-        cmd = "%s %s -O %s --AddPolarH" % (babelexe, "xxx_temp_noH.pdbqt",
-                                           output)
-    else:
-        pass
+        cmd = f"{babelexe} xxx_temp_noH.pdbqt -O {output} --AddPolarH"
     job = Popen(cmd, shell=True)
     job.communicate()
 

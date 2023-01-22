@@ -71,7 +71,7 @@ class PubChemDownloader(object):
             try:
                 r = get_compounds(n, namespace=type)
             except:
-                print("Ligand %s not found" % n)
+                print(f"Ligand {n} not found")
                 r = []
 
             if len(r):
@@ -95,10 +95,7 @@ class PubChemDownloader(object):
 
         """
 
-        if compound is not None:
-            return compound.isomeric_smiles
-        else:
-            return ""
+        return compound.isomeric_smiles if compound is not None else ""
 
     def get_cid(
         self,
@@ -115,10 +112,7 @@ class PubChemDownloader(object):
         cid : str
             The cid of a compound.
         """
-        if compound is not None:
-            return compound.cid
-        else:
-            return ""
+        return compound.cid if compound is not None else ""
 
 
 class ZINCDownloader(object):
@@ -145,41 +139,39 @@ class ZINCDownloader(object):
         if not os.path.exists(zinc_id):
 
             try:
-                cmd = "wget http://zinc.docking.org/substance/%s" % zinc_id
+                cmd = f"wget http://zinc.docking.org/substance/{zinc_id}"
                 job = sp.Popen(cmd, shell=True)
                 job.communicate()
             except ConnectionError:
                 try:
-                    url = "http://zinc.docking.org/substance/%s" % zinc_id
+                    url = f"http://zinc.docking.org/substance/{zinc_id}"
                     return self.crawl_smiles(url)
 
                 except (ConnectionError, UnicodeDecodeError) as e:
                     return ""
 
-        if os.path.exists(zinc_id):
-            try:
-                soup = BeautifulSoup(open(zinc_id))
-                if len(soup.find_all("input")) >= 4:
-                    s = soup.find_all("input")[3]["value"]
-                else:
-                    try:
-                        url = "http://zinc.docking.org/substance/%s" % zinc_id
-                        s = self.crawl_smiles(url)
-                    except (ConnectionError, UnicodeDecodeError):
-                        s = ""
-
-                return s
-
-            except UnicodeDecodeError:
-                try:
-                    url = "http://zinc.docking.org/substance/%s" % zinc_id
-
-                    return self.crawl_smiles(url)
-                except (UnicodeDecodeError, ConnectionError) as e:
-                    return ""
-
-        else:
+        if not os.path.exists(zinc_id):
             return ""
+        try:
+            soup = BeautifulSoup(open(zinc_id))
+            if len(soup.find_all("input")) >= 4:
+                s = soup.find_all("input")[3]["value"]
+            else:
+                try:
+                    url = f"http://zinc.docking.org/substance/{zinc_id}"
+                    s = self.crawl_smiles(url)
+                except (ConnectionError, UnicodeDecodeError):
+                    s = ""
+
+            return s
+
+        except UnicodeDecodeError:
+            try:
+                url = f"http://zinc.docking.org/substance/{zinc_id}"
+
+                return self.crawl_smiles(url)
+            except (UnicodeDecodeError, ConnectionError) as e:
+                return ""
 
     def get_by_ids(self, zinc_ids, max_sleep=4.0, verbose=True):
 

@@ -113,7 +113,7 @@ def generate_features(complex_fn, lig_code, ncutoffs):
     ]
 
     cplx = AtomTypeCounts(complex_fn, lig_code)
-    cplx.parsePDB(rec_sele="protein", lig_sele="resname %s" % lig_code)
+    cplx.parsePDB(rec_sele="protein", lig_sele=f"resname {lig_code}")
 
     lig = cplx.lig_ele
     rec = cplx.rec_ele
@@ -185,12 +185,12 @@ if __name__ == "__main__":
             ].copy()
             inputs = [x.split()[0] for x in lines]
 
-        inputs_list = []
         aver_size = int(len(inputs) / size)
         print(size, aver_size)
-        for i in range(size - 1):
-            inputs_list.append(inputs[int(i * aver_size):int((i + 1) *
-                                                             aver_size)])
+        inputs_list = [
+            inputs[int(i * aver_size) : int((i + 1) * aver_size)]
+            for i in range(size - 1)
+        ]
         inputs_list.append(inputs[(size - 1) * aver_size:])
 
     else:
@@ -206,10 +206,10 @@ if __name__ == "__main__":
     ele_pairs = []
     success = []
 
+    lig_code = "LIG UNK"
+
     for p in inputs:
         fn = p
-        lig_code = "LIG UNK"
-
         try:
             r, ele_pairs = generate_features(fn, lig_code, n_cutoffs)
             results.append(r)
@@ -235,10 +235,8 @@ if __name__ == "__main__":
     except:
         df.index = np.arange(df.shape[0])
 
-    col_n = []
-    for i, n in enumerate(ele_pairs * len(n_cutoffs)):
-        col_n.append(n + "_" + str(i))
+    col_n = [n + "_" + str(i) for i, n in enumerate(ele_pairs * len(n_cutoffs))]
     df.columns = col_n
-    df.to_csv(str(rank) + "_" + out, sep=",", float_format="%.3f", index=True)
+    df.to_csv(f"{str(rank)}_" + out, sep=",", float_format="%.3f", index=True)
 
     print(rank, "Complete calculations. ")

@@ -66,7 +66,7 @@ class VinaDocking(object):
 
         if self.config is not None:
 
-            job = sp.Popen("vina --config %s " % self.config, shell=True)
+            job = sp.Popen(f"vina --config {self.config} ", shell=True)
             job.communicate()
 
             job.terminate()
@@ -133,10 +133,7 @@ def rmsd(mol1, mol2):
 
 def pdb2pdbqt(inp, out, keep_polarH=True):
 
-    if keep_polarH:
-        mode = "AddPolarH"
-    else:
-        mode = "general"
+    mode = "AddPolarH" if keep_polarH else "general"
     print(mode)
     builder.babel_converter(inp, out, "obabel")
 
@@ -200,15 +197,12 @@ def run_docking():
 
     # babel_converter(lig, lig+".pdb")
 
-    pdb2pdbqt(
-        lig,
-        lig + ".pdbqt",
-    )
-    pdb2pdbqt(lig, lig + ".pdb", keep_polarH=False)
+    pdb2pdbqt(lig, f"{lig}.pdbqt")
+    pdb2pdbqt(lig, f"{lig}.pdb", keep_polarH=False)
 
     rec_prep = ReceptorPrepare(rec)
     # rec_prep.receptor_addH("H_"+rec)
-    xyz_c = rec_prep.pocket_center(LIG=lig + ".pdb")
+    xyz_c = rec_prep.pocket_center(LIG=f"{lig}.pdb")
     print(xyz_c)
     pdb2pdbqt(rec, "temp.pdbqt")
     job = sp.Popen("awk '$1 ~ /ATOM/ {print $0}' temp.pdbqt > %s.pdbqt" % rec,
@@ -217,8 +211,8 @@ def run_docking():
 
     docking = VinaDocking()
     docking.vina_config(
-        rec + ".pdbqt",
-        lig + ".pdbqt",
+        f"{rec}.pdbqt",
+        f"{lig}.pdbqt",
         args.out,
         16,
         32,

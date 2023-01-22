@@ -49,11 +49,7 @@ if __name__ == "__main__":
     dat = pd.DataFrame()
     for i, fn in enumerate(args.fn):
         df = pd.read_csv(fn, index_col=0, header=0)
-        if i == 0:
-            dat = df
-        else:
-            dat = pd.concat([dat, df])
-
+        dat = df if i == 0 else pd.concat([dat, df])
         print(dat.shape)
     # dat.index = [x.split("/")[2] for x in dat.index]
 

@@ -113,7 +113,7 @@ def generate_features(complex_fn, lig_code, ncutoffs):
     ]
 
     cplx = AtomTypeCounts(complex_fn, lig_code)
-    cplx.parsePDB(rec_sele="protein", lig_sele="resname %s" % lig_code)
+    cplx.parsePDB(rec_sele="protein", lig_sele=f"resname {lig_code}")
 
     lig = cplx.lig_ele
     rec = cplx.rec_ele
